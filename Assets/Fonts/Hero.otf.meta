@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 956b125b8657e1a4a957e9b1f1e84fdc
+timeCreated: 1542818668
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Hero
+  fontNames:
+  - Hero
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

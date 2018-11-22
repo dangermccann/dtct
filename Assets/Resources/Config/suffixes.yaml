@@ -1,0 +1,114 @@
+﻿---
+Companies:
+    - Enterprises
+    - Corporation
+    - Partners
+    - Industries
+    - Systems
+    - Communications
+    - Products
+    - Capital
+    - Incorporated
+    - ', Inc.'
+    - ', LLC'
+    - Management
+    - Solutions
+    - Limited
+    - Cooperative
+
+Producers:
+    - Manufacturing
+    - Industries
+    - Machinery
+    - Works
+    - Controls
+    - Products
+    - Specialists
+    - Automation
+    - Process Control
+    - Production Center
+    - Facility
+    - Equipment
+    - Systems
+    - Construction
+    - Factory
+    - Workshop
+    - Yard
+    - Shop
+    - Foundry
+    - Branch
+    - Forge
+Retailers:
+    - Stores
+    - Dealer
+    - Superstores
+    - Supply
+    - Depot
+    - Concepts
+    - Technologies
+    - Tech
+    - Distributions
+    - Exchange
+    - Suppliers
+    - Systems
+    - Solutions
+    - Instruments
+    - Equipment
+    - Sales
+    - Parts
+    - Provisions
+    - Enterprises
+    - Centre
+    - Retail
+    - Connection
+    - Market
+    - Specialties
+    - Associates
+    - Designs
+    - Brokers
+    - Partners
+    - Merchandise
+    - Capital
+    - Shop
+    - Outlet
+    - Emporium
+
+Servicers:
+    - Services
+    - Repair
+    - Consulting
+
+
+Modifiers:
+    - Industrial
+    - Regional
+    - Professional
+    - National
+    - International
+
+Special:
+    - Construction
+    - Automotive
+    - Mining
+    - Health
+
+Streets:
+    - Street
+    - Drive
+    - Avenue
+
+MinorStreets:
+    - Street
+    - Drive
+    - Court
+    - Circle
+    - Lane
+    - Place
+    - Way
+
+MajorStreets:
+    - Street
+    - Avenue
+    - Parkway
+    - Boulevard
+    - Highway
