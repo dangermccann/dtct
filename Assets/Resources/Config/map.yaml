@@ -1,0 +1,130 @@
+---
+LotTemplates:
+  TW: &tw
+    BuildingType: Townhouse
+    Direction: West
+    Width: 1
+    Height: 1
+  TE: &te
+    BuildingType: Townhouse
+    Direction: West
+    Width: 1
+    Height: 1
+  
+BlockTemplates:
+  Townhouses: &townhouses 
+    Lots:
+      - Position: {x: 0, y: 0}
+        <<: *tw
+      - Position: {x: 0, y: 1}
+        <<: *tw
+      - Position: {x: 0, y: 2}
+        <<: *tw
+      - Position: {x: 0, y: 3}
+        <<: *tw
+      - Position: {x: 0, y: 4}
+        <<: *tw
+      - Position: {x: 0, y: 5}
+        <<: *tw
+      - Position: {x: 0, y: 6}
+        <<: *tw
+      - Position: {x: 0, y: 7}
+        <<: *tw
+      - Position: {x: 0, y: 8}
+        <<: *tw
+      - Position: {x: 0, y: 9}
+        <<: *tw
+      - Position: {x: 0, y: 10}
+        <<: *tw
+      - Position: {x: 0, y: 11}
+        <<: *tw
+      - Position: {x: 0, y: 12}
+        <<: *tw
+      - Position: {x: 0, y: 13}
+        <<: *te
+      - Position: {x: 1, y: 0}
+        <<: *te
+      - Position: {x: 1, y: 1}
+        <<: *te
+      - Position: {x: 1, y: 2}
+        <<: *te
+      - Position: {x: 1, y: 3}
+        <<: *te
+      - Position: {x: 1, y: 4}
+        <<: *te
+      - Position: {x: 1, y: 5}
+        <<: *te
+      - Position: {x: 1, y: 6}
+        <<: *te
+      - Position: {x: 1, y: 7}
+        <<: *te
+      - Position: {x: 1, y: 8}
+        <<: *te
+      - Position: {x: 1, y: 9}
+        <<: *te
+      - Position: {x: 1, y: 10}
+        <<: *te
+      - Position: {x: 1, y: 11}
+        <<: *te
+      - Position: {x: 1, y: 12}
+        <<: *te
+      - Position: {x: 1, y: 13}
+        <<: *te
+
+
+Neighborhoods:
+  - R1:
+      Roads:
+        - Start: {x: 0, y: 0}
+          End:   {x: 59, y: 0}
+        - Start: {x: 0, y: 15}
+          End:   {x: 59, y: 15}
+        - Start: {x: 0, y: 30}
+          End:   {x: 59, y: 30}
+        - Start: {x: 0, y: 45}
+          End:   {x: 59, y: 45}
+        - Start: {x: 0, y: 0}
+          End:   {x: 59, y: 0}
+        - Start: {x: 0, y: 0}
+          End:   {x: 0, y: 59}
+        - Start: {x: 3, y: 0}
+          End:   {x: 3, y: 59}
+        - Start: {x: 6, y: 0}
+          End:   {x: 6, y: 59}
+        - Start: {x: 9, y: 0}
+          End:   {x: 9, y: 59}
+        - Start: {x: 15, y: 0}
+          End:   {x: 15, y: 59}
+        - Start: {x: 18, y: 0}
+          End:   {x: 18, y: 59}
+        - Start: {x: 21, y: 0}
+          End:   {x: 21, y: 59}
+        - Start: {x: 24, y: 0}
+          End:   {x: 24, y: 59}
+        - Start: {x: 27, y: 0}
+          End:   {x: 27, y: 59}
+        - Start: {x: 30, y: 0}
+          End:   {x: 30, y: 59}
+        - Start: {x: 33, y: 0}
+          End:   {x: 33, y: 59}
+        - Start: {x: 36, y: 0}
+          End:   {x: 36, y: 59}
+        - Start: {x: 39, y: 0}
+          End:   {x: 39, y: 59}
+        - Start: {x: 42, y: 0}
+          End:   {x: 42, y: 59}
+        - Start: {x: 45, y: 0}
+          End:   {x: 45, y: 59}
+        - Start: {x: 48, y: 0}
+          End:   {x: 48, y: 59}
+        - Start: {x: 51, y: 0}
+          End:   {x: 51, y: 59}
+        - Start: {x: 54, y: 0}
+          End:   {x: 54, y: 59}
+        - Start: {x: 57, y: 0}
+          End:   {x: 57, y: 59}
+
+      Blocks:
+        - Offset: {x: 1, y: 1}
+          <<: *townhouses
+
