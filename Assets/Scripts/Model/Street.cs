@@ -12,60 +12,59 @@ namespace DCTC.Model
 	}
 
     [Serializable]
-	public class Segment {
+    public class Segment {
 
-		public TilePosition Start { get; set; }
-		public TilePosition End { get; set; }
+        public TilePosition Start { get; set; }
+        public TilePosition End { get; set; }
 
-        public Segment() {  }
+        public Segment() { }
 
-		public Segment(TilePosition start, TilePosition end) { 
-			this.Start = start;
-			this.End = end;
+        public Segment(TilePosition start, TilePosition end) {
+            this.Start = start;
+            this.End = end;
 
-			if(start.x != end.x && start.y != end.y)
-				throw new Exception("Invalid segment arguments");
-		}
+            if (start.x != end.x && start.y != end.y)
+                throw new Exception("Invalid segment arguments");
+        }
 
         [YamlIgnore]
         public Orientation Orientation {
-			get {
-				if(Start.x == End.x)
-					return Orientation.Vertical;
-				else
-					return Orientation.Horizontal;
-			}
-		}
+            get {
+                if (Start.x == End.x)
+                    return Orientation.Vertical;
+                else
+                    return Orientation.Horizontal;
+            }
+        }
 
         [YamlIgnore]
         public IList<TilePosition> Positions {
-			get {
-				List<TilePosition> positions = new List<TilePosition>();
+            get {
+                List<TilePosition> positions = new List<TilePosition>();
 
-				int diff;
-				if(Orientation == Orientation.Horizontal) {
-					diff = End.x - Start.x;
-					for(int i = 0; i <= Math.Abs(diff); i++) {
-						if(Start.x < End.x)
-							positions.Add(new TilePosition(Start.x + i, Start.y));
-						else
-							positions.Add(new TilePosition(Start.x - i, Start.y));
-					}
+                int diff;
+                if (Orientation == Orientation.Horizontal) {
+                    diff = End.x - Start.x;
+                    for (int i = 0; i <= Math.Abs(diff); i++) {
+                        if (Start.x < End.x)
+                            positions.Add(new TilePosition(Start.x + i, Start.y));
+                        else
+                            positions.Add(new TilePosition(Start.x - i, Start.y));
+                    }
 
-				}
-				else {
-					diff = End.y - Start.y;
-					for(int i = 0; i <= Math.Abs(diff); i++) {
-						if(Start.y < End.y)
-							positions.Add(new TilePosition(Start.x, Start.y + i));
-						else
-							positions.Add(new TilePosition(Start.x, Start.y - 1));
-					}
-				}
+                } else {
+                    diff = End.y - Start.y;
+                    for (int i = 0; i <= Math.Abs(diff); i++) {
+                        if (Start.y < End.y)
+                            positions.Add(new TilePosition(Start.x, Start.y + i));
+                        else
+                            positions.Add(new TilePosition(Start.x, Start.y - 1));
+                    }
+                }
 
-				return positions;
-			}
-		}
+                return positions;
+            }
+        }
 
         [YamlIgnore]
         public int Length {
@@ -77,17 +76,25 @@ namespace DCTC.Model
             }
         }
 
-		public bool Contains(TilePosition pos) {
-			if(pos.x == Start.x && pos.x == End.x && pos.y >= Start.y && pos.y <= End.y)
-				return true;
+        public bool Contains(TilePosition pos) {
+            if (pos.x == Start.x && pos.x == End.x && pos.y >= Start.y && pos.y <= End.y)
+                return true;
 
-			if(pos.y == Start.y && pos.y == End.y && pos.x >= Start.x && pos.x <= End.x)
-				return true;
+            if (pos.y == Start.y && pos.y == End.y && pos.x >= Start.x && pos.x <= End.x)
+                return true;
 
-			return false;
-		}
-	}
+            return false;
+        }
 
+        public static Segment operator +(Segment s, TilePosition pos) {
+            return new Segment(s.Start + pos, s.End + pos);
+        }
+
+        public static Segment operator -(Segment s, TilePosition pos) {
+            return new Segment(s.Start - pos, s.End - pos);
+        }
+
+    }
 	public class Street
 	{
 		public string Name;

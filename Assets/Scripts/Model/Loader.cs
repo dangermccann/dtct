@@ -67,7 +67,7 @@ namespace DCTC.Model {
             result = CreateDeserializer().Deserialize<T>(yaml.text);
         }
 
-        private static Deserializer CreateDeserializer() {
+        private static IDeserializer CreateDeserializer() {
             return new DeserializerBuilder().WithNamingConvention(new PascalCaseNamingConvention()).Build();
         }
 

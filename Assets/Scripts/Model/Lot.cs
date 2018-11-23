@@ -24,6 +24,15 @@ namespace DCTC.Model
             get { return StreetNumber.ToString() + " " + Street.Name; }
         }
 
+        public void PopulateTiles(int width, int height) {
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    TilePosition pos = new TilePosition(Anchor.x + x, Anchor.y + y);
+                    Tiles.Add(pos);
+                }
+            }
+        }
+
         public bool WillFitBuilding(BuildingAttributes attributes) {
             for(int x = 0; x < attributes.Width; x++) {
                 for(int y = 0; y < attributes.Height; y++) {

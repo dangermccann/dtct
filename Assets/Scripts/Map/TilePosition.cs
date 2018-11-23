@@ -6,10 +6,10 @@ using YamlDotNet.Serialization.Converters;
 namespace DCTC.Map {
     [Serializable]
     public class TilePosition {
-        [YamlMember(Alias = "x")]
+        [YamlMember(Alias = "x", ApplyNamingConventions = false)]
         public int x { get; set; }
 
-        [YamlMember(Alias = "y")]
+        [YamlMember(Alias = "y", ApplyNamingConventions = false)]
         public int y { get; set; }
 
         public TilePosition() { }

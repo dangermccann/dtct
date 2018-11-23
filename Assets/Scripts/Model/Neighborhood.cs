@@ -139,6 +139,10 @@ namespace DCTC.Model
 			}
 		}
 
+        public void CreateStraightRoad(Segment segment) {
+            CreateStraightRoad(segment.Start, segment.End, segment.Orientation);
+        }
+
         public void CreateStraightRoad(TilePosition from, TilePosition to, Orientation orientation) {
             if(orientation == Orientation.Horizontal) {
                 for (int x = from.x; x <= to.x; x++) {

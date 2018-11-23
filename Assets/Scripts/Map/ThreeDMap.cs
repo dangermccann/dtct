@@ -111,10 +111,17 @@ namespace DCTC.Map {
         private void OnTileClicked(Vector3 world) {
             TilePosition pos = WorldToPosition(world);
 
-            Debug.Log("Tile Clicked world=" + world + ", pos=" + pos);
-
             if (map.Tiles.ContainsKey(pos)) {
-                
+                Tile tile = map.Tiles[pos];
+                if(tile.Building != null) {
+                    Debug.Log(BuildingName(pos) + " " + tile.Building.Type.ToString());
+                }
+                else {
+                    Debug.Log(TileName(pos) + " " + tile.Type.ToString());
+                }
+            }
+            else {
+                Debug.Log("Tile Clicked world=" + world + ", pos=" + pos);
             }
         }
 
