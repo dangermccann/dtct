@@ -4,26 +4,6 @@ using DCTC.Model;
 
 namespace DCTC.Map {
 
-    [Serializable]
-    public class NeighborhoodTemplate {
-        public List<Segment> Roads;
-        public List<BlockTemplate> Blocks;
-    }
-
-    [Serializable]
-    public class BlockTemplate {
-        public TilePosition Offset;
-        public List<LotTemplate> Lots;
-    }
-
-    [Serializable]
-    public class LotTemplate {
-        public TilePosition Position;
-        public BuildingType Type;
-        public Direction Facing;
-        public int Width, Height;
-    }
-
 	[Serializable]
 	public class MapConfiguration {
 		public static TileType DefaultTileType = TileType.Sand;

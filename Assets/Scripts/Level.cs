@@ -11,6 +11,9 @@ public class Level : MonoBehaviour {
 	public MapConfiguration MapConfiguration;
 
     void Awake() {
+        MapGenerator generator = new MapGenerator();
+        generator.Generate();
+
         int neighborhoodWidth = 60; 
         int neighborhoodHeight = 60;
         MapConfiguration config = new MapConfiguration(neighborhoodWidth * 2, neighborhoodHeight * 2);

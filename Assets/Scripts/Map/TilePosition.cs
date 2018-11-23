@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.Converters;
 
 namespace DCTC.Map {
     [Serializable]
     public class TilePosition {
+        [YamlMember(Alias = "x")]
         public int x { get; set; }
+
+        [YamlMember(Alias = "y")]
         public int y { get; set; }
 
         public TilePosition() { }

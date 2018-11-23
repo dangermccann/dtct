@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+using DCTC.Map;
 
 
 namespace DCTC.Model {
@@ -16,6 +17,7 @@ namespace DCTC.Model {
         private const string NamesYaml = Package + "names";
         private const string PlacesYaml = Package + "places";
         private const string Suffixes = Package + "suffixes";
+        private const string MapYaml = Package + "map";
 
         public static IList<string> LoadBrands() {
             Dictionary<string, List<string>> parsed;
@@ -51,6 +53,13 @@ namespace DCTC.Model {
             Dictionary<string, List<string>> parsed;
             Parse(Suffixes, out parsed);
             return parsed;
+        }
+
+        public static MapTemplate LoadMapTemplate()
+        {
+            MapTemplate template = new MapTemplate();
+            Parse(MapYaml, out template);
+            return template;
         }
 
         private static void Parse<T>(string resource, out T result) {

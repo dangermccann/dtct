@@ -2,12 +2,12 @@
 LotTemplates:
   TW: &tw
     BuildingType: Townhouse
-    Direction: West
+    Facing: West
     Width: 1
     Height: 1
   TE: &te
     BuildingType: Townhouse
-    Direction: West
+    Facing: West
     Width: 1
     Height: 1
   
@@ -103,8 +103,6 @@ Neighborhoods:
           End:   {x: 24, y: 59}
         - Start: {x: 27, y: 0}
           End:   {x: 27, y: 59}
-        - Start: {x: 30, y: 0}
-          End:   {x: 30, y: 59}
         - Start: {x: 33, y: 0}
           End:   {x: 33, y: 59}
         - Start: {x: 36, y: 0}
@@ -127,4 +125,145 @@ Neighborhoods:
       Blocks:
         - Offset: {x: 1, y: 1}
           <<: *townhouses
-
+        - Offset: {x: 4, y: 1}
+          <<: *townhouses
+        - Offset: {x: 7, y: 1}
+          <<: *townhouses
+        - Offset: {x: 10, y: 1}
+          <<: *townhouses
+        - Offset: {x: 13, y: 1}
+          <<: *townhouses
+        - Offset: {x: 16, y: 1}
+          <<: *townhouses
+        - Offset: {x: 19, y: 1}
+          <<: *townhouses
+        - Offset: {x: 22, y: 1}
+          <<: *townhouses
+        - Offset: {x: 25, y: 1}
+          <<: *townhouses
+        - Offset: {x: 34, y: 1}
+          <<: *townhouses
+        - Offset: {x: 37, y: 1}
+          <<: *townhouses
+        - Offset: {x: 40, y: 1}
+          <<: *townhouses
+        - Offset: {x: 43, y: 1}
+          <<: *townhouses
+        - Offset: {x: 46, y: 1}
+          <<: *townhouses
+        - Offset: {x: 49, y: 1}
+          <<: *townhouses
+        - Offset: {x: 52, y: 1}
+          <<: *townhouses
+        - Offset: {x: 55, y: 1}
+          <<: *townhouses
+        - Offset: {x: 58, y: 1}
+          <<: *townhouses
+        - Offset: {x: 1, y: 16}
+          <<: *townhouses
+        - Offset: {x: 4, y: 16}
+          <<: *townhouses
+        - Offset: {x: 7, y: 16}
+          <<: *townhouses
+        - Offset: {x: 10, y: 16}
+          <<: *townhouses
+        - Offset: {x: 13, y: 16}
+          <<: *townhouses
+        - Offset: {x: 16, y: 16}
+          <<: *townhouses
+        - Offset: {x: 19, y: 16}
+          <<: *townhouses
+        - Offset: {x: 22, y: 16}
+          <<: *townhouses
+        - Offset: {x: 25, y: 16}
+          <<: *townhouses
+        - Offset: {x: 34, y: 16}
+          <<: *townhouses
+        - Offset: {x: 37, y: 16}
+          <<: *townhouses
+        - Offset: {x: 40, y: 16}
+          <<: *townhouses
+        - Offset: {x: 43, y: 16}
+          <<: *townhouses
+        - Offset: {x: 46, y: 16}
+          <<: *townhouses
+        - Offset: {x: 49, y: 16}
+          <<: *townhouses
+        - Offset: {x: 52, y: 16}
+          <<: *townhouses
+        - Offset: {x: 55, y: 16}
+          <<: *townhouses
+        - Offset: {x: 58, y: 16}
+          <<: *townhouses
+        - Offset: {x: 1, y: 31}
+          <<: *townhouses
+        - Offset: {x: 4, y: 31}
+          <<: *townhouses
+        - Offset: {x: 7, y: 31}
+          <<: *townhouses
+        - Offset: {x: 10, y: 31}
+          <<: *townhouses
+        - Offset: {x: 13, y: 31}
+          <<: *townhouses
+        - Offset: {x: 16, y: 31}
+          <<: *townhouses
+        - Offset: {x: 19, y: 31}
+          <<: *townhouses
+        - Offset: {x: 22, y: 31}
+          <<: *townhouses
+        - Offset: {x: 25, y: 31}
+          <<: *townhouses
+        - Offset: {x: 34, y: 31}
+          <<: *townhouses
+        - Offset: {x: 37, y: 31}
+          <<: *townhouses
+        - Offset: {x: 40, y: 31}
+          <<: *townhouses
+        - Offset: {x: 43, y: 31}
+          <<: *townhouses
+        - Offset: {x: 46, y: 31}
+          <<: *townhouses
+        - Offset: {x: 49, y: 31}
+          <<: *townhouses
+        - Offset: {x: 52, y: 31}
+          <<: *townhouses
+        - Offset: {x: 55, y: 31}
+          <<: *townhouses
+        - Offset: {x: 58, y: 31}
+          <<: *townhouses
+        - Offset: {x: 1, y: 46}
+          <<: *townhouses
+        - Offset: {x: 4, y: 46}
+          <<: *townhouses
+        - Offset: {x: 7, y: 46}
+          <<: *townhouses
+        - Offset: {x: 10, y: 46}
+          <<: *townhouses
+        - Offset: {x: 13, y: 46}
+          <<: *townhouses
+        - Offset: {x: 16, y: 46}
+          <<: *townhouses
+        - Offset: {x: 19, y: 46}
+          <<: *townhouses
+        - Offset: {x: 22, y: 46}
+          <<: *townhouses
+        - Offset: {x: 25, y: 46}
+          <<: *townhouses
+        - Offset: {x: 34, y: 46}
+          <<: *townhouses
+        - Offset: {x: 37, y: 46}
+          <<: *townhouses
+        - Offset: {x: 40, y: 46}
+          <<: *townhouses
+        - Offset: {x: 43, y: 46}
+          <<: *townhouses
+        - Offset: {x: 46, y: 46}
+          <<: *townhouses
+        - Offset: {x: 49, y: 46}
+          <<: *townhouses
+        - Offset: {x: 52, y: 46}
+          <<: *townhouses
+        - Offset: {x: 55, y: 46}
+          <<: *townhouses
+        - Offset: {x: 58, y: 46}
+          <<: *townhouses
