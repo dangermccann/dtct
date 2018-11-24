@@ -38,19 +38,6 @@ namespace DCTC.Model {
             this.SquareMeters = squareMeters;
         }
 
-		public IList<TilePosition> Positions {
-            get {
-                List<TilePosition> positions = new List<TilePosition>();
-                for (int x = 0; x < Width; x++) {
-                    for (int y = 0; y < Height; y++) {
-                        positions.Add(new TilePosition(Anchor.x + x, Anchor.y + y));
-                    }
-                }
-
-                return positions;
-            }
-        }
-
         public BuildingAttributes GetAttributes() {
             return BuildingAttributes.GetAttributes(Type, FacingDirection);
         }

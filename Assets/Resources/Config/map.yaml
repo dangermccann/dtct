@@ -30,20 +30,20 @@ LotTemplates:
     Width: 5
     Height: 5
     Facing: East
-  SmallHouseS:
+  SmallHouseN:
     BuildingType: SmallHouse
     Width: 3
     Height: 2
-    Facing: South
+    Facing: North
   SmallHouseE:
     BuildingType: SmallHouse
-    Width: 3
-    Height: 2
+    Width: 2
+    Height: 3
     Facing: East
   SmallHouseW:
     BuildingType: SmallHouse
-    Width: 3
-    Height: 2
+    Width: 2
+    Height: 3
     Facing: West
   SmallRetailE:
     BuildingType: SmallRetail
@@ -57,13 +57,13 @@ LotTemplates:
     Facing: West
   SmallRetail2E:
     BuildingType: SmallRetail2
-    Width: 3
-    Height: 2
+    Width: 2
+    Height: 3
     Facing: East
   SmallRetail2W:
     BuildingType: SmallRetail2
-    Width: 3
-    Height: 2
+    Width: 2
+    Height: 3
     Facing: West
   StripMallE:
     BuildingType: StripMall
@@ -77,18 +77,18 @@ LotTemplates:
     Facing: West
   SuburbanHouseE: 
     BuildingType: SuburbanHouse
-    Width: 3
-    Height: 2
+    Width: 2
+    Height: 3
     Facing: East
   SuburbanHouseW:
     BuildingType: SuburbanHouse
-    Width: 3
-    Height: 2
+    Width: 2
+    Height: 3
     Facing: West
   Warehouse:
     BuildingType: Warehouse
-    Width: 9
-    Height: 5
+    Width: 5
+    Height: 9
     Facing: East
   
 BlockTemplates:
@@ -112,28 +112,28 @@ BlockTemplates:
         Position: {x: 0, y: 21}
       - Name: RanchW
         Position: {x: 0, y: 24}
-      - Name: SmallHouseS
-        Position: {x: 3, y: 27}
-      - Name: RanchW
+      - Name: SmallHouseN
+        Position: {x: 0, y: 26}
+      - Name: RanchE
         Position: {x: 3, y: 0}
-      - Name: RanchW
+      - Name: RanchE
         Position: {x: 3, y: 3}
-      - Name: RanchW
+      - Name: RanchE
         Position: {x: 3, y: 6}
-      - Name: RanchW
+      - Name: RanchE
         Position: {x: 3, y: 9}
-      - Name: RanchW
+      - Name: RanchE
         Position: {x: 3, y: 12}
-      - Name: RanchW
+      - Name: RanchE
         Position: {x: 3, y: 15}
-      - Name: RanchW
+      - Name: RanchE
         Position: {x: 3, y: 18}
-      - Name: RanchW
+      - Name: RanchE
         Position: {x: 3, y: 21}
-      - Name: RanchW
+      - Name: RanchE
         Position: {x: 3, y: 24}
-      - Name: SmallHouseS
-        Position: {x: 3, y: 27}
+      - Name: SmallHouseN
+        Position: {x: 3, y: 26}
 
   Warehouses:
     Lots: 
@@ -141,6 +141,22 @@ BlockTemplates:
         Position: {x: 0, y: 0}
       - Name: Warehouse
         Position: {x: 0, y: 10}
+
+  WarehouseAndRetail:
+    Lots:
+      - Name: Warehouse
+        Position: {x: 0, y: 0}
+      - Name: Retail
+        Position: {x: 0, y: 9}
+
+  Apartments:
+    Lots:
+      - Name: Apartment
+        Position: {x: 0, y: 0}
+      - Name: Apartment
+        Position: {x: 0, y: 6}
+      - Name: Apartment
+        Position: {x: 0, y: 12}
 
   Retail:
     Lots: 
@@ -178,28 +194,28 @@ BlockTemplates:
     Lots:
       - Name: SmallHouseW
         Position: {x: 0, y: 0}
-      - Name: SmallHouseW
+      - Name: SuburbanHouseW
         Position: {x: 0, y: 3}
       - Name: SmallHouseW
         Position: {x: 0, y: 6}
-      - Name: SmallHouseW
+      - Name: SuburbanHouseW
         Position: {x: 0, y: 9}
       - Name: SmallHouseW
         Position: {x: 0, y: 12}
-      - Name: SmallHouseW
+      - Name: SuburbanHouseW
         Position: {x: 0, y: 15} 
       - Name: SmallHouseE
-        Position: {x: 2, y: 0}
+        Position: {x: 3, y: 0}
+      - Name: SuburbanHouseE
+        Position: {x: 3, y: 3}
       - Name: SmallHouseE
-        Position: {x: 2, y: 3}
+        Position: {x: 3, y: 6}
+      - Name: SuburbanHouseE
+        Position: {x: 3, y: 9}
       - Name: SmallHouseE
-        Position: {x: 2, y: 6}
-      - Name: SmallHouseE
-        Position: {x: 2, y: 9}
-      - Name: SmallHouseE
-        Position: {x: 2, y: 12}
-      - Name: SmallHouseE
-        Position: {x: 2 , y: 15} 
+        Position: {x: 3, y: 12}
+      - Name: SuburbanHouseE
+        Position: {x: 3 , y: 15} 
 
 
   Townhouses:  
@@ -314,25 +330,25 @@ Neighborhoods:
         Position: {x: 49, y: 1}
       - Name: Suburbs
         Position: {x: 55, y: 1}
-      - Name: Suburbs
+      - Name: Apartments
         Position: {x: 1, y: 21}
-      - Name: Suburbs
+      - Name: Apartments
         Position: {x: 7, y: 21}
-      - Name: Suburbs
+      - Name: Apartments
         Position: {x: 13, y: 21}
-      - Name: Suburbs
+      - Name: Apartments
         Position: {x: 19, y: 21}
       - Name: Retail
         Position: {x: 25, y: 21}
       - Name: Warehouses
         Position: {x: 31, y: 21}
-      - Name: Suburbs
+      - Name: Apartments
         Position: {x: 37, y: 21}
-      - Name: Suburbs
+      - Name: Apartments
         Position: {x: 43, y: 21}
-      - Name: Suburbs
+      - Name: Apartments
         Position: {x: 49, y: 21}
-      - Name: Suburbs
+      - Name: Apartments
         Position: {x: 55, y: 21}
       - Name: Suburbs
         Position: {x: 1, y: 41}
@@ -385,6 +401,41 @@ Neighborhoods:
     Blocks:
       - Name: Ranches
         Position: {x: 1, y: 1}
+      - Name: Ranches
+        Position: {x: 8, y: 1}
+      - Name: Ranches
+        Position: {x: 15, y: 1}
+      - Name: Ranches
+        Position: {x: 22, y: 1}
+      - Name: StripMall
+        Position: {x: 29, y: 1}
+      - Name: Ranches
+        Position: {x: 33, y: 1}
+      - Name: Ranches
+        Position: {x: 40, y: 1}
+      - Name: Ranches
+        Position: {x: 47, y: 1}
+      - Name: Ranches
+        Position: {x: 54, y: 1}
+      - Name: Ranches
+        Position: {x: 1, y: 31}
+      - Name: Ranches
+        Position: {x: 8, y: 31}
+      - Name: Ranches
+        Position: {x: 15, y: 31}
+      - Name: Ranches
+        Position: {x: 22, y: 31}
+      - Name: StripMall
+        Position: {x: 29, y: 31}
+      - Name: Ranches
+        Position: {x: 33, y: 31}
+      - Name: Ranches
+        Position: {x: 40, y: 31}
+      - Name: Ranches
+        Position: {x: 47, y: 31}
+      - Name: Ranches
+        Position: {x: 54, y: 31}
+
 
 # Townhouse neighborhood -- 2x14 internal block size
   - Width: 60
@@ -584,3 +635,12 @@ Neighborhoods:
         Position: {x: 55, y: 46}
       - Name: Townhouses
         Position: {x: 58, y: 46}
+      - Name: WarehouseAndRetail
+        Position: {x: 28, y: 1}
+      - Name: WarehouseAndRetail
+        Position: {x: 28, y: 16}
+      - Name: WarehouseAndRetail
+        Position: {x: 28, y: 31}
+      - Name: WarehouseAndRetail
+        Position: {x: 28, y: 46}
+

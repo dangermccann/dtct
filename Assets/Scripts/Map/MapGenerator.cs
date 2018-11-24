@@ -61,7 +61,8 @@ namespace DCTC.Map
         public MapConfiguration Generate() {
             MapTemplate template = Loader.LoadMapTemplate();
 
-            MapConfiguration map = new MapConfiguration(NeighborhoodWidth * NeighborhoodCountX, NeighborhoodHeight * NeighborhoodCountY);
+            MapConfiguration map = new MapConfiguration(NeighborhoodWidth * NeighborhoodCountX + 1, 
+                NeighborhoodHeight * NeighborhoodCountY + 1);
             map.CreateTiles();
 
             int startIdx = random.Next(5);
@@ -75,11 +76,11 @@ namespace DCTC.Map
 
             // Final roads on outside
             for(int x = 0; x < NeighborhoodWidth * NeighborhoodCountX; x++) {
-                map.AddRoad(new TilePosition(x, NeighborhoodHeight * NeighborhoodCountY - 1));
+                map.AddRoad(new TilePosition(x, NeighborhoodHeight * NeighborhoodCountY));
             }
 
             for (int y = 0; y < NeighborhoodHeight * NeighborhoodCountY; y++) {
-                map.AddRoad(new TilePosition(NeighborhoodWidth * NeighborhoodCountX - 1, y));
+                map.AddRoad(new TilePosition(NeighborhoodWidth * NeighborhoodCountX, y));
             }
 
             return map;
@@ -123,12 +124,11 @@ namespace DCTC.Map
                         attributes.Width, attributes.Height);
                     lot.Building = building;
 
-                    foreach (TilePosition pos in building.Positions) {
-                        if (!map.Tiles.ContainsKey(pos))
-                            throw new Exception("Off the map: " + pos);
-
-                        Tile tile = map.Tiles[new TilePosition(pos.x, pos.y)];
-                        tile.Building = building;
+                    for (int x = 0; x < lotTemplate.Width; x++) {
+                        for (int y = 0; y < lotTemplate.Height; y++) {
+                            Tile tile = map.Tiles[new TilePosition(x + lotPosition.x, y + lotPosition.y)];
+                            tile.Building = building;
+                        }
                     }
 
                     neighborhood.Lots.Add(lot);
