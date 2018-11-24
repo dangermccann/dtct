@@ -28,23 +28,9 @@ namespace DCTC.Model {
         public Building (Tile tile, BuildingType type, Direction facingDirection, int width, 
 		                 int height, BuildingColor color, decimal squareMeters) {
 
-            // Assume that the tile passed in represents the front of the building, as per the facing direction.
-            // Adjust the anchor so that it's in the southwest (bottom left) corner of the building.
-            switch(facingDirection) {
-                case Direction.East:
-                    Anchor = new TilePosition(tile.Position.x - (width - 1), tile.Position.y);
-                    break;
-                case Direction.North:
-                    Anchor = new TilePosition(tile.Position.x, tile.Position.y - (height - 1));
-                    break;
 
-                default:
-                    Anchor = tile.Position;
-                    break;
-            }
-
-
-			this.Type = type;
+            this.Anchor = tile.Position;
+            this.Type = type;
 			this.FacingDirection = facingDirection;
 			this.Width = width;
 			this.Height = height;
@@ -80,6 +66,7 @@ namespace DCTC.Model {
         Apartment,
         StripMall,
         SmallRetail,
+        SmallRetail2,
         Retail,
 		Barn,
         Factory,

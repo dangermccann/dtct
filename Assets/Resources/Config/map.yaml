@@ -7,11 +7,201 @@ LotTemplates:
     Height: 1
   TE:
     BuildingType: Townhouse
-    Facing: West
+    Facing: East
     Width: 1
     Height: 1
+  Apartment:
+    BuildingType: Apartment
+    Width: 5
+    Height: 5
+    Facing: West
+  RanchE:
+    BuildingType: Ranch
+    Width: 3
+    Height: 3
+    Facing: East
+  RanchW:
+    BuildingType: Ranch
+    Width: 3
+    Height: 3
+    Facing: West
+  Retail:
+    BuildingType: Retail
+    Width: 5
+    Height: 5
+    Facing: East
+  SmallHouseS:
+    BuildingType: SmallHouse
+    Width: 3
+    Height: 2
+    Facing: South
+  SmallHouseE:
+    BuildingType: SmallHouse
+    Width: 3
+    Height: 2
+    Facing: East
+  SmallHouseW:
+    BuildingType: SmallHouse
+    Width: 3
+    Height: 2
+    Facing: West
+  SmallRetailE:
+    BuildingType: SmallRetail
+    Width: 3
+    Height: 3
+    Facing: East
+  SmallRetailW:
+    BuildingType: SmallRetail
+    Width: 3
+    Height: 3
+    Facing: West
+  SmallRetail2E:
+    BuildingType: SmallRetail2
+    Width: 3
+    Height: 2
+    Facing: East
+  SmallRetail2W:
+    BuildingType: SmallRetail2
+    Width: 3
+    Height: 2
+    Facing: West
+  StripMallE:
+    BuildingType: StripMall
+    Width: 3
+    Height: 3
+    Facing: East
+  StripMallW:
+    BuildingType: StripMall
+    Width: 3
+    Height: 3
+    Facing: West
+  SuburbanHouseE: 
+    BuildingType: SuburbanHouse
+    Width: 3
+    Height: 2
+    Facing: East
+  SuburbanHouseW:
+    BuildingType: SuburbanHouse
+    Width: 3
+    Height: 2
+    Facing: West
+  Warehouse:
+    BuildingType: Warehouse
+    Width: 9
+    Height: 5
+    Facing: East
   
 BlockTemplates:
+  Ranches:
+    Lots:
+      - Name: RanchW
+        Position: {x: 0, y: 0}
+      - Name: RanchW
+        Position: {x: 0, y: 3}
+      - Name: RanchW
+        Position: {x: 0, y: 6}
+      - Name: RanchW
+        Position: {x: 0, y: 9}
+      - Name: RanchW
+        Position: {x: 0, y: 12}
+      - Name: RanchW
+        Position: {x: 0, y: 15}
+      - Name: RanchW
+        Position: {x: 0, y: 18}
+      - Name: RanchW
+        Position: {x: 0, y: 21}
+      - Name: RanchW
+        Position: {x: 0, y: 24}
+      - Name: SmallHouseS
+        Position: {x: 3, y: 27}
+      - Name: RanchW
+        Position: {x: 3, y: 0}
+      - Name: RanchW
+        Position: {x: 3, y: 3}
+      - Name: RanchW
+        Position: {x: 3, y: 6}
+      - Name: RanchW
+        Position: {x: 3, y: 9}
+      - Name: RanchW
+        Position: {x: 3, y: 12}
+      - Name: RanchW
+        Position: {x: 3, y: 15}
+      - Name: RanchW
+        Position: {x: 3, y: 18}
+      - Name: RanchW
+        Position: {x: 3, y: 21}
+      - Name: RanchW
+        Position: {x: 3, y: 24}
+      - Name: SmallHouseS
+        Position: {x: 3, y: 27}
+
+  Warehouses:
+    Lots: 
+      - Name: Warehouse
+        Position: {x: 0, y: 0}
+      - Name: Warehouse
+        Position: {x: 0, y: 10}
+
+  Retail:
+    Lots: 
+      - Name: Retail
+        Position: {x: 0, y: 0}
+      - Name: Retail
+        Position: {x: 0, y: 5}
+      - Name: Retail
+        Position: {x: 0, y: 10}
+      - Name: SmallRetailW
+        Position: {x: 0, y: 16}
+  
+  StripMall:
+    Lots:
+      - Name: StripMallW
+        Position: {x: 0, y: 0}
+      - Name: StripMallW
+        Position: {x: 0, y: 3}
+      - Name: StripMallW
+        Position: {x: 0, y: 6}
+      - Name: StripMallW
+        Position: {x: 0, y: 9}
+      - Name: StripMallW
+        Position: {x: 0, y: 12}
+      - Name: StripMallW
+        Position: {x: 0, y: 15}
+      - Name: StripMallW
+        Position: {x: 0, y: 18}
+      - Name: StripMallW
+        Position: {x: 0, y: 21}
+      - Name: StripMallW
+        Position: {x: 0, y: 24}
+  
+  Suburbs:
+    Lots:
+      - Name: SmallHouseW
+        Position: {x: 0, y: 0}
+      - Name: SmallHouseW
+        Position: {x: 0, y: 3}
+      - Name: SmallHouseW
+        Position: {x: 0, y: 6}
+      - Name: SmallHouseW
+        Position: {x: 0, y: 9}
+      - Name: SmallHouseW
+        Position: {x: 0, y: 12}
+      - Name: SmallHouseW
+        Position: {x: 0, y: 15} 
+      - Name: SmallHouseE
+        Position: {x: 2, y: 0}
+      - Name: SmallHouseE
+        Position: {x: 2, y: 3}
+      - Name: SmallHouseE
+        Position: {x: 2, y: 6}
+      - Name: SmallHouseE
+        Position: {x: 2, y: 9}
+      - Name: SmallHouseE
+        Position: {x: 2, y: 12}
+      - Name: SmallHouseE
+        Position: {x: 2 , y: 15} 
+
+
   Townhouses:  
     Lots:
       - Name: TW
@@ -73,57 +263,181 @@ BlockTemplates:
 
 
 Neighborhoods:
+# Suburban neighborhood -- 5x19 internal block size
   - Width: 60
     Height: 60
     Roads:
     - Start: {x: 0, y: 0}
       End:   {x: 59, y: 0}
-    - Start: {x: 0, y: 15}
-      End:   {x: 59, y: 15}
-    - Start: {x: 0, y: 30}
-      End:   {x: 59, y: 30}
-    - Start: {x: 0, y: 45}
-      End:   {x: 59, y: 45}
-    - Start: {x: 0, y: 0}
-      End:   {x: 59, y: 0}
+    - Start: {x: 0, y: 20}
+      End:   {x: 59, y: 20}
+    - Start: {x: 0, y: 40}
+      End:   {x: 59, y: 40}
     - Start: {x: 0, y: 0}
       End:   {x: 0, y: 59}
-    - Start: {x: 3, y: 0}
-      End:   {x: 3, y: 59}
     - Start: {x: 6, y: 0}
       End:   {x: 6, y: 59}
-    - Start: {x: 9, y: 0}
-      End:   {x: 9, y: 59}
     - Start: {x: 12, y: 0}
       End:   {x: 12, y: 59}
-    - Start: {x: 15, y: 0}
-      End:   {x: 15, y: 59}
     - Start: {x: 18, y: 0}
       End:   {x: 18, y: 59}
-    - Start: {x: 21, y: 0}
-      End:   {x: 21, y: 59}
     - Start: {x: 24, y: 0}
       End:   {x: 24, y: 59}
-    - Start: {x: 27, y: 0}
-      End:   {x: 27, y: 59}
-    - Start: {x: 33, y: 0}
-      End:   {x: 33, y: 59}
+    - Start: {x: 30, y: 0}
+      End:   {x: 30, y: 59}
     - Start: {x: 36, y: 0}
       End:   {x: 36, y: 59}
-    - Start: {x: 39, y: 0}
-      End:   {x: 39, y: 59}
     - Start: {x: 42, y: 0}
       End:   {x: 42, y: 59}
-    - Start: {x: 45, y: 0}
-      End:   {x: 45, y: 59}
     - Start: {x: 48, y: 0}
       End:   {x: 48, y: 59}
-    - Start: {x: 51, y: 0}
-      End:   {x: 51, y: 59}
     - Start: {x: 54, y: 0}
       End:   {x: 54, y: 59}
-    - Start: {x: 57, y: 0}
-      End:   {x: 57, y: 59}
+    Blocks:
+      - Name: Suburbs
+        Position: {x: 1, y: 1}
+      - Name: Suburbs
+        Position: {x: 7, y: 1}
+      - Name: Suburbs
+        Position: {x: 13, y: 1}
+      - Name: Suburbs
+        Position: {x: 19, y: 1}
+      - Name: Suburbs
+        Position: {x: 25, y: 1}
+      - Name: Suburbs
+        Position: {x: 31, y: 1}
+      - Name: Suburbs
+        Position: {x: 37, y: 1}
+      - Name: Suburbs
+        Position: {x: 43, y: 1}
+      - Name: Suburbs
+        Position: {x: 49, y: 1}
+      - Name: Suburbs
+        Position: {x: 55, y: 1}
+      - Name: Suburbs
+        Position: {x: 1, y: 21}
+      - Name: Suburbs
+        Position: {x: 7, y: 21}
+      - Name: Suburbs
+        Position: {x: 13, y: 21}
+      - Name: Suburbs
+        Position: {x: 19, y: 21}
+      - Name: Retail
+        Position: {x: 25, y: 21}
+      - Name: Warehouses
+        Position: {x: 31, y: 21}
+      - Name: Suburbs
+        Position: {x: 37, y: 21}
+      - Name: Suburbs
+        Position: {x: 43, y: 21}
+      - Name: Suburbs
+        Position: {x: 49, y: 21}
+      - Name: Suburbs
+        Position: {x: 55, y: 21}
+      - Name: Suburbs
+        Position: {x: 1, y: 41}
+      - Name: Suburbs
+        Position: {x: 7, y: 41}
+      - Name: Suburbs
+        Position: {x: 13, y: 41}
+      - Name: Suburbs
+        Position: {x: 19, y: 41}
+      - Name: Suburbs
+        Position: {x: 25, y: 41}
+      - Name: Suburbs
+        Position: {x: 31, y: 41}
+      - Name: Suburbs
+        Position: {x: 37, y: 41}
+      - Name: Suburbs
+        Position: {x: 43, y: 41}
+      - Name: Suburbs
+        Position: {x: 49, y: 41}
+      - Name: Suburbs
+        Position: {x: 55, y: 41}
+
+
+# Suburban neighborhood -- 6x29 internal block size
+  - Width: 60
+    Height: 60
+    Roads:
+      - Start: {x: 0, y: 0}
+        End:   {x: 59, y: 0}
+      - Start: {x: 0, y: 30}
+        End:   {x: 59, y: 30}
+      - Start: {x: 0, y: 0}
+        End:   {x: 0, y: 59}
+      - Start: {x: 7, y: 0}
+        End:   {x: 7, y: 59}
+      - Start: {x: 14, y: 0}
+        End:   {x: 14, y: 59}
+      - Start: {x: 21, y: 0}
+        End:   {x: 21, y: 59}
+      - Start: {x: 28, y: 0}
+        End:   {x: 28, y: 59}
+      - Start: {x: 32, y: 0}
+        End:   {x: 32, y: 59}
+      - Start: {x: 39, y: 0}
+        End:   {x: 39, y: 59}
+      - Start: {x: 46, y: 0}
+        End:   {x: 46, y: 59}
+      - Start: {x: 53, y: 0}
+        End:   {x: 53, y: 59}
+    Blocks:
+      - Name: Ranches
+        Position: {x: 1, y: 1}
+
+# Townhouse neighborhood -- 2x14 internal block size
+  - Width: 60
+    Height: 60
+    Roads:
+      - Start: {x: 0, y: 0}
+        End:   {x: 59, y: 0}
+      - Start: {x: 0, y: 15}
+        End:   {x: 59, y: 15}
+      - Start: {x: 0, y: 30}
+        End:   {x: 59, y: 30}
+      - Start: {x: 0, y: 45}
+        End:   {x: 59, y: 45}
+      - Start: {x: 0, y: 0}
+        End:   {x: 59, y: 0}
+      - Start: {x: 0, y: 0}
+        End:   {x: 0, y: 59}
+      - Start: {x: 3, y: 0}
+        End:   {x: 3, y: 59}
+      - Start: {x: 6, y: 0}
+        End:   {x: 6, y: 59}
+      - Start: {x: 9, y: 0}
+        End:   {x: 9, y: 59}
+      - Start: {x: 12, y: 0}
+        End:   {x: 12, y: 59}
+      - Start: {x: 15, y: 0}
+        End:   {x: 15, y: 59}
+      - Start: {x: 18, y: 0}
+        End:   {x: 18, y: 59}
+      - Start: {x: 21, y: 0}
+        End:   {x: 21, y: 59}
+      - Start: {x: 24, y: 0}
+        End:   {x: 24, y: 59}
+      - Start: {x: 27, y: 0}
+        End:   {x: 27, y: 59}
+      - Start: {x: 33, y: 0}
+        End:   {x: 33, y: 59}
+      - Start: {x: 36, y: 0}
+        End:   {x: 36, y: 59}
+      - Start: {x: 39, y: 0}
+        End:   {x: 39, y: 59}
+      - Start: {x: 42, y: 0}
+        End:   {x: 42, y: 59}
+      - Start: {x: 45, y: 0}
+        End:   {x: 45, y: 59}
+      - Start: {x: 48, y: 0}
+        End:   {x: 48, y: 59}
+      - Start: {x: 51, y: 0}
+        End:   {x: 51, y: 59}
+      - Start: {x: 54, y: 0}
+        End:   {x: 54, y: 59}
+      - Start: {x: 57, y: 0}
+        End:   {x: 57, y: 59}
 
     Blocks:
       - Name: Townhouses

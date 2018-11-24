@@ -21,7 +21,7 @@ namespace DCTC.Map {
         private MaterialController materialController;
 
         private int batchCount = 0;
-        private const int BatchSize = 100;
+        private const int BatchSize = 200;
 
         void Start() {
             LoadPrefabs();
@@ -117,7 +117,12 @@ namespace DCTC.Map {
                     Debug.Log(BuildingName(pos) + " " + tile.Building.Type.ToString());
                 }
                 else {
-                    Debug.Log(TileName(pos) + " " + tile.Type.ToString());
+                    if(tile.Type == TileType.Road) {
+                        Debug.Log(TileName(pos) + " " + map.FindStreet(pos).Name);
+                    }
+                    else {
+                        Debug.Log(TileName(pos) + " " + tile.Type.ToString());
+                    }
                 }
             }
             else {

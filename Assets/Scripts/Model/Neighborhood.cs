@@ -69,36 +69,6 @@ namespace DCTC.Model
             get { return 1; }
         }
 
-        public virtual void BeforePopulate(System.Random random) { }
-		public Building CreateBuilding(System.Random random, Tile tile, Lot lot) {
-
-            // TODO  
-            return null;
-        }
-
-        public void Populate(System.Random random) {
-            BeforePopulate(random);
-            foreach(Lot lot in Lots) {
-                Tile anchorTile = Map.Tiles[lot.Anchor];
-                Building building = CreateBuilding(random, anchorTile, lot);
-
-                if (building != null) {
-                    ApplyBuilding(building);
-                    lot.Building = building;
-                }
-            }
-        }
-
-
-		protected void ApplyBuilding(Building building) {
-			foreach(TilePosition pos in building.Positions) { 
-				Tile tile = Map.Tiles[new TilePosition(pos.x, pos.y)];
-				tile.Building = building;
-				
-			}
-		}
-
-
 		public virtual void AssignNamesAndAddresses(System.Random random, NameGenerator nameGenerator) {
 			Name = nameGenerator.RandomPlace();
 
