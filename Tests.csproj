@@ -60,6 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Tests\SaverTest.cs" />
     <Compile Include="Assets\Tests\StreetTest.cs" />
     <Compile Include="Assets\Tests\TestMap.cs" />
     <Compile Include="Assets\Tests\TilePositionTest.cs" />

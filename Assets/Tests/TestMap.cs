@@ -116,13 +116,5 @@ namespace DCTC.Test {
             Assert.AreEqual(10, tr.Right);
             Assert.AreEqual(10, tr.Top);
         }
-
-        [Test]
-        public void TestGenerate() {
-            MapGenerator generator = new MapGenerator(new System.Random(1));
-            MapConfiguration map = generator.Generate();
-            Assert.NotNull(map);
-            Assert.Positive(map.Neighborhoods.Count);
-        }
     }
 }

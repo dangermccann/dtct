@@ -19,6 +19,7 @@ namespace DCTC.Map {
         private Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
         private HashSet<TilePosition> selectedTiles = new HashSet<TilePosition>();
         private MaterialController materialController;
+        private GameController gameController;
 
         private int batchCount = 0;
         private const int BatchSize = 200;
@@ -29,9 +30,10 @@ namespace DCTC.Map {
             canvas = transform.GetChild(0).gameObject;
 
             cameraController.TileClicked += OnTileClicked;
+            gameController = GameController.Get();
 
-            if(Game.CurrentLevel != null && Game.CurrentLevel.MapConfiguration != null) {
-                Init(Game.CurrentLevel.MapConfiguration);
+            if(gameController.Map != null) {
+                Init(gameController.Map);
                 StartDraw();
                 cameraController.ResetToDefault();
             }
@@ -159,7 +161,9 @@ namespace DCTC.Map {
         }
 
         void ApplyMaterial(GameObject go, Material mat) {
-            go.GetComponent<MeshRenderer>().material = mat;
+            if (go != null) {
+                go.GetComponent<MeshRenderer>().material = mat;
+            }
         }
 
         GameObject GetTileGameObject(TilePosition pos) {

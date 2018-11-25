@@ -44,10 +44,14 @@ namespace DCTC.Controllers {
         bool ignoreMouse = false;
         Vector3 clickCoordinates = Vector3.zero;
         CameraAnimation currentAnimation = null;
+        GameController gameController;
 
         private const int MinXRotation = 60;
         private const int MaxXRotation = 80;
 
+        void Awake() {
+            gameController = GameController.Get();
+        }
 
         void Start () {
 			if(mainCamera == null) {
@@ -57,10 +61,11 @@ namespace DCTC.Controllers {
             SelectionEnabled = true;
             NavigationEnabled = true;
             ZoomEnabled = true;
-		}
+
+        }
 
         void Update () {
-            if (Game.CurrentLevel == null)
+            if (gameController.Map == null)
                 return;
 
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
@@ -86,8 +91,8 @@ namespace DCTC.Controllers {
         public Vector2 MapDimensions {
             get {
                 // Each tile is two world coordinates wide and high
-                float mapWidth = Game.CurrentLevel.MapConfiguration.Width * 2;
-                float mapHeight = Game.CurrentLevel.MapConfiguration.Height * 2;
+                float mapWidth = gameController.Map.Width * 2;
+                float mapHeight = gameController.Map.Height * 2;
                 return new Vector2(mapWidth, mapHeight);
             }
         }

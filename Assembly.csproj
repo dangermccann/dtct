@@ -60,10 +60,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Controllers\GameController.cs" />
+    <Compile Include="Assets\Scripts\Model\GameSaver.cs" />
     <Compile Include="Assets\Scripts\Controllers\MaterialController.cs" />
     <Compile Include="Assets\Scripts\Controllers\ThreeDCameraController.cs" />
-    <Compile Include="Assets\Scripts\Game.cs" />
-    <Compile Include="Assets\Scripts\Level.cs" />
+    <Compile Include="Assets\Scripts\Model\Game.cs" />
     <Compile Include="Assets\Scripts\Map\AbstractMap.cs" />
     <Compile Include="Assets\Scripts\Map\Direction.cs" />
     <Compile Include="Assets\Scripts\Map\MapConfiguration.cs" />
