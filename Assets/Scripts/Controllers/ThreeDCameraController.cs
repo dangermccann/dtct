@@ -45,8 +45,8 @@ namespace DCTC.Controllers {
         Vector3 clickCoordinates = Vector3.zero;
         CameraAnimation currentAnimation = null;
 
-        private const int MinXRotation = 50;
-        private const int MaxXRotation = 78;
+        private const int MinXRotation = 60;
+        private const int MaxXRotation = 80;
 
 
         void Start () {

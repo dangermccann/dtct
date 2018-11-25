@@ -180,18 +180,54 @@ namespace DCTC.Map {
 
 
         IEnumerator DrawGround() {
-            GameObject prefab = null;
+            GameObject prefab;
+
+            Dictionary<TilePosition, GameObject> completedQuads = new Dictionary<TilePosition, GameObject>();
 
             for (int z = 0; z < map.Height; z++) {
                 for (int x = 0; x < map.Width; x++) {
 
+                    prefab = null;
                     TilePosition pos = new TilePosition(x, z);
                     Tile tile = map.Tiles[pos];
+                    Vector3 scale = Vector3.one;
 
                     if (tile.Type == TileType.Road) {
                         prefab = prefabs["Road" + tile.RoadType.ToString()];
                     } else {
-                        prefab = prefabs["Quad"];
+                        // Optimization to stretch quad 
+                        if(!completedQuads.ContainsKey(pos)) {
+                            prefab = prefabs["Quad"];
+                            completedQuads.Add(pos, prefab);
+                            int quadZ = z + 1;
+                            int quadX = x + 1;
+                            Tile quadTile;
+
+                            while(quadZ < map.Height) {
+                                quadTile = map.Tiles[new TilePosition(x, quadZ)];
+                                if(quadTile.Type != tile.Type) {
+                                    break;
+                                }
+                                else {
+                                    completedQuads.Add(quadTile.Position, prefab);
+                                    scale.z += 1;
+                                    quadZ++;
+                                }
+                            }
+
+                            while (quadX < map.Width) {
+                                quadTile = map.Tiles[new TilePosition(quadX, z)];
+                                if (quadTile.Type != tile.Type) {
+                                    break;
+                                } else {
+                                    completedQuads.Add(quadTile.Position, prefab);
+                                    scale.x += 1;
+                                    quadX++;
+                                }
+                            }
+
+                        }
+                        
                     }
 
                     if (prefab != null) {
@@ -199,13 +235,14 @@ namespace DCTC.Map {
                         tileGo.name = TileName(pos); ;
                         tileGo.transform.SetParent(this.transform, false);
                         tileGo.transform.position = new Vector3(x * 2, 0, z * 2);
+                        tileGo.transform.localScale = scale;
                         ApplyMaterial(pos, GetMaterialForTile(tile, false));
                         batchCount++;
-                    }
 
-                    if(batchCount > BatchSize) {
-                        batchCount = 0;
-                        yield return null;
+                        if (batchCount > BatchSize) {
+                            batchCount = 0;
+                            yield return null;
+                        }
                     }
                 }
             }

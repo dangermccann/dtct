@@ -49,8 +49,8 @@ namespace DCTC.Map
 
         const int NeighborhoodWidth = 60;
         const int NeighborhoodHeight = 60;
-        const int NeighborhoodCountX = 2;
-        const int NeighborhoodCountY = 2;
+        const int NeighborhoodCountX = 3;
+        const int NeighborhoodCountY = 3;
 
         public MapGenerator(System.Random rand) {
             random = rand;
