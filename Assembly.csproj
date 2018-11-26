@@ -61,10 +61,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Controllers\GameController.cs" />
-    <Compile Include="Assets\Scripts\Model\GameSaver.cs" />
     <Compile Include="Assets\Scripts\Controllers\MaterialController.cs" />
+    <Compile Include="Assets\Scripts\Controllers\SelectionController.cs" />
     <Compile Include="Assets\Scripts\Controllers\ThreeDCameraController.cs" />
-    <Compile Include="Assets\Scripts\Model\Game.cs" />
     <Compile Include="Assets\Scripts\Map\AbstractMap.cs" />
     <Compile Include="Assets\Scripts\Map\Direction.cs" />
     <Compile Include="Assets\Scripts\Map\MapConfiguration.cs" />
@@ -73,6 +72,8 @@
     <Compile Include="Assets\Scripts\Map\Tile.cs" />
     <Compile Include="Assets\Scripts\Map\TilePosition.cs" />
     <Compile Include="Assets\Scripts\Model\Building.cs" />
+    <Compile Include="Assets\Scripts\Model\Game.cs" />
+    <Compile Include="Assets\Scripts\Model\GameSaver.cs" />
     <Compile Include="Assets\Scripts\Model\Loader.cs" />
     <Compile Include="Assets\Scripts\Model\Lot.cs" />
     <Compile Include="Assets\Scripts\Model\NameGenerator.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Assets\Scripts\Model\Street.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\AStar.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\PriorityQueue.cs" />
+    <Compile Include="Assets\Scripts\UI\CableGraphics.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>

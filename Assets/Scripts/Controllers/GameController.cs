@@ -24,5 +24,13 @@ namespace DCTC.Controllers {
             stopwatch.Stop();
             Debug.Log("Generate time: " + stopwatch.ElapsedMilliseconds + "ms");
         }
+
+        public void Save() {
+
+        }
+
+        public void Load() {
+
+        }
     }
 }

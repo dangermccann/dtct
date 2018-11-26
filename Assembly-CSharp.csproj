@@ -60,27 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Controllers\MaterialController.cs" />
-    <Compile Include="Assets\Scripts\Controllers\ThreeDCameraController.cs" />
-    <Compile Include="Assets\Scripts\Game.cs" />
-    <Compile Include="Assets\Scripts\Level.cs" />
-    <Compile Include="Assets\Scripts\Map\AbstractMap.cs" />
-    <Compile Include="Assets\Scripts\Map\Direction.cs" />
-    <Compile Include="Assets\Scripts\Map\MapConfiguration.cs" />
-    <Compile Include="Assets\Scripts\Map\MapGenerator.cs" />
-    <Compile Include="Assets\Scripts\Map\ThreeDMap.cs" />
-    <Compile Include="Assets\Scripts\Map\Tile.cs" />
-    <Compile Include="Assets\Scripts\Map\TilePosition.cs" />
-    <Compile Include="Assets\Scripts\Model\Building.cs" />
-    <Compile Include="Assets\Scripts\Model\Loader.cs" />
-    <Compile Include="Assets\Scripts\Model\Lot.cs" />
-    <Compile Include="Assets\Scripts\Model\NameGenerator.cs" />
-    <Compile Include="Assets\Scripts\Model\Neighborhood.cs" />
-    <Compile Include="Assets\Scripts\Model\Sizes.cs" />
-    <Compile Include="Assets\Scripts\Model\Street.cs" />
-    <Compile Include="Assets\Scripts\Pathfinding\AStar.cs" />
-    <Compile Include="Assets\Scripts\Pathfinding\PriorityQueue.cs" />
-    <Compile Include="Assets\Scripts\Utilities.cs" />
+    <Compile Include="Assets\CableGraphics.cs" />
     <None Include="Assets\Resources\Config\suffixes.yaml" />
     <None Include="Assets\Resources\Config\map.yaml" />
     <None Include="Assets\Resources\Config\places.yaml" />
@@ -334,6 +314,12 @@
     <Reference Include="Boo.Lang">
       <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/2.0-api/Boo.Lang.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly.csproj">
+      <Project>{9D721418-0363-37AB-FC25-23EBCA8674B1}</Project>
+      <Name>Assembly</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

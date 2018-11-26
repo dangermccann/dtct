@@ -18,11 +18,14 @@ namespace DCTC.Map {
         private GameObject canvas;
         private Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
         private HashSet<TilePosition> selectedTiles = new HashSet<TilePosition>();
+        private Dictionary<TilePosition, GameObject> buildings = new Dictionary<TilePosition, GameObject>();
+        private Dictionary<string, GameObject> labels = new Dictionary<string, GameObject>();
+        private Dictionary<TilePosition, GameObject> ground = new Dictionary<TilePosition, GameObject>();
         private MaterialController materialController;
         private GameController gameController;
 
         private int batchCount = 0;
-        private const int BatchSize = 200;
+        private const int BatchSize = 100;
 
         void Start() {
             LoadPrefabs();
@@ -34,8 +37,6 @@ namespace DCTC.Map {
 
             if(gameController.Map != null) {
                 Init(gameController.Map);
-                StartDraw();
-                cameraController.ResetToDefault();
             }
         }
 
@@ -50,8 +51,46 @@ namespace DCTC.Map {
             }
         }
 
+        private bool groundVisible = true;
+        public bool GroundVisible {
+            get { return groundVisible; }
+            set {
+                groundVisible = value;
+                foreach(GameObject go in ground.Values) {
+                    go.SetActive(groundVisible);
+                }
+            }
+        }
+        public void ToggleGround() { GroundVisible = !GroundVisible; }
+
+        private bool labelsVisible = true;
+        public bool LabelsVisible {
+            get { return labelsVisible; }
+            set {
+                labelsVisible = value;
+                foreach (GameObject go in labels.Values) {
+                    go.SetActive(labelsVisible);
+                }
+            }
+        }
+        public void ToggleLabels() { LabelsVisible = !LabelsVisible; }
+
+        private bool buildingsVisible = true;
+        public bool BuildingsVisible {
+            get { return buildingsVisible; }
+            set {
+                buildingsVisible = value;
+                foreach (GameObject go in buildings.Values) {
+                    go.SetActive(buildingsVisible);
+                }
+            }
+        }
+        public void ToggleBuildings() { BuildingsVisible = !BuildingsVisible; }
+
         public override void Init(MapConfiguration config) {
             map = config;
+            StartDraw();
+            cameraController.ResetToDefault();
         }
 
         public override void StartDraw() {
@@ -185,6 +224,7 @@ namespace DCTC.Map {
 
         IEnumerator DrawGround() {
             GameObject prefab;
+            ground.Clear();
 
             Dictionary<TilePosition, GameObject> completedQuads = new Dictionary<TilePosition, GameObject>();
 
@@ -241,6 +281,7 @@ namespace DCTC.Map {
                         tileGo.transform.position = new Vector3(x * 2, 0, z * 2);
                         tileGo.transform.localScale = scale;
                         ApplyMaterial(pos, GetMaterialForTile(tile, false));
+                        ground.Add(pos, tileGo);
                         batchCount++;
 
                         if (batchCount > BatchSize) {
@@ -254,6 +295,7 @@ namespace DCTC.Map {
 
         IEnumerator DrawBuildings() {
             GameObject prefab = null;
+            buildings.Clear();
 
             for (int i = 0; i < map.Neighborhoods.Count; i++) {
                 Neighborhood n = map.Neighborhoods[i];
@@ -273,6 +315,7 @@ namespace DCTC.Map {
                         buildingGO.name = BuildingName(lot.Building.Anchor);
                         buildingGO.transform.SetParent(this.transform, false);
                         buildingGO.transform.position = new Vector3(lot.Building.Anchor.x * 2, 0, lot.Building.Anchor.y * 2);
+                        buildings.Add(lot.Building.Anchor, buildingGO);
 
                         float rotation = 0;
                         switch (lot.Building.FacingDirection) {
@@ -314,6 +357,7 @@ namespace DCTC.Map {
         }
 
         IEnumerator DrawLabels() {
+            labels.Clear();
             foreach (Neighborhood neighborhood in map.Neighborhoods) {
                 foreach (Street street in neighborhood.Streets) {
 
@@ -337,6 +381,7 @@ namespace DCTC.Map {
                     }
 
                     labelGO.GetComponent<Text>().text = street.Name;
+                    labels.Add(street.Name, labelGO);
 
                     batchCount++;
                     if (batchCount > BatchSize) {

@@ -185,6 +185,10 @@ namespace DCTC.Controllers {
             }
         }
 
+        public Vector3 MouseCursorInWorld() {
+            return ScreenPointToGroundPoint(Input.mousePosition);
+        }
+
 
         void UpdateZoom() {
 			float zoom = ignoreMouse ? 0 : Input.GetAxis("Mouse ScrollWheel");
