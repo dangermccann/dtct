@@ -236,6 +236,40 @@ namespace DCTC.Map {
 			return null;
 		}
 
+        public TilePosition NearestRoad(TilePosition position) {
+            if (HasRoad(position))
+                return position;
+
+            bool bail = false;
+            int count = 5;
+
+            TilePosition north = position;
+            TilePosition south = position;
+            TilePosition east  = position;
+            TilePosition west  = position;
+
+            while (!bail) {
+                east  = East(east);
+                if (HasRoad(east)) return east;
+
+                west  = West(west);
+                if (HasRoad(west)) return west;
+
+                north = North(north);
+                if (HasRoad(north)) return north;
+
+                south = South(south);
+                if (HasRoad(south)) return south;
+
+                count--;
+
+                if (count < 0)
+                    bail = true;
+            }
+
+            return new TilePosition(-1, -1);
+        }
+
 
 		/// <summary>
 		/// Determines if a building is on a corner.  Pass in the Directions that have adjacent roads
@@ -322,8 +356,13 @@ namespace DCTC.Map {
 				return Orientation.Vertical;
 		}
 
+        public bool HasRoad(TilePosition pos) {
+            if(Tiles.ContainsKey(pos))
+                return HasRoad(Tiles[pos]);
+            return false;
+        }
 
-		public static bool HasRoad(Tile tile) {
+        public static bool HasRoad(Tile tile) {
 			return tile != null && tile.Type == TileType.Road;
 		}
 

@@ -89,11 +89,16 @@ namespace DCTC.UI {
         }
 
         private void RedrawCursor() {
-            vertical.GetComponent<LineRenderer>().SetPositions(new Vector3[] {
+            LineRenderer lr = vertical.GetComponent<LineRenderer>();
+            lr.positionCount = 2;
+            lr.SetPositions(new Vector3[] {
                 new Vector3(1, y, 0),
                 new Vector3(1, y, 2),
             });
-            horizontal.GetComponent<LineRenderer>().SetPositions(new Vector3[] {
+
+            lr = horizontal.GetComponent<LineRenderer>();
+            lr.positionCount = 2;
+            lr.SetPositions(new Vector3[] {
                 new Vector3(0, y, 1),
                 new Vector3(2, y, 1),
             });

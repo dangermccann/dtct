@@ -21,6 +21,7 @@ namespace DCTC.Controllers {
         public float MinZoomDistance = 10;
         public float MaxZoomDistance = 200;
         public float AnimationDuration = 1.25f;
+        public float KeyboardScrollSpeed = 200f;
 
         public delegate void CameraChangedEventHandler();
         public event CameraChangedEventHandler CameraChanged;
@@ -260,16 +261,16 @@ namespace DCTC.Controllers {
             if (isDragging == false) {
                 Vector3 keyDiff = new Vector3(0, 0, 0);
                 if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) {
-                    keyDiff.z += 50 * Time.deltaTime;
+                    keyDiff.z += KeyboardScrollSpeed * Time.deltaTime;
                 }
                 if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) {
-                    keyDiff.z += -50 * Time.deltaTime;
+                    keyDiff.z += -KeyboardScrollSpeed * Time.deltaTime;
                 }
                 if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) {
-                    keyDiff.x += -50 * Time.deltaTime;
+                    keyDiff.x += -KeyboardScrollSpeed * Time.deltaTime;
                 }
                 if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
-                    keyDiff.x += 50 * Time.deltaTime;
+                    keyDiff.x += KeyboardScrollSpeed * Time.deltaTime;
                 }
 
                 if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {

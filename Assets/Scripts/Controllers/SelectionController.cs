@@ -84,11 +84,15 @@ namespace DCTC.Controllers {
                 }
 
                 if (Mode == SelectionModes.Cable) {
-                    Tile tile = gameController.Map.Tiles[pos];
-
                     if (cableCursor.Mode == CableGraphics.GraphicsMode.Placed) {
                         // Placement mode
                         cursorObject.transform.position = Vector3.zero;
+
+                        // Move destination to nearest road on map
+                        pos = gameController.Map.NearestRoad(pos);
+                        if(pos.x == -1) {
+                            return;
+                        }
 
                         // Find best path from start to current point
                         // Build bounding box to limit total nodes
@@ -115,16 +119,19 @@ namespace DCTC.Controllers {
                         // Convert results to list of TilePositon 
                         if (results != null) {
                             List<TilePosition> points = new List<TilePosition>(results.Select(r => r.Position));
+                            cableCursor.Valid = true;
                             cableCursor.Points = points;
                         }
                         else {
-                            // No path found....
+                            // No path found
+                            cableCursor.Valid = false;
                         }
                     }
                     else {
                         // Cursor mode
                         cursorObject.transform.position = world;
 
+                        Tile tile = gameController.Map.Tiles[pos];
                         if (tile.Type == TileType.Road) {
                             cableCursor.Valid = true;
                             if (tile.RoadType == RoadType.IntersectAll) {
@@ -154,6 +161,11 @@ namespace DCTC.Controllers {
             TilePosition tilePosition = ThreeDMap.WorldToPosition(position);
 
             if (!gameController.Map.Tiles.ContainsKey(tilePosition)) {
+                return;
+            }
+
+            // Must start on a street
+            if (cableCursor == null || cableCursor.Valid == false) {
                 return;
             }
 
