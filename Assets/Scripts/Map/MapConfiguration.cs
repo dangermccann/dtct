@@ -7,7 +7,7 @@ namespace DCTC.Map {
 	[Serializable]
 	public class MapConfiguration {
 		public static TileType DefaultTileType = TileType.Sand;
-		public static int DefaultMovementCost = 10;
+		public static int DefaultMovementCost = 1000000;
         public static int BuildingMovementCost = 1000000;
         public static int RoadMovementCost = 1;
 

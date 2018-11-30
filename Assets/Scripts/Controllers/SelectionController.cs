@@ -6,6 +6,7 @@ using System;
 using DCTC.Map;
 using DCTC.UI;
 using DCTC.Pathfinding;
+using DCTC.Model;
 
 namespace DCTC.Controllers {
     public class SelectionController : MonoBehaviour {
@@ -164,12 +165,20 @@ namespace DCTC.Controllers {
                 return;
             }
 
-            // Must start on a street
-            if (cableCursor == null || cableCursor.Valid == false) {
+            if (Mode == SelectionModes.Node) {
+                TilePosition pos = ThreeDMap.WorldToPosition(cursorObject.transform.position);
+                gameController.Game.Player.PlaceNode(NodeType.Small, pos);
+                cursorObject.name = "Node " + pos.ToString();
+
+                CreateCursor();
                 return;
             }
+            else if (Mode == SelectionModes.Cable) {
 
-            if (Mode == SelectionModes.Cable) {
+                // Cables must start on a street
+                if (cableCursor == null || cableCursor.Valid == false) {
+                return;
+                }
 
                 if (cableCursor.Mode == CableGraphics.GraphicsMode.Cursor) {
                     // First click
@@ -178,8 +187,11 @@ namespace DCTC.Controllers {
                     cableCursor.Mode = CableGraphics.GraphicsMode.Placed;
                 } else {
                     // Second click
-                    // Finalize cable placement and reset
-                    cableCursor.Mode = CableGraphics.GraphicsMode.Cursor;
+                    // Finalize cable placement and create new graphic
+                    gameController.Game.Player.PlaceCable(Model.CableType.Copper, cableCursor.Points);
+                    cableCursor.name = "Cable " + cableCursor.Points[0].ToString();
+
+                    CreateCursor();
                 }
             }
         }

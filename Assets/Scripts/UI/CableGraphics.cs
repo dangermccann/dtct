@@ -17,7 +17,7 @@ namespace DCTC.UI {
         public Color ValidColor = Color.green;
         public Color InvalidColor = Color.red;
 
-        private void Start() {
+        private void Awake() {
             vertical = transform.Find("Vertical").gameObject;
             horizontal = transform.Find("Horizontal").gameObject;
         }

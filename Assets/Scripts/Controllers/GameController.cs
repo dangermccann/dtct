@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using DCTC.Map;
+using DCTC.Model;
 
 namespace DCTC.Controllers {
     public class GameController : MonoBehaviour {
         public MapConfiguration Map { get; private set; }
+        public Game Game { get; private set; } 
 
         public static GameController Get() {
             return GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -11,6 +13,10 @@ namespace DCTC.Controllers {
 
         void Awake() {
             GenerateMap();
+
+            //
+            Game = new Game();
+            Game.NewGame(new NewGameSettings());
         }
 
         public void GenerateMap() {
