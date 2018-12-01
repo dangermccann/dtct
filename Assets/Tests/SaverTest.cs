@@ -14,11 +14,13 @@ namespace DCTC.Test {
             Assert.NotNull(map);
             Assert.Positive(map.Neighborhoods.Count);
 
-            SavedMap saved = GameSaver.SaveMap(map);
+            GameSaver saver = new GameSaver();
+
+            SavedMap saved = saver.BuildSavedMap(map);
             Assert.NotNull(saved);
 
-            MapConfiguration restored = GameSaver.BuildMap(saved);
-            CompareMaps(saved, GameSaver.SaveMap(restored));
+            MapConfiguration restored = saver.BuildMap(saved);
+            CompareMaps(saved, saver.BuildSavedMap(restored));
         }
 
         private static void CompareMaps(SavedMap map1, SavedMap map2) {

@@ -38,6 +38,13 @@ namespace DCTC.Map {
             if(gameController.Map != null) {
                 Init(gameController.Map);
             }
+
+            gameController.GameLoaded += OnGameLoaded;
+        }
+
+        private void OnGameLoaded() {
+            Clear();
+            Init(gameController.Map);
         }
 
         void LoadPrefabs() {
@@ -86,6 +93,18 @@ namespace DCTC.Map {
             }
         }
         public void ToggleBuildings() { BuildingsVisible = !BuildingsVisible; }
+
+        public void Clear() {
+            List<GameObject> removals = new List<GameObject>();
+            removals.AddRange(GameObject.FindGameObjectsWithTag("Ground"));
+            removals.AddRange(GameObject.FindGameObjectsWithTag("Building"));
+            removals.AddRange(GameObject.FindGameObjectsWithTag("Road"));
+            removals.AddRange(GameObject.FindGameObjectsWithTag("Placed"));
+
+            foreach(GameObject go in removals) {
+                GameObject.Destroy(go);
+            }
+        }
 
         public override void Init(MapConfiguration config) {
             map = config;

@@ -4,7 +4,6 @@ using DCTC.Model;
 
 namespace DCTC.Map {
 
-	[Serializable]
 	public class MapConfiguration {
 		public static TileType DefaultTileType = TileType.Sand;
 		public static int DefaultMovementCost = 1000000;

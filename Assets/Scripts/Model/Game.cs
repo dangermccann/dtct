@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using YamlDotNet.Serialization;
 using DCTC.Map;
 
 namespace DCTC.Model {
@@ -10,8 +9,9 @@ namespace DCTC.Model {
         public int NumHumans = 1;
     }
 
+    [Serializable]
     public class Game {
-        [YamlIgnore]
+        [NonSerialized]
         public Company Player;
 
         public List<Company> Companies { get; set; }
@@ -43,27 +43,30 @@ namespace DCTC.Model {
 
     public delegate void ItemEventDelegate(object item);
 
+    [Serializable]
     public class Company {
+        [field: NonSerialized]
         public event ItemEventDelegate ItemAdded;
+        [field: NonSerialized]
         public event ItemEventDelegate ItemRemoved;
 
         public string ID { get; set; }
         public string Name { get; set; }
         public string Logo { get; set; }
 
-        public HashSet<Cable> Cables { get; set; }
+        public List<Cable> Cables { get; set; }
         public Dictionary<TilePosition, Node> Nodes { get; set; }
-        public HashSet<ServiceTier> ServicesOffered { get; set; }
+        public List<ServiceTier> ServicesOffered { get; set; }
         public Dictionary<ServiceTier, float> ServicePrices { get; set; }
-        public HashSet<Employee> Employees { get; set; }
+        public List<Employee> Employees { get; set; }
         public CompanyOwnerType OwnerType { get; set; }
 
         public Company() {
-            Cables = new HashSet<Cable>();
+            Cables = new List<Cable>();
             Nodes = new Dictionary<TilePosition, Node>();
-            ServicesOffered = new HashSet<ServiceTier>();
+            ServicesOffered = new List<ServiceTier>();
             ServicePrices = new Dictionary<ServiceTier, float>();
-            Employees = new HashSet<Employee>();
+            Employees = new List<Employee>();
         }
 
         public Cable PlaceCable(CableType type, List<TilePosition> positions) {
@@ -146,6 +149,7 @@ namespace DCTC.Model {
         }
     }
 
+    [Serializable]
     public class Cable {
         public string ID { get; set; }
         public CableType Type { get; set; }
@@ -161,6 +165,7 @@ namespace DCTC.Model {
         Fiber
     }
 
+    [Serializable]
     public class Node {
         public string ID { get; set; }
         public NodeType Type { get; set; }
@@ -186,6 +191,7 @@ namespace DCTC.Model {
         PremiumDoublePlay
     }
 
+    [Serializable]
     public class Customer {
         public string ID { get; set; }
         public string Name { get; set; }
@@ -209,6 +215,7 @@ namespace DCTC.Model {
         Female
     }
 
+    [Serializable]
     public class Employee {
         public string ID { get; set; }
         public string Name { get; set; }

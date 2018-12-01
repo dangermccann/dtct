@@ -1,13 +1,103 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
+using UnityEngine;
 using DCTC.Map;
 
 namespace DCTC.Model {
 
     public class GameSaver {
 
+        private string basePath;
+        public GameSaver() {
+            basePath = Application.persistentDataPath;
+        }
 
-        public static SavedMap SaveMap(MapConfiguration map) {
+        public void SaveGame(Game game, string name) {
+            string path = SavePath(name);
+            Debug.Log("Saving game to " + path);
+
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            using (FileStream stream = new FileStream(path, FileMode.Create)) {
+                try {
+                    formatter.Serialize(stream, game);
+                }
+                catch (Exception e) {
+                    Debug.LogError(e);
+                }
+            }
+
+            stopwatch.Stop();
+            Debug.Log("Save game time: " + stopwatch.ElapsedMilliseconds + "ms");
+        }
+
+        public Game LoadGame(string name) {
+            BinaryFormatter formatter = new BinaryFormatter();
+            using (FileStream stream = new FileStream(SavePath(name), FileMode.Open)) {
+                try {
+                    return formatter.Deserialize(stream) as Game;
+                }
+                catch (Exception e) {
+                    Debug.LogError(e);
+                    return null;
+                }
+            }
+        }
+
+        public void SaveMap(MapConfiguration map, string name) {
+            SavedMap saved = BuildSavedMap(map);
+            string path = MapPath(name);
+            Debug.Log("Saving map to " + path);
+
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            using (FileStream stream = new FileStream(path, FileMode.Create)) {
+                try {
+                    formatter.Serialize(stream, saved);
+                }
+                catch (Exception e) {
+                    Debug.LogError(e);
+                }
+            }
+
+            stopwatch.Stop();
+            Debug.Log("Save map time: " + stopwatch.ElapsedMilliseconds + "ms");
+        }
+
+        public MapConfiguration LoadMap(string name) {
+            BinaryFormatter formatter = new BinaryFormatter();
+            SavedMap saved;
+            using (FileStream stream = new FileStream(MapPath(name), FileMode.Open)) {
+                try {
+                    saved = formatter.Deserialize(stream) as SavedMap;
+                }
+                catch (Exception e) {
+                    Debug.LogError(e);
+                    return null;
+                }
+            }
+            return BuildMap(saved);
+        }
+
+        private string SavePath(string name) {
+            return Path.Combine(basePath, name + ".save");
+        }
+
+        private string MapPath(string name) {
+            return Path.Combine(basePath, name + ".map");
+        }
+
+        public SavedMap BuildSavedMap(MapConfiguration map) {
             if (map == null)
                 return null;
 
@@ -69,7 +159,7 @@ namespace DCTC.Model {
         }
 
 
-        public static MapConfiguration BuildMap(SavedMap saved) {
+        public MapConfiguration BuildMap(SavedMap saved) {
 
             MapConfiguration map = new MapConfiguration(saved.Width, saved.Height);
             foreach (TileConfiguration tc in saved.Tiles) {
@@ -139,7 +229,7 @@ namespace DCTC.Model {
     }
 
 
-
+    [Serializable]
     public class StreetConfiguration {
         public string Name { get; set; }
         public string Size { get; set; }
@@ -150,6 +240,7 @@ namespace DCTC.Model {
         }
     }
 
+    [Serializable]
     public class BuildingConfiguration {
         public TilePosition Anchor { get; set; }
         public string Type { get; set; }
@@ -160,6 +251,7 @@ namespace DCTC.Model {
 
     }
 
+    [Serializable]
     public class LotConfiguration {
         public List<TilePosition> Tiles { get; set; }
         public TilePosition Anchor { get; set; }
@@ -174,6 +266,7 @@ namespace DCTC.Model {
         }
     }
 
+    [Serializable]
     public class NeighborhoodConfiguration {
         public string Name { get; set; }
         public int Width { get; set; }
@@ -190,6 +283,7 @@ namespace DCTC.Model {
         }
     }
 
+    [Serializable]
     public class TileConfiguration {
         public TilePosition Position { get; set; }
         public string Type { get; set; }
@@ -199,6 +293,7 @@ namespace DCTC.Model {
         public TileConfiguration() { }
     }
 
+    [Serializable]
     public class SavedMap {
         public int Width { get; set; }
         public int Height { get; set; }
