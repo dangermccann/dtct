@@ -13,12 +13,14 @@ namespace DCTC.Controllers {
 
         public enum SelectionModes {
             None,
+            Destroy,
             Cable,
             Node
         }
 
         public ThreeDCameraController cameraController;
         public ToggleGroup ConstructionToggleGroup;
+        public GameObject DestroyPrefab;
         public GameObject CableCursorPrefab;
         public GameObject NodeCursorPrefab;
 
@@ -65,6 +67,10 @@ namespace DCTC.Controllers {
             }
             else if (Mode == SelectionModes.Node) {
                 cursorObject = Instantiate(NodeCursorPrefab);
+            }
+            else if(Mode == SelectionModes.Destroy) {
+                cursorObject = Instantiate(DestroyPrefab);
+                cursorObject.transform.SetParent(GameObject.Find("/Map/Canvas").transform, false);
             }
         }
 
@@ -153,6 +159,15 @@ namespace DCTC.Controllers {
                     }
                 }
                 else if (Mode == SelectionModes.Node) {
+                    Tile tile = gameController.Map.Tiles[pos];
+                    if (tile.Type == TileType.Road) {
+                        cursorObject.SetActive(true);
+                        cursorObject.transform.position = world;
+                    }
+                    else {
+                        cursorObject.SetActive(false);
+                    }
+                } else if (Mode == SelectionModes.Destroy) {
                     cursorObject.transform.position = world;
                 }
             }
@@ -166,18 +181,20 @@ namespace DCTC.Controllers {
             }
 
             if (Mode == SelectionModes.Node) {
-                TilePosition pos = ThreeDMap.WorldToPosition(cursorObject.transform.position);
-                gameController.Game.Player.PlaceNode(NodeType.Small, pos);
-                cursorObject.name = "Node " + pos.ToString();
+                if(!cursorObject.activeSelf) {
+                    return;
+                }
 
+                gameController.Game.Player.PlaceNode(NodeType.Small, tilePosition);
+
+                Destroy(cursorObject);
                 CreateCursor();
-                return;
             }
             else if (Mode == SelectionModes.Cable) {
 
                 // Cables must start on a street
                 if (cableCursor == null || cableCursor.Valid == false) {
-                return;
+                    return;
                 }
 
                 if (cableCursor.Mode == CableGraphics.GraphicsMode.Cursor) {
@@ -189,10 +206,13 @@ namespace DCTC.Controllers {
                     // Second click
                     // Finalize cable placement and create new graphic
                     gameController.Game.Player.PlaceCable(Model.CableType.Copper, cableCursor.Points);
-                    cableCursor.name = "Cable " + cableCursor.Points[0].ToString();
 
+                    Destroy(cursorObject);
                     CreateCursor();
                 }
+            } else if (Mode == SelectionModes.Destroy) {
+                gameController.Game.Player.RemoveCablePosition(tilePosition);
+                gameController.Game.Player.RemoveNode(tilePosition);
             }
         }
     }

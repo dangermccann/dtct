@@ -133,17 +133,25 @@ namespace DCTC.Model {
             node.Type = type;
             node.Position = position;
             Nodes.Add(position, node);
+            TriggerItemAdded(node);
         }
 
-        public void RemoveNode(TilePosition pos){
-            Nodes.Remove(pos);
+        public void RemoveNode(TilePosition pos) {
+            if (Nodes.ContainsKey(pos)) {
+                Node node = Nodes[pos];
+                TriggerItemRemoved(node);
+                Nodes.Remove(pos);
+            }
+            
         }
     }
 
     public class Cable {
+        public string ID { get; set; }
         public CableType Type { get; set; }
         public List<TilePosition> Positions { get; set; }
         public Cable() {
+            ID = Guid.NewGuid().ToString();
             Positions = new List<TilePosition>();
         }
     }
@@ -157,6 +165,10 @@ namespace DCTC.Model {
         public string ID { get; set; }
         public NodeType Type { get; set; }
         public TilePosition Position { get; set; }
+
+        public Node() {
+            ID = Guid.NewGuid().ToString();
+        }
     }
 
     public enum NodeType {

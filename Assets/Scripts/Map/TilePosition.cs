@@ -12,6 +12,10 @@ namespace DCTC.Map {
         [YamlMember(Alias = "y", ApplyNamingConventions = false)]
         public int y { get; set; }
 
+        public static TilePosition Origin {
+            get { return new TilePosition(0, 0);  }
+        }
+
         public TilePosition() { }
         public TilePosition(int x, int y) {
             this.x = x;

@@ -44,6 +44,7 @@ namespace DCTC.Controllers {
         bool isDragging = false;
         bool ignoreMouse = false;
         Vector3 clickCoordinates = Vector3.zero;
+        TilePosition clickPosition = TilePosition.Origin;
         CameraAnimation currentAnimation = null;
         GameController gameController;
 
@@ -292,17 +293,21 @@ namespace DCTC.Controllers {
 
             if (Input.GetMouseButtonDown(SelectMouseButton)) {
                 clickCoordinates = Input.mousePosition;
+                clickPosition = ThreeDMap.WorldToPosition(ScreenPointToGroundPoint(clickCoordinates));
             }
 
             if (Input.GetMouseButtonUp(SelectMouseButton) && !ignoreMouse && SelectionEnabled) {
+                /*
                 Vector2 dist = Input.mousePosition - clickCoordinates;
+                if (Mathf.Abs(dist.magnitude) < 0.25f ) { }
+                */
 
-                if (Mathf.Abs(dist.magnitude) < 0.25f ) {
+                TilePosition position = ThreeDMap.WorldToPosition(ScreenPointToGroundPoint(Input.mousePosition));
+                if (position.Equals(clickPosition)) {
                     if (TileClicked != null) {
                         TileClicked(ScreenPointToGroundPoint(Input.mousePosition));
                     }
                 }
-                
             }
         }
 

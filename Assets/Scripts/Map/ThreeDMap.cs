@@ -91,6 +91,11 @@ namespace DCTC.Map {
             map = config;
             StartDraw();
             cameraController.ResetToDefault();
+
+            foreach(Company company in gameController.Game.Companies) {
+                company.ItemAdded += PlaceItem;
+                company.ItemRemoved += RemoveItem;
+            }
         }
 
         public override void StartDraw() {
@@ -107,6 +112,7 @@ namespace DCTC.Map {
             yield return StartCoroutine( DrawGround() );
             yield return StartCoroutine( DrawBuildings() );
             yield return StartCoroutine( DrawLabels() );
+            yield return StartCoroutine( PlaceItems() );
         }
 
 
@@ -282,12 +288,9 @@ namespace DCTC.Map {
                         tileGo.transform.localScale = scale;
                         ApplyMaterial(pos, GetMaterialForTile(tile, false));
                         ground.Add(pos, tileGo);
-                        batchCount++;
 
-                        if (batchCount > BatchSize) {
-                            batchCount = 0;
+                        if(++batchCount % BatchSize == 0) 
                             yield return null;
-                        }
                     }
                 }
             }
@@ -346,11 +349,8 @@ namespace DCTC.Map {
                             }
                         }
 
-                        batchCount++;
-                        if (batchCount > BatchSize) {
-                            batchCount = 0;
+                        if (++batchCount % BatchSize == 0)
                             yield return null;
-                        }
                     }
                 }
             }
@@ -383,13 +383,71 @@ namespace DCTC.Map {
                     labelGO.GetComponent<Text>().text = street.Name;
                     labels.Add(street.Name, labelGO);
 
-                    batchCount++;
-                    if (batchCount > BatchSize) {
-                        batchCount = 0;
+                    if (++batchCount % BatchSize == 0)
                         yield return null;
-                    }
 
                 }
+            }
+        }
+
+        IEnumerator PlaceItems() {
+            foreach(Company company in gameController.Game.Companies) {
+                foreach(Cable cable in company.Cables) {
+                    PlaceItem(cable);
+
+                    if (++batchCount % BatchSize == 0)
+                        yield return null;
+                }
+                foreach(Node node in company.Nodes.Values) {
+                    PlaceItem(node);
+
+                    if (++batchCount % BatchSize == 0)
+                        yield return null;
+                }
+            }
+            yield return null;
+        }
+
+        private void PlaceItem(object item) {
+            if(item is Cable) {
+                Cable cable = item as Cable;
+                GameObject go = InstantiateObject("Cable", cable.ID, TilePosition.Origin);
+
+                UI.CableGraphics graphics = go.GetComponent<UI.CableGraphics>();
+                graphics.Mode = UI.CableGraphics.GraphicsMode.Placed;
+                graphics.Points = cable.Positions;
+            }
+            else if(item is Node) {
+                Node node = item as Node;
+                InstantiateObject("Node", node.ID, node.Position);
+            }
+        }
+
+        private void RemoveItem(object item) {
+            if(item is Cable) {
+                Cable cable = item as Cable;
+                RemoveObject("Cable", cable.ID);
+            }
+            else if (item is Node) {
+                Node node = item as Node;
+                RemoveObject("Node", node.ID);
+            }
+        }
+
+        private GameObject InstantiateObject(string prefabName, string ID, TilePosition position) {
+            GameObject prefab = prefabs[prefabName];
+
+            GameObject go = Instantiate(prefab);
+            go.name = prefabName + " " + ID;
+            go.transform.position = PositionToWorld(position);
+            go.transform.SetParent(this.transform, false);
+            return go;
+        }
+
+        private void RemoveObject(string prefabName, string ID) {
+            GameObject go = GameObject.Find(prefabName + " " + ID);
+            if (go != null) {
+                Destroy(go);
             }
         }
 
