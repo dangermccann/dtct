@@ -23,6 +23,7 @@ namespace DCTC.Controllers {
         public GameObject DestroyPrefab;
         public GameObject CableCursorPrefab;
         public GameObject NodeCursorPrefab;
+        public GameObject MapGameObject;
 
         [HideInInspector]
         public SelectionModes Mode = SelectionModes.None;
@@ -32,12 +33,14 @@ namespace DCTC.Controllers {
         private CableGraphics cableCursor;
         private TilePosition cablePlacementStart;
         private AStar pathfinder = null;
+        private ThreeDMap mapComponent;
 
         private void Awake() {
             gameController = GameController.Get();
         }
 
         private void Start() {
+            mapComponent = MapGameObject.GetComponent<ThreeDMap>();
             cameraController.TileClicked += CameraController_TileClicked;
         }
 
@@ -56,6 +59,8 @@ namespace DCTC.Controllers {
             else {
                 Mode = SelectionModes.None;
             }
+
+            mapComponent.HighlightRadius = 0;
 
             Debug.Log("Selection mode is " + Mode.ToString());
         }
@@ -104,7 +109,7 @@ namespace DCTC.Controllers {
                         // Find best path from start to current point
                         // Build bounding box to limit total nodes
                         TileRectangle boundingBox = MapConfiguration.BoundingBox(cablePlacementStart, pos);
-                        boundingBox = gameController.Map.ExpandBoundingBox(boundingBox, 5);
+                        boundingBox = gameController.Map.ExpandBoundingBox(boundingBox, 15);
 
                         // Generate list of nodes from the bounding box
                         List<IPathNode> nodes = new List<IPathNode>();
@@ -163,9 +168,11 @@ namespace DCTC.Controllers {
                     if (tile.Type == TileType.Road) {
                         cursorObject.SetActive(true);
                         cursorObject.transform.position = world;
+                        mapComponent.HighlightRadius = 10;
                     }
                     else {
                         cursorObject.SetActive(false);
+                        mapComponent.HighlightRadius = 0;
                     }
                 } else if (Mode == SelectionModes.Destroy) {
                     cursorObject.transform.position = world;

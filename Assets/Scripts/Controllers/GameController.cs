@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading;
+using System.Collections;
 using UnityEngine;
 using DCTC.Map;
 using DCTC.Model;
@@ -42,7 +43,8 @@ namespace DCTC.Controllers {
             saver.SaveGame(Game, SaveName);
         }
 
-        public void Load() {
+        public void Load() { StartCoroutine( AsyncLoad() ); }
+        public IEnumerator AsyncLoad() {
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 
@@ -55,9 +57,12 @@ namespace DCTC.Controllers {
 
             if (GameLoaded != null)
                 GameLoaded();
+
+            yield return null;
         }
 
-        public void New() {
+        public void New() { StartCoroutine( AsyncNew() ); }
+        private IEnumerator AsyncNew() {
             GenerateMap();
 
             Game = new Game();
@@ -68,10 +73,14 @@ namespace DCTC.Controllers {
 
             // Save map in separate thread
             saveMapThread = new Thread(SaveMap);
+            saveMapThread.Priority = System.Threading.ThreadPriority.BelowNormal;
             saveMapThread.Start();
+
+            yield return null;
         }
 
         private void SaveMap() {
+            Thread.Sleep(3000);
             saver.SaveMap(Map, SaveName);
         }
     }

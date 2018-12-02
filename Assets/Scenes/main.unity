@@ -1617,6 +1617,7 @@ MonoBehaviour:
     type: 2}
   NodeCursorPrefab: {fileID: 1270918085507872, guid: e2928b8350ddd6842806ec56c1d5c011,
     type: 2}
+  MapGameObject: {fileID: 596820}
   Mode: 0
 --- !u!1001 &934885023
 Prefab:

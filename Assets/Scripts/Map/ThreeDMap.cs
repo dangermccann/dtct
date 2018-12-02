@@ -23,6 +23,8 @@ namespace DCTC.Map {
         private Dictionary<TilePosition, GameObject> ground = new Dictionary<TilePosition, GameObject>();
         private MaterialController materialController;
         private GameController gameController;
+        private HashSet<TilePosition> highlightedPositions = new HashSet<TilePosition>();
+        private Dictionary<TilePosition, MeshRenderer> buildingRenderers = new Dictionary<TilePosition, MeshRenderer>();
 
         private int batchCount = 0;
         private const int BatchSize = 100;
@@ -94,6 +96,8 @@ namespace DCTC.Map {
         }
         public void ToggleBuildings() { BuildingsVisible = !BuildingsVisible; }
 
+        public int HighlightRadius { get; set; }
+
         public void Clear() {
             List<GameObject> removals = new List<GameObject>();
             removals.AddRange(GameObject.FindGameObjectsWithTag("Ground"));
@@ -104,6 +108,9 @@ namespace DCTC.Map {
             foreach(GameObject go in removals) {
                 GameObject.Destroy(go);
             }
+
+            HighlightRadius = 0;
+            highlightedPositions.Clear();
         }
 
         public override void Init(MapConfiguration config) {
@@ -136,8 +143,6 @@ namespace DCTC.Map {
 
 
         public void EnterTileDetails(TilePosition pos) {
-            Select(pos);
-
             Tile tile = map.Tiles[pos];
             Vector3 world = PositionToWorld(pos);
             cameraController.SaveCameraLocation();
@@ -164,14 +169,33 @@ namespace DCTC.Map {
             if(cameraController.SelectionEnabled == false) {
                 cameraController.RestoreCameraLocation();
                 cameraController.SelectionEnabled = true;
-                ClearSelection();
             }
         }
 
         void Update() {
-            if(Input.GetKeyDown(KeyCode.Escape)) {
-                
+            HashSet<TilePosition> removals = new HashSet<TilePosition>();
+            removals.AddMany(highlightedPositions);
+
+            if(HighlightRadius > 0) {
+                TilePosition mousePosition = WorldToPosition(cameraController.MouseCursorInWorld());
+                for(int x = mousePosition.x - HighlightRadius; x <= mousePosition.x + HighlightRadius; x++) {
+                    for(int y = mousePosition.y - HighlightRadius; y <= mousePosition.y + HighlightRadius; y++) {
+                        TilePosition pos = new TilePosition(x, y);
+                        if(map.IsInBounds(pos)) {
+                            HighlightBuilding(pos, true);
+
+                            if(removals.Contains(pos))
+                                removals.Remove(pos);
+
+                            if(!highlightedPositions.Contains(pos))
+                                highlightedPositions.Add(pos);
+                        }
+                    }
+                }
             }
+
+            HighlightBuildings(removals, false);
+            highlightedPositions.RemoveMany(removals);
         }
 
         private void OnTileClicked(Vector3 world) {
@@ -196,31 +220,22 @@ namespace DCTC.Map {
             }
         }
 
-        void Select(TilePosition pos) {
-            ClearSelection();
+        void HighlightBuildings(IEnumerable<TilePosition> positions, bool highlight) {
+            foreach (TilePosition pos in positions) {
+                HighlightBuilding(pos, highlight);
+            }
+        }
 
+        void HighlightBuilding(TilePosition pos, bool highlight) {
             Tile tile = map.Tiles[pos];
-
-            if (tile.Lot != null) {
-                selectedTiles.AddMany(tile.Lot.Tiles);
-            } else {
-                selectedTiles.Add(tile.Position);
-            }
-
-            foreach (TilePosition selectedPos in selectedTiles) {
-                ApplyMaterial(selectedPos, GetMaterialForTile(tile, true));
+            if (tile.Building != null) {
+                MeshRenderer renderer = buildingRenderers[tile.Building.Anchor];
+                renderer.material = GetMaterialForBuilding(tile.Building, highlight);
+                //renderer.material.color = Utilities.CreateColor(highlight ? 0x8EFFCE : 0x72C7DD);
             }
         }
 
-        void ClearSelection() {
-            foreach (TilePosition pos in selectedTiles) {
-                Tile tile = map.Tiles[pos];
-                ApplyMaterial(pos, GetMaterialForTile(tile, false));
-            }
-            selectedTiles.Clear();
-        }
-
-        void ApplyMaterial(TilePosition pos, Material mat) {
+        void ApplyTileMaterial(TilePosition pos, Material mat) {
              ApplyMaterial(GetTileGraphics(GetTileGameObject(pos)), mat);
         }
 
@@ -235,6 +250,10 @@ namespace DCTC.Map {
         }
 
         GameObject GetTileGraphics(GameObject go) {
+            return go.transform.GetChild(0).gameObject;
+        }
+
+        GameObject GetBuildingGraphics(GameObject go) {
             return go.transform.GetChild(0).gameObject;
         }
 
@@ -305,7 +324,7 @@ namespace DCTC.Map {
                         tileGo.transform.SetParent(this.transform, false);
                         tileGo.transform.position = new Vector3(x * 2, 0, z * 2);
                         tileGo.transform.localScale = scale;
-                        ApplyMaterial(pos, GetMaterialForTile(tile, false));
+                        ApplyMaterial(GetTileGraphics(tileGo), GetMaterialForTile(tile, false));
                         ground.Add(pos, tileGo);
 
                         if(++batchCount % BatchSize == 0) 
@@ -318,6 +337,7 @@ namespace DCTC.Map {
         IEnumerator DrawBuildings() {
             GameObject prefab = null;
             buildings.Clear();
+            buildingRenderers.Clear();
 
             for (int i = 0; i < map.Neighborhoods.Count; i++) {
                 Neighborhood n = map.Neighborhoods[i];
@@ -338,6 +358,7 @@ namespace DCTC.Map {
                         buildingGO.transform.SetParent(this.transform, false);
                         buildingGO.transform.position = new Vector3(lot.Building.Anchor.x * 2, 0, lot.Building.Anchor.y * 2);
                         buildings.Add(lot.Building.Anchor, buildingGO);
+                        buildingRenderers.Add(lot.Building.Anchor, GetBuildingGraphics(buildingGO).GetComponent<MeshRenderer>());
 
                         float rotation = 0;
                         switch (lot.Building.FacingDirection) {
@@ -470,6 +491,15 @@ namespace DCTC.Map {
             }
         }
 
+        private Material GetMaterialForBuilding(Building building, bool isSelected) {
+            string materialName = "Blueprint";
+            if (isSelected) {
+                materialName = "Selection";
+            }
+
+            return materialController.GetMaterial(materialName);
+        }
+
         private Material GetMaterialForTile(Tile tile, bool isSelected) {
             string materialName = "Blueprint Light";
 
@@ -484,7 +514,7 @@ namespace DCTC.Map {
                 materialName = "Farm";
             }
 
-            return materialController.GetMaterial(materialName);            
+            return materialController.GetMaterial(materialName);
         }
 
         public static Vector3 PositionToWorld(TilePosition pos) {

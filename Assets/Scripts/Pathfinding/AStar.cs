@@ -39,6 +39,7 @@ namespace DCTC.Pathfinding
 		PriorityQueue<int, AStarElement> OpenElements;
 		Dictionary<TilePosition, AStarElement> ClosedElements;
 
+        public int MinimumMovementCost = 10000;
 
 		public AStar(ICollection<IPathNode> nodes) {
 			AllElements = new Dictionary<TilePosition, AStarElement>();
@@ -74,6 +75,9 @@ namespace DCTC.Pathfinding
 				foreach(AStarElement neighbor in neighbors) {
 					if(ClosedElements.ContainsKey(neighbor.Position))
 						continue;
+
+                    if (neighbor.MovementCost > MinimumMovementCost)
+                        continue;
 
 					int tentativeGCost = current.GCost + neighbor.MovementCost;
 					if(tentativeGCost >= neighbor.GCost) {

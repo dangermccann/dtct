@@ -12,6 +12,12 @@ public static class Extensions {
         }
     }
 
+    public static void RemoveMany<T>(this HashSet<T> set, IEnumerable<T> items) {
+        foreach (T item in items) {
+            set.Remove(item);
+        }
+    }
+
     public static void AddManySafely<T>(this HashSet<T> set, IEnumerable<T> items) {
         foreach (T item in items) {
             if(!set.Contains(item))
@@ -139,4 +145,151 @@ public static class RandomUtils {
         return (decimal) randNormal;
     }
     
+}
+
+
+public static class Utilities {
+
+    public static Color CreateColor(int hex) {
+        return new Color(
+            ((hex >> 16) & 0xff) / 255f,
+            ((hex >> 8) & 0xff) / 255f,
+            (hex & 0xff) / 255f);
+    }
+
+
+    public static void RecursivelyApply(GameObject go, Action<GameObject> lambda) {
+        lambda.Invoke(go);
+
+        for (int i = 0; i < go.transform.childCount; i++) {
+            lambda.Invoke(go.transform.GetChild(i).gameObject);
+        }
+    }
+
+    public static void Clear(Transform transform) {
+        for (int i = transform.childCount - 1; i >= 0; i--) {
+            GameObject go = transform.GetChild(i).gameObject;
+            SafeDestroy(go);
+        }
+    }
+
+    public static Vector3 WorldToRectTransformLocal(Vector3 point, RectTransform rt) {
+        Vector3 local = rt.transform.InverseTransformPoint(point);
+        local = new Vector3(local.x + rt.pivot.x * rt.rect.width,
+            local.y + rt.pivot.y * rt.rect.height, local.z);
+
+        return local;
+    }
+
+    public static Vector3 RectTransformLocalToWorld(Vector3 local, RectTransform rt) {
+        local = new Vector3(local.x - rt.pivot.x * rt.rect.width,
+            local.y - rt.pivot.y * rt.rect.height, local.z);
+        return rt.transform.TransformPoint(local);
+    }
+
+    public static T InstantiateComponent<T>(UnityEngine.Object prefab, Transform parent) where T : Component {
+        GameObject go = (GameObject)GameObject.Instantiate(prefab);
+        go.transform.SetParent(parent, false);
+        return go.GetComponent<T>();
+    }
+
+    public static void MaximizeBoxCollider(GameObject go) {
+        MaximizeBoxCollider(go, go.GetComponent<RectTransform>());
+    }
+
+    public static void MaximizeBoxCollider(GameObject go, RectTransform rt) {
+        BoxCollider2D bc = go.GetComponent<BoxCollider2D>();
+
+        bc.offset = new Vector2((rt.rect.width / 2) - (rt.rect.width * rt.pivot.x), (rt.rect.height / 2) - (rt.rect.height * rt.pivot.y));
+        bc.size = new Vector2(rt.rect.width, rt.rect.height);
+    }
+
+    public static void MatchParentDimensions(GameObject obj, GameObject parent) {
+        MatchParentDimensions(obj, parent, new Vector2(0, 0));
+    }
+
+    public static void MatchParentDimensions(GameObject obj, GameObject parent, Vector2 margin) {
+        RectTransform rt = obj.GetComponent<RectTransform>();
+        RectTransform parentRT = parent.GetComponent<RectTransform>();
+        rt.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, margin.x, parentRT.rect.width - 2.0f * margin.x);
+        rt.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, margin.y, parentRT.rect.height - 2.0f * margin.y);
+    }
+
+    public static float Normalize(float val, float min, float max) {
+        float range = (max - min);
+        if (range == 0)
+            return 0f;
+
+        return (val - min) / range;
+    }
+
+    public static bool AreClose(float a, float b) {
+        return Mathf.Abs(a - b) < 0.0001f;
+    }
+
+    public static bool GreaterThanOrCloseTo(float a, float b) {
+        return AreClose(a, b) || (a >= b);
+    }
+
+    public static bool LessThanOrCloseTo(float a, float b) {
+        return AreClose(a, b) || (a <= b);
+    }
+
+    public static void SafeDestroy(UnityEngine.Object obj) {
+        if (Application.isEditor)
+            UnityEngine.Object.DestroyImmediate(obj);
+        else
+            UnityEngine.Object.Destroy(obj);
+    }
+
+    public static GameObject FindOrInstantiate(string name, Transform parent, GameObject prefab) {
+        Transform t = parent.Find(name);
+        if (t != null)
+            return t.gameObject;
+        else {
+            GameObject go = (GameObject)GameObject.Instantiate(prefab);
+            go.transform.SetParent(parent, false);
+            go.name = name;
+            return go;
+        }
+    }
+
+    public static bool FindAndDestroy(string name, Transform parent) {
+        Transform t = parent.Find(name);
+        if (t != null) {
+            SafeDestroy(t.gameObject);
+            return true;
+        }
+        return false;
+    }
+
+    public static int ClearRemaining(string prefix, Transform parent, int start) {
+        int i = start;
+        int count = 0;
+        while (FindAndDestroy(prefix + i.ToString(), parent) == true) {
+            i++;
+            count++;
+        }
+
+        return count;
+    }
+
+
+    public static Transform FindChildRecursive(this Transform aParent, string aName) {
+        var result = aParent.Find(aName);
+        if (result != null)
+            return result;
+        foreach (Transform child in aParent) {
+            result = child.FindChildRecursive(aName);
+            if (result != null)
+                return result;
+        }
+        return null;
+    }
+
+    public static void DestroyAllChildren(this Transform aParent) {
+        for (int i = aParent.childCount - 1; i >= 0; i--) {
+            SafeDestroy(aParent.GetChild(i).gameObject);
+        }
+    }
 }
