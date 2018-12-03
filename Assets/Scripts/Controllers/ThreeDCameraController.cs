@@ -26,8 +26,9 @@ namespace DCTC.Controllers {
         public delegate void CameraChangedEventHandler();
         public event CameraChangedEventHandler CameraChanged;
 
-        public delegate void ClickEventHandler(Vector3 position);
-        public event ClickEventHandler TileClicked;
+        public delegate void MouseEventHandler(Vector3 world, TilePosition position);
+        public event MouseEventHandler TileClicked;
+        public event MouseEventHandler TileDragged;
 
         public bool SelectionEnabled { get; set; }
         public bool NavigationEnabled { get; set; }
@@ -45,6 +46,7 @@ namespace DCTC.Controllers {
         bool ignoreMouse = false;
         Vector3 clickCoordinates = Vector3.zero;
         TilePosition clickPosition = TilePosition.Origin;
+        TilePosition lastDragPosition = TilePosition.Origin;
         CameraAnimation currentAnimation = null;
         GameController gameController;
 
@@ -78,7 +80,7 @@ namespace DCTC.Controllers {
 
 			UpdateZoom();
 			UpdatePosition();
-            HandleSelection();
+            UpdateMouse();
             RunAnimation();
             DrawDebug();
 		}
@@ -284,7 +286,7 @@ namespace DCTC.Controllers {
             }
         }
 
-        void HandleSelection() {
+        void UpdateMouse() {
             // releasing the middle mouse stops dragging
             if (Input.GetMouseButtonUp(ScrollMouseButton)) {
                 isDragging = false;
@@ -293,7 +295,8 @@ namespace DCTC.Controllers {
 
             if (Input.GetMouseButtonDown(SelectMouseButton)) {
                 clickCoordinates = Input.mousePosition;
-                clickPosition = ThreeDMap.WorldToPosition(ScreenPointToGroundPoint(clickCoordinates));
+                clickPosition = PositionOfMouse();
+                lastDragPosition = TilePosition.Origin;
             }
 
             if (Input.GetMouseButtonUp(SelectMouseButton) && !ignoreMouse && SelectionEnabled) {
@@ -302,13 +305,27 @@ namespace DCTC.Controllers {
                 if (Mathf.Abs(dist.magnitude) < 0.25f ) { }
                 */
 
-                TilePosition position = ThreeDMap.WorldToPosition(ScreenPointToGroundPoint(Input.mousePosition));
+                TilePosition position = PositionOfMouse();
                 if (position.Equals(clickPosition)) {
                     if (TileClicked != null) {
-                        TileClicked(ScreenPointToGroundPoint(Input.mousePosition));
+                        Vector3 world = ScreenPointToGroundPoint(Input.mousePosition);
+                        TileClicked(world, ThreeDMap.WorldToPosition(world));
                     }
                 }
             }
+
+            if (Input.GetMouseButton(0)) {
+                TilePosition position = PositionOfMouse();
+                if(!position.Equals(lastDragPosition)) {
+                    lastDragPosition = position;
+                    if (TileDragged != null)
+                        TileDragged(ScreenPointToGroundPoint(Input.mousePosition), position);
+                }
+            }
+        }
+
+        TilePosition PositionOfMouse() {
+            return ThreeDMap.WorldToPosition(ScreenPointToGroundPoint(Input.mousePosition));
         }
 
         void RunAnimation() {

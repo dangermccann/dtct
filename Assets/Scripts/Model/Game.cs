@@ -79,6 +79,18 @@ namespace DCTC.Model {
             return cable;
         }
 
+        public void PrependCable(Cable cable, TilePosition position) {
+            cable.Positions.Insert(0, position);
+            TriggerItemRemoved(cable);
+            TriggerItemAdded(cable);
+        }
+
+        public void AppendCable(Cable cable, TilePosition position) {
+            cable.Positions.Add(position);
+            TriggerItemRemoved(cable);
+            TriggerItemAdded(cable);
+        }
+
         public void RemoveCablePosition(TilePosition pos) {
             List<Cable> allCables = new List<Cable>();
             allCables.AddRange(Cables);

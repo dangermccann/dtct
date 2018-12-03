@@ -29,6 +29,11 @@ namespace DCTC.Map {
                 && y <= rect.Top;
         }
 
+        public bool IsAdjacent(TilePosition other) {
+            return (Math.Abs(x - other.x) == 1 && y == other.y) ||
+                   (Math.Abs(y - other.y) == 1 && x == other.x);
+        }
+
 
         public override bool Equals(System.Object obj) {
             // If parameter is null return false.

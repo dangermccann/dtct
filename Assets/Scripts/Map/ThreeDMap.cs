@@ -198,8 +198,7 @@ namespace DCTC.Map {
             highlightedPositions.RemoveMany(removals);
         }
 
-        private void OnTileClicked(Vector3 world) {
-            TilePosition pos = WorldToPosition(world);
+        private void OnTileClicked(Vector3 world, TilePosition pos) {
 
             if (map.Tiles.ContainsKey(pos)) {
                 Tile tile = map.Tiles[pos];

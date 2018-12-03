@@ -34,6 +34,8 @@ namespace DCTC.Controllers {
         private TilePosition cablePlacementStart;
         private AStar pathfinder = null;
         private ThreeDMap mapComponent;
+        private Vector3 mouseDownPosition;
+        private Cable dragCable;
 
         private void Awake() {
             gameController = GameController.Get();
@@ -42,6 +44,7 @@ namespace DCTC.Controllers {
         private void Start() {
             mapComponent = MapGameObject.GetComponent<ThreeDMap>();
             cameraController.TileClicked += CameraController_TileClicked;
+            cameraController.TileDragged += CameraController_TileDragged;
         }
 
         public void ValueChanged() {
@@ -80,6 +83,18 @@ namespace DCTC.Controllers {
         }
 
         private void Update() {
+            if(Input.GetMouseButtonDown(1)) {
+                mouseDownPosition = Input.mousePosition;
+            }
+            if(Input.GetMouseButtonUp(1)) {
+                if((Input.mousePosition - mouseDownPosition).magnitude < 0.25f) {
+                    ConstructionToggleGroup.SetAllTogglesOff();
+                }
+            }
+            if(Input.GetMouseButtonUp(0)) {
+                dragCable = null;
+            }
+
             if(cursorObject != null) {
                 // Snap to the tile
                 Vector3 world = cameraController.MouseCursorInWorld();
@@ -180,10 +195,8 @@ namespace DCTC.Controllers {
             }
         }
 
-        private void CameraController_TileClicked(Vector3 position) {
-            TilePosition tilePosition = ThreeDMap.WorldToPosition(position);
-
-            if (!gameController.Map.Tiles.ContainsKey(tilePosition)) {
+        private void CameraController_TileClicked(Vector3 world, TilePosition position) {
+            if (!gameController.Map.Tiles.ContainsKey(position)) {
                 return;
             }
 
@@ -192,7 +205,7 @@ namespace DCTC.Controllers {
                     return;
                 }
 
-                gameController.Game.Player.PlaceNode(NodeType.Small, tilePosition);
+                gameController.Game.Player.PlaceNode(NodeType.Small, position);
 
                 Destroy(cursorObject);
                 CreateCursor();
@@ -207,7 +220,7 @@ namespace DCTC.Controllers {
                 if (cableCursor.Mode == CableGraphics.GraphicsMode.Cursor) {
                     // First click
                     // Set variable so it draws preview in Update
-                    cablePlacementStart = tilePosition;
+                    cablePlacementStart = position;
                     cableCursor.Mode = CableGraphics.GraphicsMode.Placed;
                 } else {
                     // Second click
@@ -218,8 +231,33 @@ namespace DCTC.Controllers {
                     CreateCursor();
                 }
             } else if (Mode == SelectionModes.Destroy) {
-                gameController.Game.Player.RemoveCablePosition(tilePosition);
-                gameController.Game.Player.RemoveNode(tilePosition);
+                gameController.Game.Player.RemoveCablePosition(position);
+                gameController.Game.Player.RemoveNode(position);
+            }
+        }
+
+        private void CameraController_TileDragged(Vector3 world, TilePosition position) {
+            if (Mode == SelectionModes.Destroy) {
+                gameController.Game.Player.RemoveCablePosition(position);
+                gameController.Game.Player.RemoveNode(position);
+            }
+            else if(Mode == SelectionModes.Cable) {
+                if (!gameController.Map.HasRoad(position))
+                    return;
+
+                if(dragCable == null) {
+                    dragCable = gameController.Game.Player.PlaceCable(CableType.Copper, new List<TilePosition>() { position });
+                }
+                else {
+                    if(!dragCable.Positions.Contains(position)) {
+                        if(dragCable.Positions[0].IsAdjacent(position)) {
+                            gameController.Game.Player.PrependCable(dragCable, position);
+                        }
+                        else if (dragCable.Positions.Last().IsAdjacent(position)) {
+                            gameController.Game.Player.AppendCable(dragCable, position);
+                        }
+                    }
+                }
             }
         }
     }
