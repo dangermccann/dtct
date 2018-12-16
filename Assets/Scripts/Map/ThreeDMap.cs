@@ -229,7 +229,22 @@ namespace DCTC.Map {
             Tile tile = map.Tiles[pos];
             if (tile.Building != null) {
                 MeshRenderer renderer = buildingRenderers[tile.Building.Anchor];
-                renderer.material = GetMaterialForBuilding(tile.Building, highlight);
+                List<Material> materials = new List<Material>(renderer.materials);
+
+                if(highlight) {
+                    if (!materials[0].name.StartsWith("Selection")) {
+                        materials.Insert(0, GetMaterialForBuilding(tile.Building, true));
+                    }
+                }
+                else {
+                    if (materials[0].name.StartsWith("Selection")) {
+                        materials.RemoveAt(0);
+                    }
+                }
+                renderer.materials = materials.ToArray();
+
+
+                //renderer.material = GetMaterialForBuilding(tile.Building, highlight);
                 //renderer.material.color = Utilities.CreateColor(highlight ? 0x8EFFCE : 0x72C7DD);
             }
         }
