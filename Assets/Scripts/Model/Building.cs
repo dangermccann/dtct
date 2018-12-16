@@ -47,7 +47,6 @@ namespace DCTC.Model {
 	public enum BuildingType {
 		SmallHouse,
 		Townhouse,
-        DoubleTownhouse,
         Ranch,
 		SuburbanHouse,
         Apartment,
@@ -110,11 +109,6 @@ namespace DCTC.Model {
 					return new BuildingAttributes(1, 1, BuildingClassification.Residential,
                                                   new List<BuildingColor>() { BuildingColor.Red },
                                                   120);
-
-                case BuildingType.DoubleTownhouse:
-                    return new BuildingAttributes(1, 1, BuildingClassification.Residential,
-                                                  new List<BuildingColor>() { BuildingColor.Red },
-                                                  240);
 
                 case BuildingType.Ranch:
 					return new BuildingAttributes((facing == Direction.East || facing == Direction.West) ? 1 : 2, 

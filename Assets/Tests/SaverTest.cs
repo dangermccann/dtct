@@ -7,9 +7,17 @@ using DCTC.Model;
 
 namespace DCTC.Test {
     public class SaverTest {
+
         [Test]
         public void TestSaveMap() {
-            MapGenerator generator = new MapGenerator(new System.Random(1));
+            System.Random rand = new System.Random(1);
+            NameGenerator nameGenerator = new NameGenerator(rand);
+            MapGenerator generator = new MapGenerator(rand, 
+                new NewGameSettings() {
+                    NeighborhoodCountX = 2,
+                    NeighborhoodCountY = 2
+                },
+                nameGenerator);
             MapConfiguration map = generator.Generate();
             Assert.NotNull(map);
             Assert.Positive(map.Neighborhoods.Count);

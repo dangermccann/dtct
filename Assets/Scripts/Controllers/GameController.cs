@@ -21,18 +21,21 @@ namespace DCTC.Controllers {
         private static string SaveName = "dctc";
         private Thread saveMapThread;
         private GameSaver saver;
+        private NameGenerator nameGenerator;
 
         void Awake() {
             //New();
             saver = new GameSaver();
         }
 
-        public void GenerateMap() {
+        public void GenerateMap(NewGameSettings settings) {
             int seed = 100;
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 
-            MapGenerator generator = new MapGenerator(new System.Random(seed));
+            System.Random rand = new System.Random(seed);
+            nameGenerator = new NameGenerator(rand);
+            MapGenerator generator = new MapGenerator(rand, settings, nameGenerator);
             Map = generator.Generate();
 
             stopwatch.Stop();
@@ -63,10 +66,12 @@ namespace DCTC.Controllers {
 
         public void New() { StartCoroutine( AsyncNew() ); }
         private IEnumerator AsyncNew() {
-            GenerateMap();
+            NewGameSettings settings = new NewGameSettings();
+            GenerateMap(settings);
 
             Game = new Game();
-            Game.NewGame(new NewGameSettings());
+            Game.NewGame(settings, nameGenerator);
+            Game.PopulateCustomers(Map, nameGenerator);
 
             if (GameLoaded != null)
                 GameLoaded();

@@ -56,5 +56,7 @@ namespace DCTC.Test {
             Assert.That(removed.Contains(c1));
             Assert.That(removed.Contains(c2));
         }
+
+        
     }
 }

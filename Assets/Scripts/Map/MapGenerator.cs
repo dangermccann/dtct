@@ -49,38 +49,39 @@ namespace DCTC.Map
 
         const int NeighborhoodWidth = 60;
         const int NeighborhoodHeight = 60;
-        const int NeighborhoodCountX = 3;
-        const int NeighborhoodCountY = 3;
+        private int neighborhoodCountX;
+        private int neighborhoodCountY;
 
-        public MapGenerator(System.Random rand) {
-            random = rand;
-            nameGenerator = new NameGenerator(rand);
+        public MapGenerator(System.Random rand, NewGameSettings settings, NameGenerator nameGenerator) {
+            this.random = rand;
+            this.nameGenerator = nameGenerator;
+            this.neighborhoodCountX = settings.NeighborhoodCountX;
+            this.neighborhoodCountY = settings.NeighborhoodCountY;
         }
-
 
         public MapConfiguration Generate() {
             MapTemplate template = Loader.LoadMapTemplate();
 
-            MapConfiguration map = new MapConfiguration(NeighborhoodWidth * NeighborhoodCountX + 1, 
-                NeighborhoodHeight * NeighborhoodCountY + 1);
+            MapConfiguration map = new MapConfiguration(NeighborhoodWidth * neighborhoodCountX + 1, 
+                NeighborhoodHeight * neighborhoodCountY + 1);
             map.CreateTiles();
 
             int startIdx = random.Next(5);
             int nTemplateCount = template.Neighborhoods.Count;
-            for(int x = 0; x < NeighborhoodCountX; x++) {
-                for(int y = 0; y < NeighborhoodCountY; y++) {
+            for(int x = 0; x < neighborhoodCountX; x++) {
+                for(int y = 0; y < neighborhoodCountY; y++) {
                     GenerateNeighborhood(map, template, (startIdx + x + y) % nTemplateCount, 
                         new TilePosition(x * NeighborhoodWidth, y * NeighborhoodHeight));
                 }
             }
 
             // Final roads on outside
-            for(int x = 0; x < NeighborhoodWidth * NeighborhoodCountX; x++) {
-                map.AddRoad(new TilePosition(x, NeighborhoodHeight * NeighborhoodCountY));
+            for(int x = 0; x < NeighborhoodWidth * neighborhoodCountX; x++) {
+                map.AddRoad(new TilePosition(x, NeighborhoodHeight * neighborhoodCountY));
             }
 
-            for (int y = 0; y < NeighborhoodHeight * NeighborhoodCountY; y++) {
-                map.AddRoad(new TilePosition(NeighborhoodWidth * NeighborhoodCountX, y));
+            for (int y = 0; y < NeighborhoodHeight * neighborhoodCountY; y++) {
+                map.AddRoad(new TilePosition(NeighborhoodWidth * neighborhoodCountX, y));
             }
 
             return map;

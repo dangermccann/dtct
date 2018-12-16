@@ -69,9 +69,7 @@ namespace DCTC.Model {
 
         public string RandomSurname() {
             int idx = random.Next(0, surnames.Count);
-            string name = surnames[idx];
-            surnames.RemoveAt(idx);
-            return name;
+            return surnames[idx];
         }
 
         public string RandomMaleName() {
