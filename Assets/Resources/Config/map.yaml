@@ -14,7 +14,7 @@ LotTemplates:
     BuildingType: Apartment
     Width: 5
     Height: 5
-    Facing: West
+    Facing: East
   RanchE:
     BuildingType: Ranch
     Width: 3
