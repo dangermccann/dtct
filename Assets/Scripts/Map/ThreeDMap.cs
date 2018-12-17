@@ -249,7 +249,7 @@ namespace DCTC.Map {
 
         void ApplyMaterial(GameObject go, Material mat) {
             if (go != null) {
-                go.GetComponent<MeshRenderer>().material = mat;
+                //go.GetComponent<MeshRenderer>().material = mat;
             }
         }
 
