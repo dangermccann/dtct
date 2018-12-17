@@ -292,4 +292,22 @@ public static class Utilities {
             SafeDestroy(aParent.GetChild(i).gameObject);
         }
     }
+
+    public static void AssureMaterialPresent(this MeshRenderer renderer, Material material) {
+        List<Material> materials = new List<Material>(renderer.materials);
+        int found = materials.Where(m => (m.name.StartsWith(material.name))).Count();
+        if (found == 0) {
+            materials.Insert(0, material);
+            renderer.materials = materials.ToArray();
+        }
+    }
+
+    public static void AssureMaterialAbsent(this MeshRenderer renderer, Material material) {
+        List<Material> materials = new List<Material>(renderer.materials);
+        int found = materials.FindIndex(m => m.name.StartsWith(material.name));
+        if (found != -1) {
+            materials.RemoveAt(found);
+            renderer.materials = materials.ToArray();
+        }
+    }
 }

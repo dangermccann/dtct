@@ -14,6 +14,8 @@ namespace DCTC.Controllers {
 
         public event GameLoadedEvent GameLoaded;
 
+        public int GameSpeed = 1;
+
         public static GameController Get() {
             return GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
         }
@@ -22,10 +24,24 @@ namespace DCTC.Controllers {
         private Thread saveMapThread;
         private GameSaver saver;
         private NameGenerator nameGenerator;
+        private Coroutine loopCoroutine;
+        private int gameCounter = 0;
 
         void Awake() {
-            //New();
             saver = new GameSaver();
+            this.GameLoaded += OnGameLoaded;
+        }
+
+        public void Unpause() {
+            if(loopCoroutine == null)
+                loopCoroutine = StartCoroutine(GameLoop());
+        }
+
+        public void Pause() {
+            if(loopCoroutine != null) {
+                StopCoroutine(loopCoroutine);
+                loopCoroutine = null;
+            }
         }
 
         public void GenerateMap(NewGameSettings settings) {
@@ -87,6 +103,25 @@ namespace DCTC.Controllers {
         private void SaveMap() {
             Thread.Sleep(3000);
             saver.SaveMap(Map, SaveName);
+        }
+
+        private void OnGameLoaded() {
+            Unpause();
+        }
+
+        private IEnumerator GameLoop() {
+            while(true) {
+                int householdIndex = gameCounter % Game.Customers.Count;
+                Game.Customers[householdIndex].Update();
+
+                if(gameCounter % 10000 == 0) {
+                    Debug.Log("Game Counter: " + gameCounter);
+                }
+
+                if (++gameCounter % GameSpeed == 0) {
+                    yield return null;
+                }
+            }
         }
     }
 }

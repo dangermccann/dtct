@@ -206,10 +206,10 @@ namespace DCTC.Model {
             }
         }
 
-        public Dictionary<CableType, TilePosition> CalculateServiceArea() {
-            Dictionary<CableType, TilePosition> serviceArea = new Dictionary<CableType, TilePosition>();
-            foreach(Network network in Networks) {
-
+        public HashSet<TilePosition> CalculateServiceArea() {
+            HashSet<TilePosition> serviceArea = new HashSet<TilePosition>();
+            foreach(Node node in Nodes.Values) {
+                // TODO: 
             }
             return serviceArea;
         }
@@ -361,6 +361,20 @@ namespace DCTC.Model {
         public Node() {
             ID = Guid.NewGuid().ToString();
         }
+
+        public int ServiceArea {
+            get {
+                switch(Type) {
+                    case NodeType.Small:
+                        return 15;
+                    case NodeType.Large:
+                        return 30;
+                    case NodeType.Fiber:
+                        return 30;
+                }
+                return 0;
+            }
+        }
     }
 
     public enum NodeType {
@@ -389,6 +403,10 @@ namespace DCTC.Model {
         public string ProviderID { get; set; }
 
         public ServiceTier ServiceTier { get; set; }
+
+        public void Update() {
+
+        }
     }
 
 
