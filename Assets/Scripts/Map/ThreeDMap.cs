@@ -23,12 +23,13 @@ namespace DCTC.Map {
         private Dictionary<TilePosition, GameObject> ground = new Dictionary<TilePosition, GameObject>();
         private MaterialController materialController;
         private GameController gameController;
-        private HashSet<TilePosition> highlightedPositions = new HashSet<TilePosition>();
         private Dictionary<TilePosition, MeshRenderer> buildingRenderers = new Dictionary<TilePosition, MeshRenderer>();
-        private Dictionary<string, HashSet<Building>> colorizedBuildings = new Dictionary<string, HashSet<Building>>();
+        private Dictionary<string, HashSet<TilePosition>> colorizedBuildings = new Dictionary<string, HashSet<TilePosition>>();
 
         private int batchCount = 0;
         private const int BatchSize = 100;
+        private const string ServiceAreaKey = "ServiceArea";
+        private const string SelectionKey = "Selection";
 
         void Start() {
             LoadPrefabs();
@@ -125,11 +126,15 @@ namespace DCTC.Map {
             }
 
             HighlightRadius = 0;
-            highlightedPositions.Clear();
+            colorizedBuildings.Clear();
         }
 
         public override void Init(MapConfiguration config) {
             map = config;
+
+            colorizedBuildings.Add(SelectionKey, new HashSet<TilePosition>());
+            colorizedBuildings.Add(ServiceAreaKey, new HashSet<TilePosition>());
+
             StartDraw();
             cameraController.ResetToDefault();
 
@@ -195,8 +200,9 @@ namespace DCTC.Map {
             if (gameController.Game == null)
                 return;
 
+
             HashSet<TilePosition> removals = new HashSet<TilePosition>();
-            removals.AddMany(highlightedPositions);
+            removals.AddMany(colorizedBuildings[SelectionKey]);
 
             if (HighlightRadius > 0) {
                 TilePosition mousePosition = WorldToPosition(cameraController.MouseCursorInWorld());
@@ -209,51 +215,50 @@ namespace DCTC.Map {
                             if (removals.Contains(pos))
                                 removals.Remove(pos);
 
-                            if (!highlightedPositions.Contains(pos))
-                                highlightedPositions.Add(pos);
+                            if (!colorizedBuildings[SelectionKey].Contains(pos))
+                                colorizedBuildings[SelectionKey].Add(pos);
                         }
                     }
                 }
             }
 
-            HighlightBuildings(removals, false);
-            highlightedPositions.RemoveMany(removals);
+            foreach(TilePosition removal in removals) {
+                if (!colorizedBuildings[ServiceAreaKey].Contains(removal))
+                    HighlightBuilding(removal, false);
+            }
+            
+
+            colorizedBuildings[SelectionKey].RemoveMany(removals);
         }
 
         private void DrawServiceArea() {
-            string category = "ServiceArea";
-            
-            if (!colorizedBuildings.ContainsKey(category)) {
-                colorizedBuildings[category] = new HashSet<Building>();
-            }
-
             if (ServiceAreaVisible) {
-                HashSet<Building> buildings = new HashSet<Building>();
-                buildings.AddMany(colorizedBuildings[category]);
+                HashSet<TilePosition> buildings = new HashSet<TilePosition>();
+                buildings.AddMany(colorizedBuildings[ServiceAreaKey]);
 
                 IEnumerable<TilePosition> area = gameController.Game.Player.ServiceArea;
                 foreach (TilePosition pos in area) {
                     Tile tile = map.Tiles[pos];
                     if (tile.Building != null) {
-                        if (!colorizedBuildings[category].Contains(tile.Building)) {
-                            colorizedBuildings[category].Add(tile.Building);
+                        if (!colorizedBuildings[ServiceAreaKey].Contains(tile.Position)) {
+                            colorizedBuildings[ServiceAreaKey].Add(tile.Position);
                             HighlightBuilding(pos, true);
                         }
 
-                        buildings.Remove(tile.Building);
+                        buildings.Remove(tile.Position);
                     }
                 }
 
-                foreach (Building building in buildings) {
-                    HighlightBuilding(building.Anchor, false);
-                    colorizedBuildings[category].Remove(building);
+                foreach (TilePosition pos in buildings) {
+                    HighlightBuilding(pos, false);
+                    colorizedBuildings[ServiceAreaKey].Remove(pos);
                 }
             }
             else {
-                foreach (Building building in colorizedBuildings[category]) {
-                    HighlightBuilding(building.Anchor, false);
+                foreach (TilePosition pos in colorizedBuildings[ServiceAreaKey]) {
+                    HighlightBuilding(pos, false);
                 }
-                colorizedBuildings[category].Clear();
+                colorizedBuildings[ServiceAreaKey].Clear();
             }
         }
 
@@ -285,9 +290,25 @@ namespace DCTC.Map {
         }
 
         void HighlightBuilding(TilePosition pos, bool highlight) {
+            Color color = Color.green;
+            float intensity = 0.5f;
+
             Tile tile = map.Tiles[pos];
             if (tile.Building != null) {
                 MeshRenderer renderer = buildingRenderers[tile.Building.Anchor];
+
+                foreach(Material material in renderer.materials) {
+                    if(highlight) {
+                        material.SetColor("_EmissionColor", 
+                            new Vector4(color.r, color.g, color.b, 0) * intensity);
+                        material.EnableKeyword("_EMISSION");
+                    }
+                    else {
+                        material.DisableKeyword("_EMISSION");
+                    }
+                }
+
+                /*
                 Material highlightMaterial = GetMaterialForBuilding(tile.Building, true);
                 if (highlight) {
                     renderer.AssureMaterialPresent(highlightMaterial);
@@ -295,6 +316,7 @@ namespace DCTC.Map {
                 else {
                     renderer.AssureMaterialAbsent(highlightMaterial);
                 }
+                */
 
 
                 //renderer.material = GetMaterialForBuilding(tile.Building, highlight);
