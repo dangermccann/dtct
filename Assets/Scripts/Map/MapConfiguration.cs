@@ -361,6 +361,21 @@ namespace DCTC.Map {
             return false;
         }
 
+        public IEnumerable<TilePosition> Area(TilePosition center, int radius) {
+            List<TilePosition> area = new List<TilePosition>();
+
+            for(int x = center.x - radius; x <= center.x + radius; x++) {
+                for(int y = center.y - radius; y <= center.y + radius; y++) {
+                    TilePosition pos = new TilePosition(x, y);
+                    if(IsInBounds(pos)) {
+                        area.Add(pos);
+                    }
+                }
+            }
+
+            return area;
+        }
+
         public static bool HasRoad(Tile tile) {
 			return tile != null && tile.Type == TileType.Road;
 		}

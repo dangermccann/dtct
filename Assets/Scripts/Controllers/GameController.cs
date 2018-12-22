@@ -27,6 +27,11 @@ namespace DCTC.Controllers {
         private Coroutine loopCoroutine;
         private int gameCounter = 0;
 
+        private NewGameSettings defaultNewGameSettings = new NewGameSettings() {
+            NeighborhoodCountX = 2,
+            NeighborhoodCountY = 2
+        };
+
         void Awake() {
             saver = new GameSaver();
             this.GameLoaded += OnGameLoaded;
@@ -82,12 +87,12 @@ namespace DCTC.Controllers {
 
         public void New() { StartCoroutine( AsyncNew() ); }
         private IEnumerator AsyncNew() {
-            NewGameSettings settings = new NewGameSettings();
+            NewGameSettings settings = defaultNewGameSettings;
             GenerateMap(settings);
 
             Game = new Game();
-            Game.NewGame(settings, nameGenerator);
-            Game.PopulateCustomers(Map, nameGenerator);
+            Game.NewGame(settings, nameGenerator, Map);
+            Game.PopulateCustomers(nameGenerator);
 
             if (GameLoaded != null)
                 GameLoaded();

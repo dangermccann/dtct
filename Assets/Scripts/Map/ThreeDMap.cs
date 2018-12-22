@@ -96,6 +96,17 @@ namespace DCTC.Map {
         }
         public void ToggleBuildings() { BuildingsVisible = !BuildingsVisible; }
 
+
+        private bool serviceAreaVisible = true;
+        public bool ServiceAreaVisible {
+            get { return serviceAreaVisible; }
+            set {
+                serviceAreaVisible = value;
+            }
+        }
+        public void ToggleServiceArea() { ServiceAreaVisible = !ServiceAreaVisible; }
+
+
         public int HighlightRadius { get; set; }
 
         public void Clear() {
@@ -173,21 +184,24 @@ namespace DCTC.Map {
         }
 
         void Update() {
+            if (gameController.Game == null)
+                return;
+
             HashSet<TilePosition> removals = new HashSet<TilePosition>();
             removals.AddMany(highlightedPositions);
 
-            if(HighlightRadius > 0) {
+            if (HighlightRadius > 0) {
                 TilePosition mousePosition = WorldToPosition(cameraController.MouseCursorInWorld());
-                for(int x = mousePosition.x - HighlightRadius; x <= mousePosition.x + HighlightRadius; x++) {
-                    for(int y = mousePosition.y - HighlightRadius; y <= mousePosition.y + HighlightRadius; y++) {
+                for (int x = mousePosition.x - HighlightRadius; x <= mousePosition.x + HighlightRadius; x++) {
+                    for (int y = mousePosition.y - HighlightRadius; y <= mousePosition.y + HighlightRadius; y++) {
                         TilePosition pos = new TilePosition(x, y);
-                        if(map.IsInBounds(pos)) {
+                        if (map.IsInBounds(pos)) {
                             HighlightBuilding(pos, true);
 
-                            if(removals.Contains(pos))
+                            if (removals.Contains(pos))
                                 removals.Remove(pos);
 
-                            if(!highlightedPositions.Contains(pos))
+                            if (!highlightedPositions.Contains(pos))
                                 highlightedPositions.Add(pos);
                         }
                     }
@@ -196,6 +210,14 @@ namespace DCTC.Map {
 
             HighlightBuildings(removals, false);
             highlightedPositions.RemoveMany(removals);
+
+            IEnumerable<TilePosition> area = gameController.Game.Player.ServiceArea;
+            foreach (TilePosition pos in area) {
+                Tile tile = map.Tiles[pos];
+                if (tile.Building != null) {
+                    HighlightBuilding(pos, ServiceAreaVisible);
+                }
+            }
         }
 
         private void OnTileClicked(Vector3 world, TilePosition pos) {
@@ -240,16 +262,6 @@ namespace DCTC.Map {
 
                 //renderer.material = GetMaterialForBuilding(tile.Building, highlight);
                 //renderer.material.color = Utilities.CreateColor(highlight ? 0x8EFFCE : 0x72C7DD);
-            }
-        }
-
-        void ApplyTileMaterial(TilePosition pos, Material mat) {
-             ApplyMaterial(GetTileGraphics(GetTileGameObject(pos)), mat);
-        }
-
-        void ApplyMaterial(GameObject go, Material mat) {
-            if (go != null) {
-                //go.GetComponent<MeshRenderer>().material = mat;
             }
         }
 
@@ -332,7 +344,6 @@ namespace DCTC.Map {
                         tileGo.transform.SetParent(this.transform, false);
                         tileGo.transform.position = new Vector3(x * 2, 0, z * 2);
                         tileGo.transform.localScale = scale;
-                        ApplyMaterial(GetTileGraphics(tileGo), GetMaterialForTile(tile, false));
                         ground.Add(pos, tileGo);
 
                         if(++batchCount % BatchSize == 0) 

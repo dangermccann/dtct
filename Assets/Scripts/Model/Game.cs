@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using DCTC.Map;
 
 namespace DCTC.Model {
@@ -16,10 +17,22 @@ namespace DCTC.Model {
         [NonSerialized]
         public Company Player;
 
+        [NonSerialized]
+        public MapConfiguration Map;
+
         public List<Company> Companies { get; set; }
         public List<Customer> Customers { get; set; }
 
-        public void NewGame(NewGameSettings settings, NameGenerator nameGenerator) {
+        [OnDeserialized()]
+        internal void OnSerializedMethod(StreamingContext context) {
+            foreach(Company c in Companies) {
+                c.Game = this;
+            }
+        }
+
+        public void NewGame(NewGameSettings settings, NameGenerator nameGenerator, MapConfiguration map) {
+            this.Map = map;
+
             Companies = new List<Company>();
             for (int i = 0; i < settings.NumAIs; i++) {
                 Companies.Add(GenerateCompany(CompanyOwnerType.AI, nameGenerator));
@@ -31,9 +44,9 @@ namespace DCTC.Model {
             }
         }
 
-        public void PopulateCustomers(MapConfiguration map, NameGenerator nameGenerator) {
+        public void PopulateCustomers(NameGenerator nameGenerator) {
             Customers = new List<Customer>();
-            foreach (Neighborhood neighborhood in map.Neighborhoods) {
+            foreach (Neighborhood neighborhood in Map.Neighborhoods) {
                 foreach(Lot lot in neighborhood.Lots) {
                     if(lot.Building != null) {
                         switch(lot.Building.Type) {
@@ -59,6 +72,7 @@ namespace DCTC.Model {
             c.ID = Guid.NewGuid().ToString();
             c.Name = nameGenerator.CompanyName();
             c.OwnerType = type;
+            c.Game = this;
             return c;
         }
 
@@ -85,6 +99,9 @@ namespace DCTC.Model {
         [field: NonSerialized]
         public event ItemEventDelegate ItemRemoved;
 
+        [NonSerialized]
+        public Game Game;
+
         public string ID { get; set; }
         public string Name { get; set; }
         public string Logo { get; set; }
@@ -104,6 +121,16 @@ namespace DCTC.Model {
                 if (networks == null)
                     networks = CalculateNetworks();
                 return networks;
+            }
+        }
+
+        [NonSerialized]
+        private HashSet<TilePosition> serviceArea = null;
+        public HashSet<TilePosition> ServiceArea {
+            get {
+                if (serviceArea == null)
+                    serviceArea = CalculateServiceArea();
+                return serviceArea;
             }
         }
         
@@ -208,8 +235,21 @@ namespace DCTC.Model {
 
         public HashSet<TilePosition> CalculateServiceArea() {
             HashSet<TilePosition> serviceArea = new HashSet<TilePosition>();
-            foreach(Node node in Nodes.Values) {
-                // TODO: 
+            foreach(Network network in Networks) {
+                foreach(Node node in network.Nodes) {
+                    // TODO: does the area change for different network types?
+                    // TODO: determine the range based on the node type
+                    IEnumerable<TilePosition> positions = Game.Map.Area(node.Position, 4);
+                    serviceArea.AddManySafely(positions);
+                }
+
+                foreach(Cable cable in network.Cables) {
+                    foreach(TilePosition pos in cable.Positions) {
+                        // TODO: does the area change for different network types?
+                        IEnumerable<TilePosition> positions = Game.Map.Area(pos, 4);
+                        serviceArea.AddManySafely(positions);
+                    }
+                }
             }
             return serviceArea;
         }
@@ -299,6 +339,7 @@ namespace DCTC.Model {
 
         private void InvalidateNetworks() {
             networks = null;
+            serviceArea = null;
         }
     }
 
