@@ -91,6 +91,7 @@ namespace DCTC.Model {
     }
 
     public delegate void ItemEventDelegate(object item);
+    public delegate void ChangeDelegate();
 
     [Serializable]
     public class Company {
@@ -98,6 +99,8 @@ namespace DCTC.Model {
         public event ItemEventDelegate ItemAdded;
         [field: NonSerialized]
         public event ItemEventDelegate ItemRemoved;
+        [field: NonSerialized]
+        public event ChangeDelegate ServiceAreaChanged;
 
         [NonSerialized]
         public Game Game;
@@ -119,7 +122,7 @@ namespace DCTC.Model {
         public List<Network> Networks {
             get {
                 if (networks == null)
-                    networks = CalculateNetworks();
+                    CalculateNetworks();
                 return networks;
             }
         }
@@ -129,7 +132,7 @@ namespace DCTC.Model {
         public HashSet<TilePosition> ServiceArea {
             get {
                 if (serviceArea == null)
-                    serviceArea = CalculateServiceArea();
+                    CalculateServiceArea();
                 return serviceArea;
             }
         }
@@ -233,7 +236,7 @@ namespace DCTC.Model {
             }
         }
 
-        public HashSet<TilePosition> CalculateServiceArea() {
+        public void CalculateServiceArea() {
             HashSet<TilePosition> serviceArea = new HashSet<TilePosition>();
             foreach(Network network in Networks) {
                 foreach(Node node in network.Nodes) {
@@ -251,10 +254,10 @@ namespace DCTC.Model {
                     }
                 }
             }
-            return serviceArea;
+            this.serviceArea = serviceArea;
         }
 
-        public List<Network> CalculateNetworks() {
+        public void CalculateNetworks() {
             List<Network> networks = new List<Network>();
 
             HashSet<Node> usedNodes = new HashSet<Node>();
@@ -286,7 +289,7 @@ namespace DCTC.Model {
                 }
             }
 
-            return networks;
+            this.networks = networks;
         }
 
 
@@ -340,6 +343,9 @@ namespace DCTC.Model {
         private void InvalidateNetworks() {
             networks = null;
             serviceArea = null;
+
+            if (ServiceAreaChanged != null)
+                ServiceAreaChanged();
         }
     }
 

@@ -25,6 +25,7 @@ namespace DCTC.Map {
         private GameController gameController;
         private HashSet<TilePosition> highlightedPositions = new HashSet<TilePosition>();
         private Dictionary<TilePosition, MeshRenderer> buildingRenderers = new Dictionary<TilePosition, MeshRenderer>();
+        private Dictionary<string, HashSet<Building>> colorizedBuildings = new Dictionary<string, HashSet<Building>>();
 
         private int batchCount = 0;
         private const int BatchSize = 100;
@@ -104,7 +105,10 @@ namespace DCTC.Map {
                 serviceAreaVisible = value;
             }
         }
-        public void ToggleServiceArea() { ServiceAreaVisible = !ServiceAreaVisible; }
+        public void ToggleServiceArea() {
+            ServiceAreaVisible = !ServiceAreaVisible;
+            DrawServiceArea();
+        }
 
 
         public int HighlightRadius { get; set; }
@@ -133,6 +137,8 @@ namespace DCTC.Map {
                 company.ItemAdded += PlaceItem;
                 company.ItemRemoved += RemoveItem;
             }
+
+            gameController.Game.Player.ServiceAreaChanged += DrawServiceArea;
         }
 
         public override void StartDraw() {
@@ -150,6 +156,8 @@ namespace DCTC.Map {
             yield return StartCoroutine( DrawBuildings() );
             yield return StartCoroutine( DrawLabels() );
             yield return StartCoroutine( PlaceItems() );
+
+            DrawServiceArea();
         }
 
 
@@ -210,13 +218,42 @@ namespace DCTC.Map {
 
             HighlightBuildings(removals, false);
             highlightedPositions.RemoveMany(removals);
+        }
 
-            IEnumerable<TilePosition> area = gameController.Game.Player.ServiceArea;
-            foreach (TilePosition pos in area) {
-                Tile tile = map.Tiles[pos];
-                if (tile.Building != null) {
-                    HighlightBuilding(pos, ServiceAreaVisible);
+        private void DrawServiceArea() {
+            string category = "ServiceArea";
+            
+            if (!colorizedBuildings.ContainsKey(category)) {
+                colorizedBuildings[category] = new HashSet<Building>();
+            }
+
+            if (ServiceAreaVisible) {
+                HashSet<Building> buildings = new HashSet<Building>();
+                buildings.AddMany(colorizedBuildings[category]);
+
+                IEnumerable<TilePosition> area = gameController.Game.Player.ServiceArea;
+                foreach (TilePosition pos in area) {
+                    Tile tile = map.Tiles[pos];
+                    if (tile.Building != null) {
+                        if (!colorizedBuildings[category].Contains(tile.Building)) {
+                            colorizedBuildings[category].Add(tile.Building);
+                            HighlightBuilding(pos, true);
+                        }
+
+                        buildings.Remove(tile.Building);
+                    }
                 }
+
+                foreach (Building building in buildings) {
+                    HighlightBuilding(building.Anchor, false);
+                    colorizedBuildings[category].Remove(building);
+                }
+            }
+            else {
+                foreach (Building building in colorizedBuildings[category]) {
+                    HighlightBuilding(building.Anchor, false);
+                }
+                colorizedBuildings[category].Clear();
             }
         }
 

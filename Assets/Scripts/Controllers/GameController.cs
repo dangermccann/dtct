@@ -75,6 +75,7 @@ namespace DCTC.Controllers {
             Game = saver.LoadGame(SaveName);
             Game.Player = Game.Companies.First(c => c.OwnerType == CompanyOwnerType.Human);
             Map = saver.LoadMap(SaveName);
+            Game.Map = Map;
 
             stopwatch.Stop();
             Debug.Log("Game load time: " + stopwatch.ElapsedMilliseconds + "ms");
