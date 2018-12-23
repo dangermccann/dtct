@@ -105,6 +105,10 @@ public static class RandomUtils {
         return (decimal)rand.NextDouble() * (max - min) + min;
     }
 
+    public static float RandomFloat(float min, float max, System.Random rand) {
+        return (float)rand.NextDouble() * (max - min) + min;
+    }
+
     public static T Choice<T>(System.Random random, decimal chance, T first, T second) {
         if ((decimal)random.NextDouble() <= chance)
             return first;
@@ -117,13 +121,21 @@ public static class RandomUtils {
         return start.AddDays(random.Next(range));
     }
 
+    public static float LinearLikelihood(float min, float max, float current) {
+        return Mathf.Clamp01( (current - min) / (max - min) );
+    }
+
     /// <summary>
     /// Represents a chance that a certain outcome will become true.
     /// </summary>
     /// <param name="chance">Value between 0 and 1 indicating the likelihood that the chance will be true.</param>
     /// <returns></returns>
     public static bool Chance(double chance) {
-        return (new System.Random().NextDouble() < chance);
+        return Chance(new System.Random(), chance);
+    }
+
+    public static bool Chance(System.Random rand, double chance) {
+        return (rand.NextDouble() < chance);
     }
 
     /// <summary>

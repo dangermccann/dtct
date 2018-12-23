@@ -142,7 +142,7 @@ namespace DCTC.Model {
                         bc.FacingDirection = lot.Building.FacingDirection.ToString();
                         bc.Width = lot.Building.Width;
                         bc.Height = lot.Building.Height;
-                        bc.Color = lot.Building.Color.ToString();
+                        bc.SquareMeters = lot.Building.SquareMeters;
                         nc.Buildings.Add(bc);
                     }
                 }
@@ -213,7 +213,7 @@ namespace DCTC.Model {
                     building.FacingDirection = (Direction)Enum.Parse(typeof(Direction), bc.FacingDirection);
                     building.Width = bc.Width;
                     building.Height = bc.Height;
-                    building.Color = (BuildingColor)Enum.Parse(typeof(BuildingColor), bc.Color);
+                    building.SquareMeters = bc.SquareMeters;
 
                     lots[building.Anchor].Building = building;
                     foreach (TilePosition pos in lots[building.Anchor].Tiles) {
@@ -247,7 +247,7 @@ namespace DCTC.Model {
         public string FacingDirection { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
-        public string Color { get; set; }
+        public float SquareMeters { get; set; }
 
     }
 

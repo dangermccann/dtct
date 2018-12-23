@@ -183,7 +183,7 @@ namespace DCTC.Controllers {
                     if (tile.Type == TileType.Road) {
                         cursorObject.SetActive(true);
                         cursorObject.transform.position = world;
-                        mapComponent.HighlightRadius = 10;
+                        mapComponent.HighlightRadius = new Node().ServiceRange;
                     }
                     else {
                         cursorObject.SetActive(false);

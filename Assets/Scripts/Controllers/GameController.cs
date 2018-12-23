@@ -8,13 +8,19 @@ using DCTC.Model;
 namespace DCTC.Controllers {
     public delegate void GameLoadedEvent();
 
+    public enum GameSpeed {
+        Pause = 0,
+        Normal = 1,
+        Fast = 2
+    }
+
     public class GameController : MonoBehaviour {
         public MapConfiguration Map { get; private set; }
         public Game Game { get; private set; }
 
         public event GameLoadedEvent GameLoaded;
 
-        public int GameSpeed = 1;
+        public GameSpeed GameSpeed = GameSpeed.Normal;
 
         public static GameController Get() {
             return GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -26,6 +32,20 @@ namespace DCTC.Controllers {
         private NameGenerator nameGenerator;
         private Coroutine loopCoroutine;
         private int gameCounter = 0;
+
+        private int GameLoopBatchSize {
+            get {
+                switch(GameSpeed) {
+                    case GameSpeed.Pause:
+                        return 0;
+                    case GameSpeed.Normal:
+                        return 100;
+                    case GameSpeed.Fast:
+                        return 750;
+                }
+                return 0;
+            }
+        }
 
         private NewGameSettings defaultNewGameSettings = new NewGameSettings() {
             NeighborhoodCountX = 2,
@@ -118,13 +138,13 @@ namespace DCTC.Controllers {
         private IEnumerator GameLoop() {
             while(true) {
                 int householdIndex = gameCounter % Game.Customers.Count;
-                Game.Customers[householdIndex].Update();
+                Game.Customers[householdIndex].Update(Time.time);
 
-                if(gameCounter % 10000 == 0) {
+                if(gameCounter % 1000000 == 0) {
                     Debug.Log("Game Counter: " + gameCounter);
                 }
 
-                if (++gameCounter % GameSpeed == 0) {
+                if (++gameCounter % GameLoopBatchSize == 0) {
                     yield return null;
                 }
             }

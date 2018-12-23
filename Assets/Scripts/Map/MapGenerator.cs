@@ -122,7 +122,7 @@ namespace DCTC.Map
 
                     BuildingAttributes attributes = BuildingAttributes.GetAttributes(lotTemplate.BuildingType, lotTemplate.Facing);
                     Building building = new Building(map.Tiles[lotPosition], lotTemplate.BuildingType, lotTemplate.Facing,
-                        attributes.Width, attributes.Height);
+                        attributes.Width, attributes.Height, attributes.SquareMeters);
                     lot.Building = building;
 
                     for (int x = 0; x < lotTemplate.Width; x++) {

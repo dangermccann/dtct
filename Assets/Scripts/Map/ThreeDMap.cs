@@ -7,6 +7,11 @@ using DCTC.Model;
 using DCTC.Controllers;
 
 namespace DCTC.Map {
+    public enum OverlayMode {
+        Customers,
+        ServiceArea
+    }
+
     public class ThreeDMap : AbstractMap {
 
         public ThreeDCameraController cameraController;
@@ -17,7 +22,6 @@ namespace DCTC.Map {
         private MapConfiguration map;
         private GameObject canvas;
         private Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
-        private HashSet<TilePosition> selectedTiles = new HashSet<TilePosition>();
         private Dictionary<TilePosition, GameObject> buildings = new Dictionary<TilePosition, GameObject>();
         private Dictionary<string, GameObject> labels = new Dictionary<string, GameObject>();
         private Dictionary<TilePosition, GameObject> ground = new Dictionary<TilePosition, GameObject>();
@@ -27,8 +31,9 @@ namespace DCTC.Map {
         private Dictionary<string, HashSet<TilePosition>> colorizedBuildings = new Dictionary<string, HashSet<TilePosition>>();
 
         private int batchCount = 0;
+        private bool drawComplete = false;
         private const int BatchSize = 100;
-        private const string ServiceAreaKey = "ServiceArea";
+        private const string OverlayKey = "Overlay";
         private const string SelectionKey = "Selection";
 
         void Start() {
@@ -98,18 +103,16 @@ namespace DCTC.Map {
         }
         public void ToggleBuildings() { BuildingsVisible = !BuildingsVisible; }
 
-
-        private bool serviceAreaVisible = true;
-        public bool ServiceAreaVisible {
-            get { return serviceAreaVisible; }
+        private OverlayMode overlayMode = OverlayMode.Customers;
+        public OverlayMode OverlayMode {
+            get { return overlayMode; }
             set {
-                serviceAreaVisible = value;
+                overlayMode = value;
+                RedrawOverlay();
             }
         }
-        public void ToggleServiceArea() {
-            ServiceAreaVisible = !ServiceAreaVisible;
-            DrawServiceArea();
-        }
+        public void SetCustomerOverlayMode() { OverlayMode = OverlayMode.Customers; }
+        public void SetServiceAreaOverlayMode() { OverlayMode = OverlayMode.ServiceArea; }
 
 
         public int HighlightRadius { get; set; }
@@ -133,17 +136,10 @@ namespace DCTC.Map {
             map = config;
 
             colorizedBuildings.Add(SelectionKey, new HashSet<TilePosition>());
-            colorizedBuildings.Add(ServiceAreaKey, new HashSet<TilePosition>());
+            colorizedBuildings.Add(OverlayKey, new HashSet<TilePosition>());
 
             StartDraw();
             cameraController.ResetToDefault();
-
-            foreach(Company company in gameController.Game.Companies) {
-                company.ItemAdded += PlaceItem;
-                company.ItemRemoved += RemoveItem;
-            }
-
-            gameController.Game.Player.ServiceAreaChanged += DrawServiceArea;
         }
 
         public override void StartDraw() {
@@ -162,7 +158,17 @@ namespace DCTC.Map {
             yield return StartCoroutine( DrawLabels() );
             yield return StartCoroutine( PlaceItems() );
 
-            DrawServiceArea();
+            RedrawOverlay();
+
+            foreach (Company company in gameController.Game.Companies) {
+                company.ItemAdded += PlaceItem;
+                company.ItemRemoved += RemoveItem;
+            }
+
+            gameController.Game.Player.ServiceAreaChanged += OnServiceAreaChanged;
+            gameController.Game.CustomerChanged += OnCustomerChanged;
+
+            drawComplete = true;
         }
 
 
@@ -223,7 +229,7 @@ namespace DCTC.Map {
             }
 
             foreach(TilePosition removal in removals) {
-                if (!colorizedBuildings[ServiceAreaKey].Contains(removal))
+                if (!colorizedBuildings[OverlayKey].Contains(removal))
                     HighlightBuilding(removal, false);
             }
             
@@ -231,35 +237,64 @@ namespace DCTC.Map {
             colorizedBuildings[SelectionKey].RemoveMany(removals);
         }
 
+        private void OnServiceAreaChanged() {
+            if (OverlayMode == OverlayMode.ServiceArea)
+                DrawServiceArea();
+        }
+
+        private void OnCustomerChanged(Customer customer, Company company) {
+            if (OverlayMode == OverlayMode.Customers)
+                DrawCustomers();
+        }
+
+        private void RedrawOverlay() {
+            ClearBuildingOverlay(OverlayKey);
+
+            switch (overlayMode) {
+                case OverlayMode.Customers:
+                    DrawCustomers();
+                    break;
+                case OverlayMode.ServiceArea:
+                    DrawServiceArea();
+                    break;
+            }
+        }
+
         private void DrawServiceArea() {
-            if (ServiceAreaVisible) {
-                HashSet<TilePosition> buildings = new HashSet<TilePosition>();
-                buildings.AddMany(colorizedBuildings[ServiceAreaKey]);
+            DrawBuildingOverlay(OverlayKey, gameController.Game.Player.ServiceArea, Color.green, 0.5f);
+        }
 
-                IEnumerable<TilePosition> area = gameController.Game.Player.ServiceArea;
-                foreach (TilePosition pos in area) {
-                    Tile tile = map.Tiles[pos];
-                    if (tile.Building != null) {
-                        if (!colorizedBuildings[ServiceAreaKey].Contains(tile.Position)) {
-                            colorizedBuildings[ServiceAreaKey].Add(tile.Position);
-                            HighlightBuilding(pos, true);
-                        }
+        private void DrawCustomers() {
+            DrawBuildingOverlay(OverlayKey, gameController.Game.Player.CustomerHouses, Color.green, 0.5f);
+        }
 
-                        buildings.Remove(tile.Position);
+        private void DrawBuildingOverlay(string key, IEnumerable<TilePosition> positions, Color color, float intensity) {
+            HashSet<TilePosition> buildings = new HashSet<TilePosition>();
+            buildings.AddMany(colorizedBuildings[key]);
+
+            foreach (TilePosition pos in positions) {
+                Tile tile = map.Tiles[pos];
+                if (tile.Building != null) {
+                    if (!colorizedBuildings[key].Contains(tile.Position)) {
+                        colorizedBuildings[key].Add(tile.Position);
+                        HighlightBuilding(pos, true);
                     }
-                }
 
-                foreach (TilePosition pos in buildings) {
-                    HighlightBuilding(pos, false);
-                    colorizedBuildings[ServiceAreaKey].Remove(pos);
+                    buildings.Remove(tile.Position);
                 }
             }
-            else {
-                foreach (TilePosition pos in colorizedBuildings[ServiceAreaKey]) {
-                    HighlightBuilding(pos, false);
-                }
-                colorizedBuildings[ServiceAreaKey].Clear();
+
+            foreach (TilePosition pos in buildings) {
+                HighlightBuilding(pos, false);
+                colorizedBuildings[key].Remove(pos);
             }
+        }
+
+        private void ClearBuildingOverlay(string key) {
+            foreach (TilePosition pos in colorizedBuildings[key]) {
+                HighlightBuilding(pos, false);
+            }
+            colorizedBuildings[key].Clear();
         }
 
         private void OnTileClicked(Vector3 world, TilePosition pos) {

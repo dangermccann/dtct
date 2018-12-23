@@ -56,7 +56,7 @@ namespace DCTC.Test {
                         Assert.AreEqual(map1.Neighborhoods[i].Buildings[j].FacingDirection, map2.Neighborhoods[i].Buildings[j].FacingDirection);
                         Assert.AreEqual(map1.Neighborhoods[i].Buildings[j].Width, map2.Neighborhoods[i].Buildings[j].Width);
                         Assert.AreEqual(map1.Neighborhoods[i].Buildings[j].Height, map2.Neighborhoods[i].Buildings[j].Height);
-                        Assert.AreEqual(map1.Neighborhoods[i].Buildings[j].Color, map2.Neighborhoods[i].Buildings[j].Color);
+                        Assert.AreEqual(map1.Neighborhoods[i].Buildings[j].SquareMeters, map2.Neighborhoods[i].Buildings[j].SquareMeters);
                     }
 
                     for (int j = 0; j < map1.Neighborhoods[i].Lots.Count; j++) {
