@@ -6,7 +6,7 @@ using DCTC.Map;
 using DCTC.Model;
 
 namespace DCTC.Controllers {
-    public delegate void GameLoadedEvent();
+    public delegate void GameEvent();
 
     public enum GameSpeed {
         Pause = 0,
@@ -18,9 +18,18 @@ namespace DCTC.Controllers {
         public MapConfiguration Map { get; private set; }
         public Game Game { get; private set; }
 
-        public event GameLoadedEvent GameLoaded;
+        public event GameEvent GameLoaded;
+        public event GameEvent SpeedChanged;
 
-        public GameSpeed GameSpeed = GameSpeed.Normal;
+        private GameSpeed gameSpeed = GameSpeed.Pause;
+        public GameSpeed GameSpeed {
+            get { return gameSpeed; }
+            set {
+                gameSpeed = value;
+                if (SpeedChanged != null)
+                    SpeedChanged();
+            }
+        }
 
         public static GameController Get() {
             return GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -37,13 +46,13 @@ namespace DCTC.Controllers {
             get {
                 switch(GameSpeed) {
                     case GameSpeed.Pause:
-                        return 0;
+                        return 1;
                     case GameSpeed.Normal:
                         return 100;
                     case GameSpeed.Fast:
                         return 750;
                 }
-                return 0;
+                return 1;
             }
         }
 
@@ -58,11 +67,15 @@ namespace DCTC.Controllers {
         }
 
         public void Unpause() {
+            GameSpeed = GameSpeed.Normal;
+
             if(loopCoroutine == null)
                 loopCoroutine = StartCoroutine(GameLoop());
         }
 
         public void Pause() {
+            GameSpeed = GameSpeed.Pause;
+
             if(loopCoroutine != null) {
                 StopCoroutine(loopCoroutine);
                 loopCoroutine = null;
@@ -137,6 +150,8 @@ namespace DCTC.Controllers {
 
         private IEnumerator GameLoop() {
             while(true) {
+                
+
                 int householdIndex = gameCounter % Game.Customers.Count;
                 Game.Customers[householdIndex].Update(Time.time);
 
@@ -147,6 +162,7 @@ namespace DCTC.Controllers {
                 if (++gameCounter % GameLoopBatchSize == 0) {
                     yield return null;
                 }
+                
             }
         }
     }

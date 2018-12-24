@@ -18,6 +18,7 @@ namespace DCTC.Map {
 
         public delegate void TileSelectEventHandler(Tile tile);
         public event TileSelectEventHandler TileSelected;
+        public event GameEvent OverlayModeChanged;
 
         private MapConfiguration map;
         private GameObject canvas;
@@ -108,11 +109,12 @@ namespace DCTC.Map {
             get { return overlayMode; }
             set {
                 overlayMode = value;
+                if (OverlayModeChanged != null)
+                    OverlayModeChanged();
+
                 RedrawOverlay();
             }
         }
-        public void SetCustomerOverlayMode() { OverlayMode = OverlayMode.Customers; }
-        public void SetServiceAreaOverlayMode() { OverlayMode = OverlayMode.ServiceArea; }
 
 
         public int HighlightRadius { get; set; }
@@ -168,6 +170,7 @@ namespace DCTC.Map {
             gameController.Game.Player.ServiceAreaChanged += OnServiceAreaChanged;
             gameController.Game.CustomerChanged += OnCustomerChanged;
 
+            // TODO: probably want to pause the game until draw completes
             drawComplete = true;
         }
 
