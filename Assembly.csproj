@@ -88,6 +88,7 @@
     <Compile Include="Assets\Scripts\UI\CableGraphics.cs" />
     <Compile Include="Assets\Scripts\UI\EnumToggleGroup.cs" />
     <Compile Include="Assets\Scripts\UI\GameSpeedToggles.cs" />
+    <Compile Include="Assets\Scripts\UI\LotOutline.cs" />
     <Compile Include="Assets\Scripts\UI\OverlayToggles.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
     <Reference Include="UnityEngine.AIModule">
