@@ -73,6 +73,7 @@
     <Compile Include="Assets\Scripts\Map\TilePosition.cs" />
     <Compile Include="Assets\Scripts\Model\Building.cs" />
     <Compile Include="Assets\Scripts\Model\Company.cs" />
+    <Compile Include="Assets\Scripts\Model\Customer.cs" />
     <Compile Include="Assets\Scripts\Model\Game.cs" />
     <Compile Include="Assets\Scripts\Model\GameSaver.cs" />
     <Compile Include="Assets\Scripts\Model\Loader.cs" />

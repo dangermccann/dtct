@@ -12,9 +12,13 @@ namespace DCTC.Model {
         public List<Cable> Cables;
         public List<Node> Nodes;
 
+        [NonSerialized]
+        public HashSet<TilePosition> ServiceArea;
+
         public Network() {
             Cables = new List<Cable>();
             Nodes = new List<Node>();
+            ServiceArea = new HashSet<TilePosition>();
         }
 
         public bool ContainsPosition(TilePosition position) {
@@ -28,6 +32,38 @@ namespace DCTC.Model {
                     positions.AddManySafely(cable.Positions);
                 }
                 return positions;
+            }
+        }
+
+        public HashSet<ServiceTier> AvailableServices {
+            get {
+                if (Nodes.Count == 0)
+                    return new HashSet<ServiceTier>();
+
+                if(Nodes[0].Type == NodeType.Fiber) {
+                    return new HashSet<ServiceTier>() {
+                        ServiceTier.FiberInternet, ServiceTier.FiberTV, ServiceTier.FiberDoublePlay
+                    };
+                }
+                else {
+                    NodeType lowestType = NodeType.Large;
+                    foreach(Node node in Nodes) {
+                        if (node.Type == NodeType.Small)
+                            lowestType = NodeType.Small;
+                    }
+
+                    if(lowestType == NodeType.Small) {
+                        return new HashSet<ServiceTier>() {
+                            ServiceTier.BasicInternet, ServiceTier.BasicTV, ServiceTier.BasicDoublePlay
+                        };
+                    }
+                    else {
+                        return new HashSet<ServiceTier>() {
+                            ServiceTier.BasicInternet, ServiceTier.BasicTV, ServiceTier.BasicDoublePlay,
+                            ServiceTier.PremiumInternet, ServiceTier.PremiumTV, ServiceTier.PremiumDoublePlay
+                        };
+                    }
+                }
             }
         }
 
@@ -103,9 +139,12 @@ namespace DCTC.Model {
     public enum ServiceTier {
         BasicTV,
         BasicInternet,
+        BasicDoublePlay,
         PremiumTV,
         PremiumInternet,
-        BasicDoublePlay,
-        PremiumDoublePlay
+        PremiumDoublePlay,
+        FiberTV,
+        FiberInternet,
+        FiberDoublePlay
     }
 }

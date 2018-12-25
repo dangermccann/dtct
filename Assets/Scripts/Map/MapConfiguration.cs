@@ -390,6 +390,24 @@ namespace DCTC.Map {
             return new TileRectangle(bottomLeft, topRight);
         }
 
+        public HashSet<TilePosition> LotPeriphery(Lot lot) {
+            HashSet<TilePosition> lotPositions = new HashSet<TilePosition>(lot.Tiles);
+            HashSet<TilePosition> removals = new HashSet<TilePosition>();
+
+            foreach(TilePosition pos in lotPositions) {
+                if(    lotPositions.Contains(North(pos))
+                    && lotPositions.Contains(South(pos))
+                    && lotPositions.Contains(East(pos))
+                    && lotPositions.Contains(West(pos))) {
+                    removals.Add(pos);
+                }
+            }
+
+            lotPositions.RemoveMany(removals);
+
+            return lotPositions;
+        }
+
 
     }
 }

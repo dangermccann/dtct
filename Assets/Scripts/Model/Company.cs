@@ -23,7 +23,6 @@ namespace DCTC.Model {
 
         public List<Cable> Cables { get; set; }
         public Dictionary<TilePosition, Node> Nodes { get; set; }
-        public List<ServiceTier> ServicesOffered { get; set; }
         public Dictionary<ServiceTier, float> ServicePrices { get; set; }
         public List<Employee> Employees { get; set; }
         public CompanyOwnerType OwnerType { get; set; }
@@ -69,9 +68,10 @@ namespace DCTC.Model {
         public Company() {
             Cables = new List<Cable>();
             Nodes = new Dictionary<TilePosition, Node>();
-            ServicesOffered = new List<ServiceTier>();
             ServicePrices = new Dictionary<ServiceTier, float>();
             Employees = new List<Employee>();
+
+            InitPrices();
         }
 
         public Cable PlaceCable(CableType type, List<TilePosition> positions) {
@@ -162,18 +162,37 @@ namespace DCTC.Model {
             }
         }
 
+        public Dictionary<ServiceTier, float> FindServicesForLocation(TilePosition position) {
+            HashSet<ServiceTier> services = new HashSet<ServiceTier>();
+            foreach(Network network in Networks) {
+                if(network.ServiceArea.Contains(position)) {
+                    services.AddManySafely(network.AvailableServices);
+                }
+            }
+
+            Dictionary<ServiceTier, float> results = new Dictionary<ServiceTier, float>();
+            foreach(ServiceTier service in services) {
+                results.Add(service, ServicePrices[service]);
+            }
+            return results;
+        }
+
         public void CalculateServiceArea() {
             HashSet<TilePosition> serviceArea = new HashSet<TilePosition>();
             foreach (Network network in Networks) {
+                network.ServiceArea.Clear();
+
                 foreach (Node node in network.Nodes) {
                     // TODO: does the area change for different network types?
                     IEnumerable<TilePosition> positions = Game.Map.Area(node.Position, node.ServiceRange);
+                    network.ServiceArea.AddManySafely(positions);
                     serviceArea.AddManySafely(positions);
                 }
 
                 foreach (Cable cable in network.Cables) {
                     foreach (TilePosition pos in cable.Positions) {
                         IEnumerable<TilePosition> positions = Game.Map.Area(pos, cable.ServiceRange);
+                        network.ServiceArea.AddManySafely(positions);
                         serviceArea.AddManySafely(positions);
                     }
                 }
@@ -270,6 +289,18 @@ namespace DCTC.Model {
 
             if (ServiceAreaChanged != null)
                 ServiceAreaChanged();
+        }
+
+        private void InitPrices() {
+            ServicePrices[ServiceTier.BasicInternet]        = 1.0f;
+            ServicePrices[ServiceTier.BasicTV]              = 1.0f;
+            ServicePrices[ServiceTier.BasicDoublePlay]      = 1.5f;
+            ServicePrices[ServiceTier.PremiumInternet]      = 2.0f;
+            ServicePrices[ServiceTier.PremiumTV]            = 2.0f;
+            ServicePrices[ServiceTier.PremiumDoublePlay]    = 3.5f;
+            ServicePrices[ServiceTier.FiberInternet]        = 4.0f;
+            ServicePrices[ServiceTier.FiberTV]              = 4.0f;
+            ServicePrices[ServiceTier.FiberDoublePlay]      = 5.5f;
         }
     }
 }
