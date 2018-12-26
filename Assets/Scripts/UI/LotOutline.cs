@@ -14,81 +14,98 @@ namespace DCTC.UI {
         public IEnumerable<TilePosition> Positions;
 
         private HashSet<TilePosition> positionsSet;
+        private HashSet<TilePosition> visited;
+        private List<Vector3> points;
 
         void Start() {
             lineRenderer = GetComponent<LineRenderer>();
         }
 
         public void Redraw() {
-            positionsSet = new HashSet<TilePosition>(Positions);
-
-            int lefMost = positionsSet.Min(pos => pos.x);
-            int bottomMost = positionsSet.Min(pos => (pos.x == lefMost) ? pos.y : int.MaxValue);
-
-            TilePosition current = new TilePosition(lefMost, bottomMost);
-            Direction direction = Direction.North;
-
-            var visited = new HashSet<TilePosition>();
-            var points = new List<Vector3>();
-            float c = 2.0f;
-
-            Vector3 world = ThreeDMap.PositionToWorld(current);
-            Vector3 point;
-            points.Add(new Vector3(world.x, y, world.z));
-
-            do {
-                world = ThreeDMap.PositionToWorld(current);
-                switch(direction) {
-                    case Direction.North:
-                        point = new Vector3(world.x, y, world.z + c);
-                        break;
-                    case Direction.South:
-                        point = new Vector3(world.x + c, y, world.z);
-                        break;
-                    case Direction.East:
-                        point = new Vector3(world.x + c, y, world.z + c);
-                        break;
-                    case Direction.West:
-                    default:
-                        point = new Vector3(world.x, y, world.z);
-                        break;
-                }
-                
-                points.Add(point);
-
-                visited.Add(current);
-                current = Next(current, out direction);
-            }
-            while (!visited.Contains(current));
-
-            lineRenderer.positionCount = points.Count;
-            lineRenderer.SetPositions(points.ToArray());
+            Vector3[] points = CalculatePoints();
+            lineRenderer.positionCount = points.Length;
+            lineRenderer.SetPositions(points);
         }
 
-        TilePosition Next(TilePosition current, out Direction direction) {
+        private void CalculatePoint(TilePosition current) {
+            Vector3 point;
             TilePosition north = MapConfiguration.North(current);
-            TilePosition east  = MapConfiguration.East(current);
+            TilePosition east = MapConfiguration.East(current);
             TilePosition south = MapConfiguration.South(current);
-            TilePosition west  = MapConfiguration.West(current);
+            TilePosition west = MapConfiguration.West(current);
 
-            if (positionsSet.Contains(north)) {
-                direction = Direction.North;
-                return north;
-            }
-            if (positionsSet.Contains(east)) {
-                direction = Direction.East;
-                return east;
-            }
-            if (positionsSet.Contains(south)) {
-                direction = Direction.South;
-                return south;
-            }
-            if (positionsSet.Contains(west)) {
-                direction = Direction.West;
-                return west;
+            if(positionsSet.Contains(north) && positionsSet.Contains(south) 
+                && positionsSet.Contains(east) && positionsSet.Contains(west)) {
+                // We're on a tile in the interior. 
+                return;
             }
 
-            throw new System.Exception("Can't find next position!");
+            Vector3 world = ThreeDMap.PositionToWorld(current);
+            float c = 2.0f;
+
+            visited.Add(current);
+
+            if (!positionsSet.Contains(west)) {
+                point = new Vector3(world.x, y, world.z + c);
+                if (!points.Contains(point))
+                    points.Add(point);
+                else
+                    return;
+            } 
+
+            if (!positionsSet.Contains(north)) {
+                point = new Vector3(world.x + c, y, world.z + c);
+                if (!points.Contains(point))
+                    points.Add(point);
+                else
+                    return;
+            } else if (!visited.Contains(north)) {
+                CalculatePoint(north);
+            }
+
+            if (!positionsSet.Contains(east)) {
+                point = new Vector3(world.x + c, y, world.z);
+                if (!points.Contains(point))
+                    points.Add(point);
+                else
+                    return;
+            } else if (!visited.Contains(east)) {
+                CalculatePoint(east);
+            }
+
+            if (!positionsSet.Contains(south)) {
+                point = new Vector3(world.x, y, world.z);
+                if (!points.Contains(point))
+                    points.Add(point);
+                else
+                    return;
+            } else if (!visited.Contains(south)) {
+                CalculatePoint(south);
+            }
+
+            if (positionsSet.Contains(west) && !visited.Contains(west)) {
+                CalculatePoint(west);
+            }
+        }
+    
+
+        public Vector3[] CalculatePoints() { 
+            positionsSet = new HashSet<TilePosition>(Positions);
+            visited = new HashSet<TilePosition>();
+
+            int leftMost = positionsSet.Min(pos => pos.x);
+            int bottomMost = positionsSet.Min(pos => (pos.x == leftMost) ? pos.y : int.MaxValue);
+
+            TilePosition current = new TilePosition(leftMost, bottomMost);
+
+            points = new List<Vector3>();
+        
+            Vector3 world = ThreeDMap.PositionToWorld(current);
+            points.Add(new Vector3(world.x, y, world.z));
+
+            CalculatePoint(current);
+
+            return points.ToArray();
         }
 
 

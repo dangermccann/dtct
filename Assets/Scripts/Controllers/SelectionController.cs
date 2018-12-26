@@ -24,6 +24,7 @@ namespace DCTC.Controllers {
         public GameObject CableCursorPrefab;
         public GameObject NodeCursorPrefab;
         public GameObject MapGameObject;
+        public GameObject LotSelection;
 
         [HideInInspector]
         public SelectionModes Mode = SelectionModes.None;
@@ -45,6 +46,7 @@ namespace DCTC.Controllers {
             mapComponent = MapGameObject.GetComponent<ThreeDMap>();
             cameraController.TileClicked += CameraController_TileClicked;
             cameraController.TileDragged += CameraController_TileDragged;
+            LotSelection.SetActive(false);
         }
 
         public void ValueChanged() {
@@ -83,16 +85,34 @@ namespace DCTC.Controllers {
         }
 
         private void Update() {
-            if(Input.GetMouseButtonDown(1)) {
+            if (gameController.Map == null)
+                return;
+
+            if (Input.GetMouseButtonDown(1)) {
                 mouseDownPosition = Input.mousePosition;
             }
             if(Input.GetMouseButtonUp(1)) {
                 if((Input.mousePosition - mouseDownPosition).magnitude < 0.25f) {
                     ConstructionToggleGroup.SetAllTogglesOff();
+                    LotSelection.SetActive(false);
                 }
             }
             if(Input.GetMouseButtonUp(0)) {
                 dragCable = null;
+            }
+
+            if(Input.GetMouseButtonDown(0) && Mode == SelectionModes.None) {
+                Vector3 world = cameraController.MouseCursorInWorld();
+                TilePosition pos = ThreeDMap.WorldToPosition(world);
+                if (gameController.Map.Tiles.ContainsKey(pos)) {
+                    var outline = LotSelection.GetComponent<LotOutline>();
+                    var lot = gameController.Map.Tiles[pos].Lot;
+                    if (lot != null) {
+                        outline.Positions = lot.Tiles;
+                        LotSelection.SetActive(true);
+                        outline.Redraw();
+                    }
+                }
             }
 
             if(cursorObject != null) {
