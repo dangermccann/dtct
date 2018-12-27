@@ -25,6 +25,7 @@ namespace DCTC.Controllers {
         public GameObject NodeCursorPrefab;
         public GameObject MapGameObject;
         public GameObject LotSelection;
+        public GameObject CustomerDetails;
 
         [HideInInspector]
         public SelectionModes Mode = SelectionModes.None;
@@ -47,6 +48,7 @@ namespace DCTC.Controllers {
             cameraController.TileClicked += CameraController_TileClicked;
             cameraController.TileDragged += CameraController_TileDragged;
             LotSelection.SetActive(false);
+            CustomerDetails.SetActive(false);
         }
 
         public void ValueChanged() {
@@ -95,6 +97,7 @@ namespace DCTC.Controllers {
                 if((Input.mousePosition - mouseDownPosition).magnitude < 0.25f) {
                     ConstructionToggleGroup.SetAllTogglesOff();
                     LotSelection.SetActive(false);
+                    CustomerDetails.SetActive(false);
                 }
             }
             if(Input.GetMouseButtonUp(0)) {
@@ -111,6 +114,9 @@ namespace DCTC.Controllers {
                         outline.Positions = lot.Tiles;
                         LotSelection.SetActive(true);
                         outline.Redraw();
+
+                        CustomerDetails.SetActive(true);
+                        CustomerDetails.GetComponent<CustomerDetails>().Customer = gameController.Game.FindCustomerByAddress(lot.Anchor);
                     }
                 }
             }

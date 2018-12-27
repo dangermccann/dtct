@@ -93,6 +93,10 @@ namespace DCTC.Model {
             return Companies.Find(c => c.ID == id);
         }
 
+        public Customer FindCustomerByAddress(TilePosition address) {
+            return Customers.Where(c => c.HomeLocation.Equals(address)).FirstOrDefault();
+        }
+
         public void OnCustomerChanged(Customer customer) {
             Company company = GetCompany(customer.ProviderID);
             Debug.Log("Customer " + customer.Name + " changed to " +  ((company == null) ? "[none]" : company.Name));

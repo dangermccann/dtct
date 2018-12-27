@@ -86,6 +86,7 @@
     <Compile Include="Assets\Scripts\Pathfinding\AStar.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\PriorityQueue.cs" />
     <Compile Include="Assets\Scripts\UI\CableGraphics.cs" />
+    <Compile Include="Assets\Scripts\UI\CustomerDetails.cs" />
     <Compile Include="Assets\Scripts\UI\EnumToggleGroup.cs" />
     <Compile Include="Assets\Scripts\UI\GameSpeedToggles.cs" />
     <Compile Include="Assets\Scripts\UI\LotOutline.cs" />

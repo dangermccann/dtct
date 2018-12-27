@@ -21,7 +21,11 @@ namespace DCTC.Model
         }
 
         public string Address {
-            get { return StreetNumber.ToString() + " " + Street.Name; }
+            get {
+                if (Street == null)
+                    return null;
+                return StreetNumber.ToString() + " " + Street.Name;
+            }
         }
 
         public void PopulateTiles(int width, int height) {

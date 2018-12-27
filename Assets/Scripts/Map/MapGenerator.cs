@@ -129,6 +129,7 @@ namespace DCTC.Map
                         for (int y = 0; y < lotTemplate.Height; y++) {
                             Tile tile = map.Tiles[new TilePosition(x + lotPosition.x, y + lotPosition.y)];
                             tile.Building = building;
+                            tile.Lot = lot;
                         }
                     }
 

@@ -35,8 +35,22 @@ namespace DCTC.Model {
             }
         }
 
+        public string Address {
+            get {
+                return Game.Map.Tiles[HomeLocation].Lot.Address;
+            }
+        }
+
         public float Wealth {
             get { return IncomeLevel * Home.SquareMeters; }
+        }
+
+        public Company Provider {
+            get {
+                if (ProviderID == null)
+                    return null;
+                return Game.GetCompany(ProviderID);
+            }
         }
 
         public void Update(float time) {
@@ -129,7 +143,8 @@ namespace DCTC.Model {
             ProviderID = (company == null) ? null : company.ID;
             Frustration = 0;
             invocationsSinceProviderChange = 0;
-            ServiceTier = ChooseServiceTier(company);
+            if(company != null)
+                ServiceTier = ChooseServiceTier(company);
 
             Game.OnCustomerChanged(this);
         }
