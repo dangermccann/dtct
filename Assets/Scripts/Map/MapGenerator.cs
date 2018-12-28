@@ -76,31 +76,39 @@ namespace DCTC.Map
             }
 
             // Final roads on outside
-            for(int x = 0; x < NeighborhoodWidth * neighborhoodCountX; x++) {
-                map.AddRoad(new TilePosition(x, NeighborhoodHeight * neighborhoodCountY));
-            }
+            Segment segment = new Segment(new TilePosition(0, NeighborhoodHeight * neighborhoodCountY),
+                new TilePosition(NeighborhoodWidth * neighborhoodCountX - 1, NeighborhoodHeight * neighborhoodCountY));
+            GenerateStreet(map, nameGenerator, segment, map.Neighborhoods[0]);
 
-            for (int y = 0; y < NeighborhoodHeight * neighborhoodCountY; y++) {
-                map.AddRoad(new TilePosition(NeighborhoodWidth * neighborhoodCountX, y));
+            segment = new Segment(new TilePosition(NeighborhoodWidth * neighborhoodCountX, 0),
+                new TilePosition(NeighborhoodWidth * neighborhoodCountX, NeighborhoodHeight * neighborhoodCountY));
+            GenerateStreet(map, nameGenerator, segment, map.Neighborhoods[0]);
+
+            foreach (Neighborhood neighborhood in map.Neighborhoods) {
+                AssignStreets(neighborhood, map);
             }
 
             return map;
         }
 
+        void GenerateStreet(MapConfiguration map, NameGenerator nameGenerator, Segment segment, Neighborhood neighborhood) {
+            Street street = new Street(map);
+            street.Name = nameGenerator.RandomMinorStreet();
+            street.Segments.Add(segment);
+            map.Streets.Add(street);
+            neighborhood.CreateStraightRoad(segment);
+        }
+
         void GenerateNeighborhood(MapConfiguration map, MapTemplate template, int neighborhoodIndex, TilePosition offset) {
             NeighborhoodTemplate neighborhoodTemplate = template.Neighborhoods[neighborhoodIndex];
             Neighborhood neighborhood = new Neighborhood(map, neighborhoodTemplate.Width, neighborhoodTemplate.Height);
+            neighborhood.Index = neighborhoodIndex;
             neighborhood.Position = offset;
             map.Neighborhoods.Add(neighborhood);
 
             // Generate streets
             foreach (Segment segment in neighborhoodTemplate.Roads) {
-                Segment roadSegment = segment + offset;
-                Street street = new Street(map);
-                street.Name = nameGenerator.RandomMinorStreet();
-                street.Segments.Add(roadSegment);
-                neighborhood.AddStreet(street);
-                neighborhood.CreateStraightRoad(roadSegment);
+                GenerateStreet(map, nameGenerator, segment + offset, neighborhood);
             }
 
             // Generate lots and buildings 
@@ -136,6 +144,40 @@ namespace DCTC.Map
                     neighborhood.Lots.Add(lot);
                 }
             }
+        }
+
+        private void AssignStreets(Neighborhood neighborhood, MapConfiguration map) {
+            // Assign streets to lots
+            Dictionary<string, int> lotNumbers = new Dictionary<string, int>();
+
+            for (int x = 0; x < neighborhood.Width; x++) {
+                for (int y = 0; y < neighborhood.Height; y++) {
+                    Tile tile = map.Tiles[new TilePosition(neighborhood.Position.x + x, neighborhood.Position.y + y)];
+                    if (tile.Building != null && tile.Lot.Street == null) {
+                        Direction facing = tile.Building.FacingDirection;
+                        TilePosition next = MapConfiguration.NextTile(tile.Position, facing);
+
+                        if (map.Tiles.ContainsKey(next) && map.Tiles[next].Type == TileType.Road) {
+                            Street street = map.FindStreet(next);
+                            tile.Lot.Street = street;
+
+                            if (!lotNumbers.ContainsKey(street.Name)) {
+                                lotNumbers.Add(street.Name, StartingStreetNumber(facing, neighborhood));
+                            }
+
+                            tile.Lot.StreetNumber = lotNumbers[street.Name];
+                            lotNumbers[street.Name] += 2;
+                        }
+                    }
+                }
+            }
+        }
+
+        private int StartingStreetNumber(Direction facing, Neighborhood neighborhood) {
+            int start = neighborhood.Index * 100;
+            if (facing == Direction.North || facing == Direction.East)
+                return start + 2;
+            else return start + 1;
         }
     }
 }

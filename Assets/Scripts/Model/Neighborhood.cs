@@ -20,9 +20,9 @@ namespace DCTC.Model
 		public string Name;
 		public int Width;
 		public int Height;
+        public int Index;
 		public TilePosition Position;
 		public MapConfiguration Map;
-		public List<Street> Streets = new List<Street>();
         public List<Lot> Lots = new List<Lot>();
         public SectionType SectonType;
 
@@ -68,16 +68,7 @@ namespace DCTC.Model
         public virtual int MinimumLotHeight {
             get { return 1; }
         }
-
-		public virtual void AssignNamesAndAddresses(System.Random random, NameGenerator nameGenerator) {
-			Name = nameGenerator.RandomPlace();
-
-			foreach(Street street in Streets) {
-				street.GenerateName(nameGenerator);
-			}
-		}
-
-		
+	
 		public virtual bool CanCreateAt(TilePosition position) {
 			
 			if(Width <= 0 || Height <= 0) 
@@ -165,7 +156,7 @@ namespace DCTC.Model
 			s.AddSegment(new TilePosition(bottomLeft.x, bottomLeft.y), new TilePosition(bottomLeft.x, topRight.y));
 			result.Add(s);
 
-			AddStreets(result);
+			Map.Streets.AddMany(result);
 
 			return result;
 		}
@@ -198,30 +189,6 @@ namespace DCTC.Model
 			pos.y = Position.y + (Height - 1) / 2;
 			return pos;
 		}
-
-		public void AddStreets(List<Street> streets) {
-			foreach(Street s in streets) {
-				AddStreet(s);
-			}
-		}
-
-		public void AddStreet(Street street) {
-			Streets.Add(street);
-			Map.Streets.Add(street);
-		}
-
-		public Street FindStreet(TilePosition position) {
-			foreach(Street street in Streets) {
-				if(street.Contains(position)) {
-					return street;
-				}
-			}
-			return null;
-		}
-
-        public TilePosition RandomStreetTile(System.Random random) {
-            return RandomUtils.RandomThing<Street>(Streets, random).AllTiles.First();
-        }
 	}
 }
 

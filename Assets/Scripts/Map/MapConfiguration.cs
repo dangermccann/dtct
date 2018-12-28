@@ -218,10 +218,9 @@ namespace DCTC.Map {
 		}
 
 		public Street FindStreet(TilePosition position) {
-			foreach(Neighborhood n in Neighborhoods) {
-				if(n.IsInside(position)) {
-					return n.FindStreet(position);
-				}
+			foreach(Street street in Streets) {
+                if (street.Contains(position))
+                    return street;
 			}
 			return null;
 		}

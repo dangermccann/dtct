@@ -115,18 +115,28 @@ namespace DCTC.Model {
                 saved.Tiles.Add(tc);
             }
 
+            foreach (Street street in map.Streets) {
+                StreetConfiguration sc = new StreetConfiguration();
+                sc.Name = street.Name;
+                sc.Size = street.Size.ToString();
+                sc.Segments.AddRange(street.Segments);
+                saved.Streets.Add(sc);
+            }
+
             foreach (Neighborhood neighborhood in map.Neighborhoods) {
                 NeighborhoodConfiguration nc = new NeighborhoodConfiguration();
                 nc.Name = neighborhood.Name;
                 nc.Width = neighborhood.Width;
+                nc.Index = neighborhood.Index;
                 nc.Height = neighborhood.Height;
                 nc.Position = neighborhood.Position;
                 saved.Neighborhoods.Add(nc);
 
                 foreach (Lot lot in neighborhood.Lots) {
                     LotConfiguration lc = new LotConfiguration();
-                    if(lot.Street != null)
+                    if (lot.Street != null) {
                         lc.Street = lot.Street.Name;
+                    }
                     lc.StreetNumber = lot.StreetNumber;
                     lc.Anchor = lot.Anchor;
                     lc.FacingDirection = lot.Facing.ToString();
@@ -146,14 +156,6 @@ namespace DCTC.Model {
                         nc.Buildings.Add(bc);
                     }
                 }
-
-                foreach (Street street in neighborhood.Streets) {
-                    StreetConfiguration sc = new StreetConfiguration();
-                    sc.Name = street.Name;
-                    sc.Size = street.Size.ToString();
-                    sc.Segments.AddRange(street.Segments);
-                    nc.Streets.Add(sc);
-                }
             }
             return saved;
         }
@@ -170,25 +172,25 @@ namespace DCTC.Model {
                 map.Tiles.Add(tile.Position, tile);
             }
 
+            Dictionary<string, Street> streets = new Dictionary<string, Street>();
+            foreach (StreetConfiguration sc in saved.Streets) {
+                Street street = new Street(map);
+                street.Name = sc.Name;
+                street.Segments.AddRange(sc.Segments);
+                street.Size = (StreetSize)Enum.Parse(typeof(StreetSize), sc.Size);
+
+                map.Streets.Add(street);
+                streets.Add(street.Name, street);
+            }
+
             foreach (NeighborhoodConfiguration nc in saved.Neighborhoods) {
                 Neighborhood neighborhood = new Neighborhood(map, nc.Width, nc.Height);
+                neighborhood.Index = nc.Index;
                 neighborhood.Name = nc.Name;
                 neighborhood.Position = nc.Position;
                 map.Neighborhoods.Add(neighborhood);
 
-                Dictionary<string, Street> streets = new Dictionary<string, Street>();
                 Dictionary<TilePosition, Lot> lots = new Dictionary<TilePosition, Lot>();
-
-                foreach (StreetConfiguration sc in nc.Streets) {
-                    Street street = new Street(map);
-                    street.Name = sc.Name;
-                    street.Segments.AddRange(sc.Segments);
-                    street.Size = (StreetSize)Enum.Parse(typeof(StreetSize), sc.Size);
-
-                    map.Streets.Add(street);
-                    neighborhood.Streets.Add(street);
-                    streets.Add(street.Name, street);
-                }
 
                 foreach (LotConfiguration lc in nc.Lots) {
                     Lot lot = new Lot();
@@ -196,8 +198,14 @@ namespace DCTC.Model {
                     lot.Anchor = lc.Anchor;
                     lot.StreetNumber = lc.StreetNumber;
                     lot.Facing = (Direction)Enum.Parse(typeof(Direction), lc.FacingDirection);
-                    if(lc.Street != null)
-                        lot.Street = streets[lc.Street];
+                    if (lc.Street != null) {
+                        if(streets.ContainsKey(lc.Street)) {
+                            lot.Street = streets[lc.Street];
+                        }
+                        else {
+                            Debug.LogWarning("Can not find " + lc.Street);
+                        }
+                    }
                     neighborhood.Lots.Add(lot);
 
                     foreach (TilePosition pos in lot.Tiles) {
@@ -271,15 +279,14 @@ namespace DCTC.Model {
         public string Name { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public int Index { get; set; }
         public TilePosition Position { get; set; }
         public List<BuildingConfiguration> Buildings { get; set; }
         public List<LotConfiguration> Lots { get; set; }
-        public List<StreetConfiguration> Streets { get; set; }
 
         public NeighborhoodConfiguration() {
             Buildings = new List<BuildingConfiguration>();
             Lots = new List<LotConfiguration>();
-            Streets = new List<StreetConfiguration>();
         }
     }
 
@@ -299,10 +306,12 @@ namespace DCTC.Model {
         public int Height { get; set; }
         public List<TileConfiguration> Tiles { get; set; }
         public List<NeighborhoodConfiguration> Neighborhoods { get; set; }
+        public List<StreetConfiguration> Streets { get; set; }
 
         public SavedMap() {
             Tiles = new List<TileConfiguration>();
             Neighborhoods = new List<NeighborhoodConfiguration>();
+            Streets = new List<StreetConfiguration>();
         }
     }
 }

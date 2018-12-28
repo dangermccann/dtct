@@ -514,35 +514,44 @@ namespace DCTC.Map {
 
         IEnumerator DrawLabels() {
             labels.Clear();
-            foreach (Neighborhood neighborhood in map.Neighborhoods) {
-                foreach (Street street in neighborhood.Streets) {
+            int index = 0;
 
-                    Segment segment = street.Segments[0];
-                    Vector2 length = segment.End.AsVector() - segment.Start.AsVector();
+            foreach (Street street in map.Streets) {
 
-                    if (length.magnitude < 3)
-                        continue;
+                Segment segment = street.Segments[0];
+                Vector2 length = segment.End.AsVector() - segment.Start.AsVector();
 
-                    Vector2 pos = new Vector2(segment.Start.x + length.x / 2f, segment.Start.y + length.y / 2f);
+                if (length.magnitude < 3)
+                    continue;
 
-                    GameObject labelGO = Instantiate(prefabs["RoadLabel"]);
-                    labelGO.name = "Label (" + street.Name + ")";
-                    labelGO.transform.SetParent(canvas.transform, false);
 
-                    Vector3 world = PositionToWorld(pos);
-                    labelGO.transform.position = new Vector3(world.x + 1f, world.y + 0.05f, world.z + 1f); ;
+                Vector2 pos;
+                if(index % 3 == 0)
+                    pos = new Vector2(segment.Start.x + length.x / 3f, segment.Start.y + length.y / 3f);
+                else if(index % 3 == 1)
+                    pos = new Vector2(segment.Start.x + length.x / 2f, segment.Start.y + length.y / 2f);
+                else
+                    pos = new Vector2(segment.Start.x + length.x / 1.5f, segment.Start.y + length.y / 1.5f);
 
-                    if (segment.Orientation == Orientation.Vertical) {
-                        labelGO.transform.Rotate(Vector3.up, 90, Space.World);
-                    }
+                GameObject labelGO = Instantiate(prefabs["RoadLabel"]);
+                labelGO.name = "Label (" + street.Name + ")";
+                labelGO.transform.SetParent(canvas.transform, false);
 
-                    labelGO.GetComponent<Text>().text = street.Name;
-                    labels.Add(street.Name, labelGO);
+                Vector3 world = PositionToWorld(pos);
+                labelGO.transform.position = new Vector3(world.x + 1f, world.y + 0.05f, world.z + 1f); ;
 
-                    if (++batchCount % BatchSize == 0)
-                        yield return null;
-
+                if (segment.Orientation == Orientation.Vertical) {
+                    labelGO.transform.Rotate(Vector3.up, 90, Space.World);
                 }
+
+                labelGO.GetComponent<Text>().text = street.Name;
+                labels.Add(street.Name, labelGO);
+
+                index++;
+
+                if (++batchCount % BatchSize == 0)
+                    yield return null;
+
             }
         }
 

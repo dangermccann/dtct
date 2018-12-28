@@ -120,7 +120,7 @@ namespace DCTC.Model {
                 ID = Guid.NewGuid().ToString(),
                 Name = nameGenerator.RandomSurname(),
                 Game = this,
-                IncomeLevel = RandomUtils.RandomFloat(1.0f, 3.0f, this.Random),
+                IncomeLevel = RandomUtils.RandomFloat(1.5f, 2.5f, this.Random),
                 Patience = RandomUtils.RandomFloat(0.2f, 1.0f, this.Random)
             };
             return customer;

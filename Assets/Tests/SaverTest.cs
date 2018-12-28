@@ -44,6 +44,16 @@ namespace DCTC.Test {
                     Assert.AreEqual(map1.Tiles[i].MovementCost, map2.Tiles[i].MovementCost);
                 }
 
+                for (int j = 0; j < map1.Streets.Count; j++) {
+                    Assert.AreEqual(map1.Streets[j].Name, map2.Streets[j].Name);
+                    Assert.AreEqual(map1.Streets[j].Size, map2.Streets[j].Size);
+
+                    for (int k = 0; k < map1.Streets[j].Segments.Count; k++) {
+                        Assert.AreEqual(map1.Streets[j].Segments[k].Start, map2.Streets[j].Segments[k].Start);
+                        Assert.AreEqual(map1.Streets[j].Segments[k].End, map2.Streets[j].Segments[k].End);
+                    }
+                }
+
                 for (int i = 0; i < map1.Neighborhoods.Count; i++) {
                     Assert.AreEqual(map1.Neighborhoods[i].Name, map2.Neighborhoods[i].Name);
                     Assert.AreEqual(map1.Neighborhoods[i].Width, map2.Neighborhoods[i].Width);
@@ -68,16 +78,6 @@ namespace DCTC.Test {
 
                         for (int k = 0; k < map1.Neighborhoods[i].Lots[j].Tiles.Count; k++) {
                             Assert.AreEqual(map1.Neighborhoods[i].Lots[j].Tiles[k], map2.Neighborhoods[i].Lots[j].Tiles[k]);
-                        }
-                    }
-
-                    for (int j = 0; j < map1.Neighborhoods[i].Streets.Count; j++) {
-                        Assert.AreEqual(map1.Neighborhoods[i].Streets[j].Name, map2.Neighborhoods[i].Streets[j].Name);
-                        Assert.AreEqual(map1.Neighborhoods[i].Streets[j].Size, map2.Neighborhoods[i].Streets[j].Size);
-
-                        for (int k = 0; k < map1.Neighborhoods[i].Streets[j].Segments.Count; k++) {
-                            Assert.AreEqual(map1.Neighborhoods[i].Streets[j].Segments[k].Start, map2.Neighborhoods[i].Streets[j].Segments[k].Start);
-                            Assert.AreEqual(map1.Neighborhoods[i].Streets[j].Segments[k].End, map2.Neighborhoods[i].Streets[j].Segments[k].End);
                         }
                     }
                 }

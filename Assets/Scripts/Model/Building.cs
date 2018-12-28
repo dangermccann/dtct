@@ -93,20 +93,20 @@ namespace DCTC.Model {
 			switch(type) {
                 // Residential
 				case BuildingType.SmallHouse:
-					return new BuildingAttributes(1, 1, BuildingClassification.Residential, 185);
+					return new BuildingAttributes(1, 1, BuildingClassification.Residential, 195);
 
 				case BuildingType.Townhouse:
-					return new BuildingAttributes(1, 1, BuildingClassification.Residential, 120);
+					return new BuildingAttributes(1, 1, BuildingClassification.Residential, 100);
 
                 case BuildingType.Ranch:
 					return new BuildingAttributes((facing == Direction.East || facing == Direction.West) ? 1 : 2, 
 												  (facing == Direction.East || facing == Direction.West) ? 2 : 1,
-                                                  BuildingClassification.Residential, 170);
+                                                  BuildingClassification.Residential, 250);
 
 				case BuildingType.SuburbanHouse:
 					return new BuildingAttributes((facing == Direction.East || facing == Direction.West) ? 1 : 2, 
 												  (facing == Direction.East || facing == Direction.West) ? 2 : 1,
-                                                  BuildingClassification.Residential, 232);
+                                                  BuildingClassification.Residential, 290);
                 case BuildingType.Apartment:
                     return new BuildingAttributes(2, 2, BuildingClassification.Residential, 670);
 
