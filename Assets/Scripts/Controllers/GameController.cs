@@ -97,6 +97,7 @@ namespace DCTC.Controllers {
         }
 
         public void Save() {
+            Game.RandomState = Random.state;
             saver.SaveGame(Game, SaveName);
         }
 
@@ -106,6 +107,7 @@ namespace DCTC.Controllers {
             stopwatch.Start();
 
             Game = saver.LoadGame(SaveName);
+            UnityEngine.Random.state = Game.RandomState;
             Game.Player = Game.Companies.First(c => c.OwnerType == CompanyOwnerType.Human);
             Map = saver.LoadMap(SaveName);
             Game.Map = Map;
@@ -139,13 +141,18 @@ namespace DCTC.Controllers {
             yield return null;
         }
 
+        public void OnMapDrawComplete() {
+            Game.PostLoad();
+            Unpause();
+        }
+
         private void SaveMap() {
             Thread.Sleep(3000);
             saver.SaveMap(Map, SaveName);
         }
 
         private void OnGameLoaded() {
-            Unpause();
+            
         }
 
         private IEnumerator GameLoop() {
@@ -154,6 +161,10 @@ namespace DCTC.Controllers {
 
                 int householdIndex = gameCounter % Game.Customers.Count;
                 Game.Customers[householdIndex].Update(Time.time);
+
+                foreach(Company company in Game.Companies) {
+                    company.Update(Time.time);
+                }
 
                 if(gameCounter % 1000000 == 0) {
                     Debug.Log("Game Counter: " + gameCounter);

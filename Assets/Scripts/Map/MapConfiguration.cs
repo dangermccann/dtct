@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DCTC.Model;
+using DCTC.Pathfinding;
 
 namespace DCTC.Map {
 
@@ -268,6 +269,38 @@ namespace DCTC.Map {
             return new TilePosition(-1, -1);
         }
 
+        public IList<TilePosition> Pathfind(TilePosition start, TilePosition end, int tolerence = 15) {
+            // Build bounding box of candidate nodes
+            TileRectangle boundingBox = MapConfiguration.BoundingBox(start, end);
+            boundingBox = ExpandBoundingBox(boundingBox, tolerence);
+
+            // Generate list of nodes from the bounding box
+            List<IPathNode> nodes = new List<IPathNode>();
+            TilePosition p = new TilePosition();
+            for (int x = boundingBox.Left; x <= boundingBox.Right; x++) {
+                for (int y = boundingBox.Bottom; y <= boundingBox.Top; y++) {
+                    p.x = x;
+                    p.y = y;
+                    nodes.Add(Tiles[p]);
+                }
+            }
+            AStar pathfinder = new AStar(nodes);
+
+            // Perform search
+            IList<IPathNode> results = pathfinder.Search(
+                Tiles[start],
+                Tiles[end]);
+
+            // Convert results into usable list of TilePosition objects
+            List<TilePosition> positions = new List<TilePosition>();
+
+            foreach(IPathNode result in results) {
+                positions.Add(result.Position);
+            }
+
+            return positions;
+        }
+
 
 		/// <summary>
 		/// Determines if a building is on a corner.  Pass in the Directions that have adjacent roads
@@ -346,6 +379,16 @@ namespace DCTC.Map {
 			}
 			return Direction.None;
 		}
+
+        public static Direction RelativeDirection(TilePosition from, TilePosition to) {
+            if (to.y > from.y)
+                return Direction.North;
+            if (to.x > from.x)
+                return Direction.East;
+            if (to.y < from.y)
+                return Direction.South;
+            else return Direction.West;
+        }
 
 		public static Orientation OppositeOrientation(Orientation orientation) {
 			if(orientation == Orientation.Vertical)

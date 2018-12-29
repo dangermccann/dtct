@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCTC.Map;
+using UnityEngine;
 
 
 namespace DCTC.Model {
@@ -15,7 +16,7 @@ namespace DCTC.Model {
         public event ChangeDelegate ServiceAreaChanged;
 
         [NonSerialized]
-        public Game Game;
+        private Game game;
 
         public string ID { get; set; }
         public string Name { get; set; }
@@ -25,8 +26,15 @@ namespace DCTC.Model {
         public Dictionary<TilePosition, Node> Nodes { get; set; }
         public Dictionary<ServiceTier, float> ServicePrices { get; set; }
         public List<Employee> Employees { get; set; }
+        public List<Truck> Trucks { get; set; }
+        public List<string> TruckRollQueue { get; set; }
         public CompanyOwnerType OwnerType { get; set; }
 
+        private SerializableColor color;
+        public Color Color {
+            get { return color.GetColor(); }
+            set { color = new SerializableColor(value); }
+        }
 
         [NonSerialized]
         private List<Network> networks = null;
@@ -59,6 +67,24 @@ namespace DCTC.Model {
             }
         }
 
+        public Game Game {
+            get { return game; }
+            set {
+                game = value;
+                game.CustomerChanged += OnCustomerChanged;
+            }
+        }
+
+        private void OnCustomerChanged(Customer customer, Company company) {
+            if (TruckRollQueue.Contains(customer.ID))
+                TruckRollQueue.Remove(customer.ID);
+
+            if(company != null && company.ID == ID) {
+                if(customer.Status == CustomerStatus.Pending)
+                    TruckRollQueue.Insert(TruckRollQueue.Count, customer.ID);
+            }
+        }
+
         public IEnumerable<TilePosition> CustomerHouses {
             get {
                 return Customers.Select(c => c.HomeLocation);
@@ -70,6 +96,7 @@ namespace DCTC.Model {
             Nodes = new Dictionary<TilePosition, Node>();
             ServicePrices = new Dictionary<ServiceTier, float>();
             Employees = new List<Employee>();
+            TruckRollQueue = new List<string>();
 
             InitPrices();
         }
@@ -235,6 +262,33 @@ namespace DCTC.Model {
             this.networks = networks;
         }
 
+        public void Update(float time) {
+            foreach (Truck truck in Trucks) {
+                if (truck.Status == TruckStatus.Idle) {
+                    if(TruckRollQueue.Count > 0) {
+                        string customerID = TruckRollQueue[0];
+                        TruckRollQueue.RemoveAt(0);
+                        DispatchTruck(truck, customerID);
+                    }
+                }
+            }
+        }
+
+        private void DispatchTruck(Truck truck, string customerID) {
+            Customer customer = Game.GetCustomer(customerID);
+            TilePosition position = customer.HomeLocation;
+            position = Game.Map.NearestRoad(position);
+
+            IList<TilePosition> path = Game.Map.Pathfind(truck.Position, position);
+            if(path.Count == 0) {
+                UnityEngine.Debug.LogError("Unable to pathfind to truck destination: " + position.ToString());
+                return;
+            }
+
+            path = new List<TilePosition>(path.Reverse());
+
+            truck.Dispatch(customer.ID, path);
+        }
 
         private void InsertNetworkNode(Network network, Node node) {
             network.Nodes.Add(node);
@@ -301,6 +355,59 @@ namespace DCTC.Model {
             ServicePrices[ServiceTier.FiberInternet]        = 4.0f;
             ServicePrices[ServiceTier.FiberTV]              = 4.0f;
             ServicePrices[ServiceTier.FiberDoublePlay]      = 5.5f;
+        }
+    }
+
+    public enum TruckStatus {
+        Idle,
+        EnRoute
+    }
+
+    [System.Serializable]
+    public class SerializableColor {
+        public float R;
+        public float G;
+        public float B;
+        public float A;
+        public SerializableColor(Color color) {
+            R = color.r;
+            G = color.g;
+            B = color.b;
+            A = color.a;
+        }
+        public Color GetColor() {
+            return new Color(R, G, B, A);
+        }
+    }
+
+    [Serializable]
+    public class Truck {
+        public string ID { get; set; }
+        public TilePosition Position { get; set; }
+        public string DestinationCustomerID { get; set; }
+        public TruckStatus Status { get; set; }
+        public List<TilePosition> Path { get; set; }
+
+        [NonSerialized]
+        public Game Game;
+
+        [field: NonSerialized]
+        public event ChangeDelegate Dispatched;
+
+        public void Dispatch(string customerID, IList<TilePosition> path) {
+            DestinationCustomerID = customerID;
+            Status = TruckStatus.EnRoute;
+            Path = new List<TilePosition>(path);
+
+            if (Dispatched != null)
+                Dispatched();
+        }
+
+        public void DestinationReached() {
+            Customer customer = Game.GetCustomer(DestinationCustomerID);
+            customer.Status = CustomerStatus.Subscribed;
+            Status = TruckStatus.Idle;
+            Game.OnCustomerChanged(customer);
         }
     }
 }

@@ -6,6 +6,13 @@ using UnityEngine;
 
 namespace DCTC.Model {
 
+    public enum CustomerStatus {
+        NoProvider,
+        Pending,
+        Subscribed,
+        Outage
+    }
+
     [Serializable]
     public class Customer {
         public string ID { get; set; }
@@ -14,6 +21,7 @@ namespace DCTC.Model {
         public float IncomeLevel { get; set; }
         public float Patience { get; set; }
         public float Frustration { get; set; }
+        public CustomerStatus Status { get; set; }
 
         // ID of Company that provides service to this customer
         public string ProviderID { get; set; }
@@ -51,6 +59,10 @@ namespace DCTC.Model {
                     return null;
                 return Game.GetCompany(ProviderID);
             }
+        }
+
+        public Customer() {
+            Status = CustomerStatus.NoProvider;
         }
 
         public void Update(float time) {
@@ -145,6 +157,8 @@ namespace DCTC.Model {
             invocationsSinceProviderChange = 0;
             if(company != null)
                 ServiceTier = ChooseServiceTier(company);
+
+            Status = (company == null) ? CustomerStatus.NoProvider : CustomerStatus.Pending;
 
             Game.OnCustomerChanged(this);
         }

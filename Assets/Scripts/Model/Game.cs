@@ -34,6 +34,8 @@ namespace DCTC.Model {
         public List<Company> Companies { get; set; }
         public List<Customer> Customers { get; set; }
 
+        public UnityEngine.Random.State RandomState;
+
         [NonSerialized]
         public System.Random Random;
 
@@ -41,6 +43,9 @@ namespace DCTC.Model {
         internal void OnSerializedMethod(StreamingContext context) {
             foreach(Company c in Companies) {
                 c.Game = this;
+                foreach(Truck t in c.Trucks) {
+                    t.Game = this;
+                }
             }
             foreach(Customer c in Customers) {
                 c.Game = this;
@@ -53,6 +58,7 @@ namespace DCTC.Model {
             this.Settings = settings;
             this.Map = map;
             this.Random = new System.Random(Settings.Seed);
+            UnityEngine.Random.InitState(Settings.Seed);
 
             Companies = new List<Company>();
             for (int i = 0; i < settings.NumAIs; i++) {
@@ -89,8 +95,23 @@ namespace DCTC.Model {
             }
         }
 
+        public void PostLoad() {
+            // Redispatch trucks so they restore their previous jobs
+            foreach(Company c in Companies) {
+                foreach(Truck t in c.Trucks) {
+                    if(t.Status == TruckStatus.EnRoute) {
+                        t.Dispatch(t.DestinationCustomerID, t.Path);
+                    }
+                }
+            }
+        }
+
         public Company GetCompany(string id) {
             return Companies.Find(c => c.ID == id);
+        }
+
+        public Customer GetCustomer(string id) {
+            return Customers.Find(c => c.ID == id);
         }
 
         public Customer FindCustomerByAddress(TilePosition address) {
@@ -99,7 +120,7 @@ namespace DCTC.Model {
 
         public void OnCustomerChanged(Customer customer) {
             Company company = GetCompany(customer.ProviderID);
-            Debug.Log("Customer " + customer.Name + " changed to " +  ((company == null) ? "[none]" : company.Name));
+            //Debug.Log("Customer " + customer.Name + " changed to " +  ((company == null) ? "[none]" : company.Name));
             if (CustomerChanged != null)
                 CustomerChanged(customer, company);
         }
@@ -109,9 +130,22 @@ namespace DCTC.Model {
                 ID = Guid.NewGuid().ToString(),
                 Name = nameGenerator.CompanyName(),
                 OwnerType = type,
-                Game = this
+                Game = this,
+                Trucks = new List<Truck>() {
+                    GenerateTruck()
+                },
+                Color = UnityEngine.Random.ColorHSV(0, 1, 1, 1, 0.7f, 1, 1, 1)
             };
             return c;
+        }
+
+        private Truck GenerateTruck() {
+            return new Truck() {
+                ID = Guid.NewGuid().ToString(),
+                Position = new TilePosition(0, 0),
+                Status = TruckStatus.Idle,
+                Game = this
+            };
         }
 
         private Customer GenerateCustomer(Lot home, NameGenerator nameGenerator) {

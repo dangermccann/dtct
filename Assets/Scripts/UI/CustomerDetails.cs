@@ -25,7 +25,7 @@ namespace DCTC.UI {
         }
 
         private void Game_CustomerChanged(Customer _customer, Company company) {
-            if(_customer.ID == Customer.ID) {
+            if(Customer != null && _customer.ID == Customer.ID) {
                 Redraw();
             }
         }

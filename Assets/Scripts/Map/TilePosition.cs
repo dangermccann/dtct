@@ -5,7 +5,7 @@ using YamlDotNet.Serialization.Converters;
 
 namespace DCTC.Map {
     [Serializable]
-    public class TilePosition {
+    public class TilePosition : IEquatable<TilePosition> {
         [YamlMember(Alias = "x", ApplyNamingConventions = false)]
         public int x { get; set; }
 

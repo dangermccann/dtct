@@ -19,6 +19,7 @@ namespace DCTC.Map {
         public delegate void TileSelectEventHandler(Tile tile);
         public event TileSelectEventHandler TileSelected;
         public event GameEvent OverlayModeChanged;
+        public event GameEvent DrawComplete;
 
         private MapConfiguration map;
         private GameObject canvas;
@@ -32,7 +33,6 @@ namespace DCTC.Map {
         private Dictionary<string, HashSet<TilePosition>> colorizedBuildings = new Dictionary<string, HashSet<TilePosition>>();
 
         private int batchCount = 0;
-        private bool drawComplete = false;
         private const int BatchSize = 100;
         private const string OverlayKey = "Overlay";
         private const string SelectionKey = "Selection";
@@ -170,8 +170,9 @@ namespace DCTC.Map {
             gameController.Game.Player.ServiceAreaChanged += OnServiceAreaChanged;
             gameController.Game.CustomerChanged += OnCustomerChanged;
 
-            // TODO: probably want to pause the game until draw completes
-            drawComplete = true;
+            if (DrawComplete != null)
+                DrawComplete();
+            gameController.OnMapDrawComplete();
         }
 
 
@@ -219,7 +220,7 @@ namespace DCTC.Map {
                     for (int y = mousePosition.y - HighlightRadius; y <= mousePosition.y + HighlightRadius; y++) {
                         TilePosition pos = new TilePosition(x, y);
                         if (map.IsInBounds(pos)) {
-                            HighlightBuilding(pos, true);
+                            HighlightBuilding(pos, gameController.Game.Player.Color, 0.5f);
 
                             if (removals.Contains(pos))
                                 removals.Remove(pos);
@@ -233,7 +234,7 @@ namespace DCTC.Map {
 
             foreach(TilePosition removal in removals) {
                 if (!colorizedBuildings[OverlayKey].Contains(removal))
-                    HighlightBuilding(removal, false);
+                    RedrawBuildingOverlay(removal);
             }
             
 
@@ -247,7 +248,7 @@ namespace DCTC.Map {
 
         private void OnCustomerChanged(Customer customer, Company company) {
             if (OverlayMode == OverlayMode.Customers)
-                DrawCustomers();
+                RedrawBuildingOverlay(customer.HomeLocation);
         }
 
         private void RedrawOverlay() {
@@ -263,15 +264,61 @@ namespace DCTC.Map {
             }
         }
 
+        private void RedrawBuildingOverlay(TilePosition pos) {
+            Tile tile = map.Tiles[pos];
+            Company player = gameController.Game.Player;
+
+            if (tile.Building != null) {
+                Color color = Color.clear;
+                float intensity = 0;
+
+                switch(overlayMode) {
+                    case OverlayMode.Customers:
+                        Customer customer = gameController.Game.FindCustomerByAddress(pos);
+                        if(customer != null) {
+                            switch(customer.Status) {
+                                case CustomerStatus.Pending:
+                                    color = Color.white;
+                                    intensity = 0.25f;
+                                    break;
+                                case CustomerStatus.Outage:
+                                    color = Color.red;
+                                    intensity = 0.5f;
+                                    break;
+                                case CustomerStatus.Subscribed:
+                                    color = player.Color;
+                                    intensity = 0.5f;
+                                    break;
+                            }
+                        }
+                        break;
+
+                    case OverlayMode.ServiceArea:
+                        if(player.ServiceArea.Contains(pos)) {
+                            color = player.Color;
+                            intensity = 0.5f;
+                        }
+                        break;
+                }
+
+                HighlightBuilding(pos, color, intensity);
+            }
+        }
+
         private void DrawServiceArea() {
-            DrawBuildingOverlay(OverlayKey, gameController.Game.Player.ServiceArea, Color.green, 0.5f);
+            Company player = gameController.Game.Player;
+            UpdateBuildingOverlays(OverlayKey, player.ServiceArea, player.Color, 0.5f);
         }
 
         private void DrawCustomers() {
-            DrawBuildingOverlay(OverlayKey, gameController.Game.Player.CustomerHouses, Color.green, 0.5f);
+            Company player = gameController.Game.Player;
+            foreach(TilePosition pos in player.CustomerHouses) {
+                RedrawBuildingOverlay(pos);
+                colorizedBuildings[OverlayKey].Add(pos);
+            }
         }
 
-        private void DrawBuildingOverlay(string key, IEnumerable<TilePosition> positions, Color color, float intensity) {
+        private void UpdateBuildingOverlays(string key, IEnumerable<TilePosition> positions, Color color, float intensity) {
             HashSet<TilePosition> buildings = new HashSet<TilePosition>();
             buildings.AddMany(colorizedBuildings[key]);
 
@@ -280,7 +327,7 @@ namespace DCTC.Map {
                 if (tile.Building != null) {
                     if (!colorizedBuildings[key].Contains(tile.Position)) {
                         colorizedBuildings[key].Add(tile.Position);
-                        HighlightBuilding(pos, true);
+                        HighlightBuilding(pos, color, intensity);
                     }
 
                     buildings.Remove(tile.Position);
@@ -288,14 +335,14 @@ namespace DCTC.Map {
             }
 
             foreach (TilePosition pos in buildings) {
-                HighlightBuilding(pos, false);
+                HighlightBuilding(pos, Color.clear, 0);
                 colorizedBuildings[key].Remove(pos);
             }
         }
 
         private void ClearBuildingOverlay(string key) {
             foreach (TilePosition pos in colorizedBuildings[key]) {
-                HighlightBuilding(pos, false);
+                HighlightBuilding(pos, Color.clear, 0);
             }
             colorizedBuildings[key].Clear();
         }
@@ -321,22 +368,20 @@ namespace DCTC.Map {
             }
         }
 
-        void HighlightBuildings(IEnumerable<TilePosition> positions, bool highlight) {
+        void HighlightBuildings(IEnumerable<TilePosition> positions, Color color, float intensity) {
             foreach (TilePosition pos in positions) {
-                HighlightBuilding(pos, highlight);
+                HighlightBuilding(pos, color, intensity);
             }
         }
 
-        void HighlightBuilding(TilePosition pos, bool highlight) {
-            Color color = Color.green;
-            float intensity = 0.5f;
+        void HighlightBuilding(TilePosition pos, Color color, float intensity) {
 
             Tile tile = map.Tiles[pos];
             if (tile.Building != null) {
                 MeshRenderer renderer = buildingRenderers[tile.Building.Anchor];
 
                 foreach(Material material in renderer.materials) {
-                    if(highlight) {
+                    if(color != Color.clear) {
                         material.SetColor("_EmissionColor", 
                             new Vector4(color.r, color.g, color.b, 0) * intensity);
                         material.EnableKeyword("_EMISSION");
@@ -345,20 +390,6 @@ namespace DCTC.Map {
                         material.DisableKeyword("_EMISSION");
                     }
                 }
-
-                /*
-                Material highlightMaterial = GetMaterialForBuilding(tile.Building, true);
-                if (highlight) {
-                    renderer.AssureMaterialPresent(highlightMaterial);
-                }
-                else {
-                    renderer.AssureMaterialAbsent(highlightMaterial);
-                }
-                */
-
-
-                //renderer.material = GetMaterialForBuilding(tile.Building, highlight);
-                //renderer.material.color = Utilities.CreateColor(highlight ? 0x8EFFCE : 0x72C7DD);
             }
         }
 
@@ -569,6 +600,12 @@ namespace DCTC.Map {
                     if (++batchCount % BatchSize == 0)
                         yield return null;
                 }
+                foreach(Truck truck in company.Trucks) {
+                    PlaceItem(truck);
+
+                    if (++batchCount % BatchSize == 0)
+                        yield return null;
+                }
             }
             yield return null;
         }
@@ -586,6 +623,11 @@ namespace DCTC.Map {
                 Node node = item as Node;
                 InstantiateObject("Node", node.ID, node.Position);
             }
+            else if(item is Truck) {
+                Truck truck = item as Truck;
+                GameObject go = InstantiateObject("Van", truck.ID, truck.Position);
+                go.GetComponent<Van>().Truck = truck;
+            }
         }
 
         private void RemoveItem(object item) {
@@ -596,6 +638,9 @@ namespace DCTC.Map {
             else if (item is Node) {
                 Node node = item as Node;
                 RemoveObject("Node", node.ID);
+            } else if (item is Truck) {
+                Truck truck = item as Truck;
+                RemoveObject("Truck", truck.ID);
             }
         }
 
@@ -614,32 +659,6 @@ namespace DCTC.Map {
             if (go != null) {
                 Destroy(go);
             }
-        }
-
-        private Material GetMaterialForBuilding(Building building, bool isSelected) {
-            string materialName = "Blueprint";
-            if (isSelected) {
-                materialName = "Selection";
-            }
-
-            return materialController.GetMaterial(materialName);
-        }
-
-        private Material GetMaterialForTile(Tile tile, bool isSelected) {
-            string materialName = "Blueprint Light";
-
-            if(isSelected) {
-                materialName = "Selection";
-            }
-            else if(tile.Type == TileType.Road) {
-                materialName = "BlueprintRoad";
-            }
-            else if(tile.Type == TileType.FruitFarm || tile.Type == TileType.VegetableFarm ||
-                tile.Type == TileType.SoybeanFarm || tile.Type == TileType.TilledSoil) {
-                materialName = "Farm";
-            }
-
-            return materialController.GetMaterial(materialName);
         }
 
         public static Vector3 PositionToWorld(TilePosition pos) {

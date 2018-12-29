@@ -26,5 +26,11 @@ namespace DCTC.Test {
         public void TestInvalidInput2() {
             Assert.Throws<ArgumentException>( () => TilePosition.Parse("(1)"));
         }
+
+        [Test]
+        public void TestEquatable() {
+            Assert.IsTrue(new TilePosition(4, 5).Equals( new TilePosition(4, 5) )); 
+            Assert.IsFalse(new TilePosition(5, 4).Equals( new TilePosition(4, 5) ));
+        }
     }
 }
