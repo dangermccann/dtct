@@ -43,7 +43,8 @@ namespace DCTC.Model {
         internal void OnSerializedMethod(StreamingContext context) {
             foreach(Company c in Companies) {
                 c.Game = this;
-                foreach(Truck t in c.Trucks) {
+                c.RefreshCustomers();
+                foreach (Truck t in c.Trucks) {
                     t.Game = this;
                 }
             }

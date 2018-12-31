@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,10 +91,16 @@ namespace DCTC.Controllers {
             if (gameController.Map == null)
                 return;
 
+            bool ignoreMouse;
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                ignoreMouse = true;
+            else
+                ignoreMouse = false;
+
             if (Input.GetMouseButtonDown(1)) {
                 mouseDownPosition = Input.mousePosition;
             }
-            if(Input.GetMouseButtonUp(1)) {
+            if(Input.GetMouseButtonUp(1) && !ignoreMouse) {
                 if((Input.mousePosition - mouseDownPosition).magnitude < 0.25f) {
                     ConstructionToggleGroup.SetAllTogglesOff();
                     LotSelection.SetActive(false);
@@ -104,7 +111,7 @@ namespace DCTC.Controllers {
                 dragCable = null;
             }
 
-            if(Input.GetMouseButtonDown(0) && Mode == SelectionModes.None) {
+            if(Input.GetMouseButtonDown(0) && !ignoreMouse && Mode == SelectionModes.None) {
                 Vector3 world = cameraController.MouseCursorInWorld();
                 TilePosition pos = ThreeDMap.WorldToPosition(world);
                 if (gameController.Map.Tiles.ContainsKey(pos)) {

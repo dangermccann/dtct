@@ -20,7 +20,7 @@ namespace DCTC.Model {
         public TilePosition HomeLocation { get; set; }
         public float IncomeLevel { get; set; }
         public float Patience { get; set; }
-        public float Frustration { get; set; }
+        public float Dissatisfaction { get; set; }
         public CustomerStatus Status { get; set; }
 
         // ID of Company that provides service to this customer
@@ -68,6 +68,8 @@ namespace DCTC.Model {
         public void Update(float time) {
             float deltaTime = time - lastUpdateTime;
 
+            UpdateDissatisfaction(deltaTime);
+
             List<Company> candidates = FindServiceProviders();
 
             if (ProviderID == null) {
@@ -85,6 +87,14 @@ namespace DCTC.Model {
                     candidates.Remove(provider);
                     if (WillChangeProvider()) {
                         ChangeProvider(ChooseProvider(candidates));
+                    }
+                    else {
+                        // Small chance of outage
+                        if (Status == CustomerStatus.Subscribed) {
+                            if (RandomUtils.Chance(Game.Random, 0.002)) {
+                                EnterOutage();
+                            }
+                        }
                     }
                 }
 
@@ -105,12 +115,51 @@ namespace DCTC.Model {
             return candidates;
         }
 
+        private void UpdateDissatisfaction(float deltaTime) {
+            // Adjust Dissatisfaction due to wait times 
+            if (Status == CustomerStatus.Outage)
+                Dissatisfaction += Patience * deltaTime * 0.25f;
+            else if (Status == CustomerStatus.Pending)
+                Dissatisfaction += Patience * deltaTime * 0.05f;
+            else
+                Dissatisfaction -= deltaTime * 0.005f;
+
+            Dissatisfaction = Mathf.Clamp01(Dissatisfaction);
+        }
+
+        private void EnterOutage() {
+            Status = CustomerStatus.Outage;
+            Dissatisfaction += Patience * 0.25f;
+            Game.OnCustomerChanged(this);
+        }
+
         private bool WillChangeProvider() {
-            // Look for a company to add service
-            float timeInerta = (ProviderID == null) ? 50 : 500;
-            float wealthChance = RandomUtils.LinearLikelihood(100f, 1000f, Wealth);
-            float timeChance = RandomUtils.LinearLikelihood(0, timeInerta, invocationsSinceProviderChange);
-            float chance = Mathf.Clamp01(wealthChance * timeChance * Patience * (Frustration + 1));
+            float churnChance = 0;
+            float timeChance = 1;
+            switch (Status) {
+                case CustomerStatus.NoProvider:
+                    churnChance = RandomUtils.LinearLikelihood(100f, 1000f, Wealth);
+                    churnChance *= (1.0f - Mathf.Min(1f, Dissatisfaction * 2f));
+                    timeChance = RandomUtils.LinearLikelihood(0, 150, invocationsSinceProviderChange);
+                    break;
+
+                case CustomerStatus.Subscribed:
+                    churnChance = Mathf.Max(0.1f, Dissatisfaction) * Patience;
+                    timeChance = 0.1f;
+                    break;
+
+                case CustomerStatus.Outage:
+                    churnChance = Mathf.Max(0.1f, Dissatisfaction) * Patience;
+                    timeChance = 0.25f;
+                    break;
+
+                case CustomerStatus.Pending:
+                    churnChance = Mathf.Max(0.1f, Dissatisfaction) * Patience;
+                    timeChance = RandomUtils.LinearLikelihood(0, 1000, invocationsSinceProviderChange);
+                    break;
+            }
+
+            float chance = Mathf.Clamp01(churnChance * timeChance);
             return RandomUtils.Chance(Game.Random, chance);
         }
 
@@ -152,14 +201,22 @@ namespace DCTC.Model {
         }
 
         private void ChangeProvider(Company company) {
-            ProviderID = (company == null) ? null : company.ID;
-            Frustration = 0;
-            invocationsSinceProviderChange = 0;
-            if(company != null)
+            if(Status == CustomerStatus.Pending && company == null) {
+                Debug.LogWarning("Dropping while Pending " + Dissatisfaction.ToString());
+            }
+                
+            if(company != null) {
+                Dissatisfaction /= 3.0f;
+                ProviderID = company.ID;
+                Status = CustomerStatus.Pending;
                 ServiceTier = ChooseServiceTier(company);
+            }
+            else {
+                ProviderID = null;
+                Status = CustomerStatus.NoProvider;
+            }
 
-            Status = (company == null) ? CustomerStatus.NoProvider : CustomerStatus.Pending;
-
+            invocationsSinceProviderChange = 0;
             Game.OnCustomerChanged(this);
         }
     }

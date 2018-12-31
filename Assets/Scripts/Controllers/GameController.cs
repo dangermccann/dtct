@@ -41,6 +41,7 @@ namespace DCTC.Controllers {
         private NameGenerator nameGenerator;
         private Coroutine loopCoroutine;
         private int gameCounter = 0;
+        private float lastUpdateTime;
 
         private int GameLoopBatchSize {
             get {
@@ -156,19 +157,23 @@ namespace DCTC.Controllers {
         }
 
         private IEnumerator GameLoop() {
-            while(true) {
+            lastUpdateTime = Time.time;
+
+            while (true) {
                 
 
                 int householdIndex = gameCounter % Game.Customers.Count;
                 Game.Customers[householdIndex].Update(Time.time);
 
                 foreach(Company company in Game.Companies) {
-                    company.Update(Time.time);
+                    company.Update(Time.time - lastUpdateTime);
                 }
 
                 if(gameCounter % 1000000 == 0) {
                     Debug.Log("Game Counter: " + gameCounter);
                 }
+
+                lastUpdateTime = Time.time;
 
                 if (++gameCounter % GameLoopBatchSize == 0) {
                     yield return null;

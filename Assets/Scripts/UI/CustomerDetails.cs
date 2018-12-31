@@ -9,6 +9,7 @@ namespace DCTC.UI {
     public class CustomerDetails : MonoBehaviour {
 
         private bool initialized = false;
+        private int coolDown = 0;
 
         private Customer customer;
         public Customer Customer {
@@ -22,6 +23,16 @@ namespace DCTC.UI {
         void Init() {
             initialized = true;
             GameController.Get().Game.CustomerChanged += Game_CustomerChanged;
+        }
+
+        void Update() {
+            if (!initialized || Customer == null)
+                return;
+
+            if(++coolDown > 60) {
+                coolDown = 0;
+                Redraw();
+            }
         }
 
         private void Game_CustomerChanged(Customer _customer, Company company) {
@@ -50,17 +61,19 @@ namespace DCTC.UI {
             SetText("Provider", provider == null ? "[No Service Provider]" : provider.Name);
             if (provider == null) {
                 SetActive("ServiceTier", false);
-                SetActive("Frustration", false);
+                SetActive("Satisfaction", false);
             } else {
                 SetActive("ServiceTier", true);
                 SetText("ServiceTier", Customer.ServiceTier.ToString());
 
-                SetActive("Frustration", true);
-                SetText("Frustration", "Satisfaction: " + FormatFrustration(Customer.Frustration));
+                SetActive("Satisfaction", true);
+                string satisfaction = "Satisfaction: " + Formatter.FormatDissatisfaction(Customer.Dissatisfaction);
+                satisfaction += " (" + Customer.Dissatisfaction.ToString("0.00") + ")";
+                SetText("Satisfaction", satisfaction);
             }
             
-            SetText("Income", "Income: $" + FormatIncome(Customer.Wealth));
-            SetText("Patience", "Patience: " + FormatPatience(Customer.Patience));
+            SetText("Income", "Income: " + Formatter.FormatCurrency(Customer.Wealth * 10));
+            SetText("Patience", "Demeanor: " + Formatter.FormatPatience(Customer.Patience));
         }
 
         void Clear() {
@@ -77,28 +90,6 @@ namespace DCTC.UI {
 
         void SetActive(string name, bool active) {
             transform.Find(name).gameObject.SetActive(active);
-        }
-
-        static string FormatIncome(float amount) {
-            return (Mathf.RoundToInt(amount * 10)).ToString();
-        }
-
-        static string FormatPatience(float amount) {
-            if (amount < 0.33f)
-                return "Low";
-            if (amount < 0.66f)
-                return "Medium";
-            return "High";
-        }
-
-        static string FormatFrustration(float amount) {
-            if (amount < 2)
-                return "Content";
-            if (amount < 5)
-                return "Frustrated";
-            if (amount < 8)
-                return "Angry";
-            return "Furious";
         }
     }
 }

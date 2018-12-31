@@ -29,11 +29,20 @@ namespace DCTC.Model {
         public List<Truck> Trucks { get; set; }
         public List<string> TruckRollQueue { get; set; }
         public CompanyOwnerType OwnerType { get; set; }
+        public float Money { get; set; }
 
         private SerializableColor color;
         public Color Color {
             get { return color.GetColor(); }
             set { color = new SerializableColor(value); }
+        }
+
+        [NonSerialized]
+        HashSet<Customer> customers = new HashSet<Customer>();
+        public HashSet<Customer> Customers {
+            get {
+                return customers;
+            }
         }
 
         [NonSerialized]
@@ -56,17 +65,6 @@ namespace DCTC.Model {
             }
         }
 
-        public HashSet<Customer> Customers {
-            get {
-                HashSet<Customer> customers = new HashSet<Customer>();
-                foreach(Customer customer in Game.Customers) {
-                    if (customer.ProviderID == ID)
-                        customers.Add(customer);
-                }
-                return customers;
-            }
-        }
-
         public Game Game {
             get { return game; }
             set {
@@ -75,13 +73,53 @@ namespace DCTC.Model {
             }
         }
 
+        public IEnumerable<Customer> ActiveCustomers {
+            get {
+                return Customers.Where(c => c.Status != CustomerStatus.Pending);
+            }
+        }
+
+        public float Satisfaction {
+            get {
+                List<Customer> actives = new List<Customer>(ActiveCustomers);
+                if (actives.Count == 0)
+                    return 0;
+
+                float val = 0f;
+                foreach(Customer c in actives) {
+                    val += c.Dissatisfaction;
+                }
+                val /= actives.Count;
+                return (1 - val) * 100f;
+            }
+        }
+
+        public void RefreshCustomers() {
+            customers = new HashSet<Customer>();
+            foreach (Customer customer in game.Customers) {
+                if (customer.ProviderID == ID)
+                    customers.Add(customer);
+            }
+        }
+
         private void OnCustomerChanged(Customer customer, Company company) {
             if (TruckRollQueue.Contains(customer.ID))
                 TruckRollQueue.Remove(customer.ID);
 
-            if(company != null && company.ID == ID) {
-                if(customer.Status == CustomerStatus.Pending)
+            if (company != null && company.ID == ID) {
+                if (!customers.Contains(customer))
+                    customers.Add(customer);
+
+                if (customer.Status == CustomerStatus.Pending)
                     TruckRollQueue.Insert(TruckRollQueue.Count, customer.ID);
+
+                // TODO: maybe allow outages to go to the begining of the queue
+                if(customer.Status == CustomerStatus.Outage)
+                    TruckRollQueue.Insert(TruckRollQueue.Count, customer.ID);
+
+
+            } else if (customers.Contains(customer)) {
+                customers.Remove(customer);
             }
         }
 
@@ -262,7 +300,7 @@ namespace DCTC.Model {
             this.networks = networks;
         }
 
-        public void Update(float time) {
+        public void Update(float deltaTime) {
             foreach (Truck truck in Trucks) {
                 if (truck.Status == TruckStatus.Idle) {
                     if(TruckRollQueue.Count > 0) {
@@ -270,6 +308,13 @@ namespace DCTC.Model {
                         TruckRollQueue.RemoveAt(0);
                         DispatchTruck(truck, customerID);
                     }
+                }
+            }
+
+            HashSet<Customer> customers = Customers;
+            foreach (Customer customer in customers) {
+                if(customer.Status == CustomerStatus.Subscribed) {
+                    Money += ServicePrices[customer.ServiceTier] * deltaTime;
                 }
             }
         }

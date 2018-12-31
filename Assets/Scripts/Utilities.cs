@@ -161,7 +161,6 @@ public static class RandomUtils {
 
 
 public static class Utilities {
-
     public static Color CreateColor(int hex) {
         return new Color(
             ((hex >> 16) & 0xff) / 255f,
