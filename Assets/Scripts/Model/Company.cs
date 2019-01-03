@@ -18,6 +18,9 @@ namespace DCTC.Model {
         [NonSerialized]
         private Game game;
 
+        [NonSerialized]
+        private HashSet<Cable> OrphanedCables;
+
         public string ID { get; set; }
         public string Name { get; set; }
         public string Logo { get; set; }
@@ -30,6 +33,7 @@ namespace DCTC.Model {
         public List<string> TruckRollQueue { get; set; }
         public CompanyOwnerType OwnerType { get; set; }
         public float Money { get; set; }
+        public TilePosition HeadquartersLocation { get; set; }
 
         private SerializableColor color;
         public Color Color {
@@ -62,6 +66,12 @@ namespace DCTC.Model {
                 if (serviceArea == null)
                     CalculateServiceArea();
                 return serviceArea;
+            }
+        }
+
+        public HashSet<TilePosition> HeadquartersConnectors {
+            get {
+                return Game.Map.Tiles[HeadquartersLocation].Lot.Corners();
             }
         }
 
@@ -247,6 +257,9 @@ namespace DCTC.Model {
             foreach (Network network in Networks) {
                 network.ServiceArea.Clear();
 
+                if (!network.Active)
+                    continue;
+
                 foreach (Node node in network.Nodes) {
                     // TODO: does the area change for different network types?
                     IEnumerable<TilePosition> positions = Game.Map.Area(node.Position, node.ServiceRange);
@@ -269,6 +282,9 @@ namespace DCTC.Model {
             List<Network> networks = new List<Network>();
 
             HashSet<Node> usedNodes = new HashSet<Node>();
+
+            OrphanedCables = new HashSet<Cable>();
+            OrphanedCables.AddMany(Cables);
 
             foreach (Node node in Nodes.Values) {
                 if (!usedNodes.Contains(node)) {
@@ -297,7 +313,49 @@ namespace DCTC.Model {
                 }
             }
 
+            // Build network from each of the orphaned cables not connected to a node
+            HashSet<Cable> usedCables = new HashSet<Cable>();
+            foreach(Cable orphan in OrphanedCables) {
+                if (!usedCables.Contains(orphan)) {
+                    usedCables.Add(orphan);
+
+                    Network network = new Network();
+                    networks.Add(network);
+                    network.Cables.Add(orphan);
+
+                    foreach (Cable otherCable in Cables) {
+                        // TODO: Check for cable type compatibility 
+                        if (!network.Cables.Contains(otherCable) &&
+                            otherCable.Intersects(orphan.Positions)) {
+                            network.Cables.Add(otherCable);
+                            usedCables.Add(otherCable);
+                        }
+                    }
+                }
+            }
+
             this.networks = networks;
+
+            UpdateNetworkStatus();
+        }
+
+        void UpdateNetworkStatus() {
+            // Update network state for all elements
+            HashSet<TilePosition> connectors = HeadquartersConnectors;
+            foreach (Network network in Networks) {
+                bool intersects = false;
+                if (network.IntersectsOneOf(connectors)) {
+                    intersects = true;
+                }
+
+                foreach (Cable cable in network.Cables) {
+                    cable.Status = intersects ? NetworkStatus.Active : NetworkStatus.Disconnected;
+                }
+
+                foreach (Node node in network.Nodes) {
+                    node.Status = intersects ? NetworkStatus.Active : NetworkStatus.Disconnected;
+                }
+            }
         }
 
         public void Update(float deltaTime) {
@@ -343,6 +401,9 @@ namespace DCTC.Model {
                 if (!network.Cables.Contains(cable)) {
                     network.Cables.Add(cable);
 
+                    if (OrphanedCables.Contains(cable))
+                        OrphanedCables.Remove(cable);
+
                     bool found;
                     do {
                         found = false;
@@ -351,6 +412,10 @@ namespace DCTC.Model {
                             if (!network.Cables.Contains(otherCable) &&
                                 otherCable.Intersects(network.Positions)) {
                                 network.Cables.Add(otherCable);
+
+                                if (OrphanedCables.Contains(otherCable))
+                                    OrphanedCables.Remove(otherCable);
+
                                 found = true;
                             }
                         }
@@ -383,7 +448,7 @@ namespace DCTC.Model {
         }
 
         private void InvalidateNetworks() {
-            networks = null;
+            CalculateNetworks();
             serviceArea = null;
 
             if (ServiceAreaChanged != null)
@@ -449,10 +514,10 @@ namespace DCTC.Model {
         }
 
         public void DestinationReached() {
-            Customer customer = Game.GetCustomer(DestinationCustomerID);
-            customer.Status = CustomerStatus.Subscribed;
             Status = TruckStatus.Idle;
-            Game.OnCustomerChanged(customer);
+
+            Customer customer = Game.GetCustomer(DestinationCustomerID);
+            customer.ServiceTruckArrived();
         }
     }
 }

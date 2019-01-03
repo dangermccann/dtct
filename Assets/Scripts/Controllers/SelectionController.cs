@@ -205,7 +205,11 @@ namespace DCTC.Controllers {
                             } else {
                                 cableCursor.Orientation = Orientation.Vertical;
                             }
-                        } else {
+                        } 
+                        else if(tile.Type == TileType.Connector) {
+                            cableCursor.Valid = true;
+                        }
+                        else {
                             // Not a road tile; disable selection
                             cableCursor.Valid = false;
                         }
@@ -275,7 +279,8 @@ namespace DCTC.Controllers {
                 gameController.Game.Player.RemoveNode(position);
             }
             else if(Mode == SelectionModes.Cable) {
-                if (!gameController.Map.HasRoad(position))
+                Tile tile = gameController.Map.Tiles[position];
+                if (tile.Type != TileType.Road && tile.Type != TileType.Connector)
                     return;
 
                 if(dragCable == null) {

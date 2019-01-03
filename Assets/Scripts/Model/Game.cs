@@ -55,7 +55,8 @@ namespace DCTC.Model {
             this.Random = new System.Random(Settings.Seed);
         }
 
-        public void NewGame(NewGameSettings settings, NameGenerator nameGenerator, MapConfiguration map) {
+        public void NewGame(NewGameSettings settings, NameGenerator nameGenerator, MapConfiguration map,
+            IList<TilePosition> headquarters) {
             this.Settings = settings;
             this.Map = map;
             this.Random = new System.Random(Settings.Seed);
@@ -63,11 +64,11 @@ namespace DCTC.Model {
 
             Companies = new List<Company>();
             for (int i = 0; i < settings.NumAIs; i++) {
-                Companies.Add(GenerateCompany(CompanyOwnerType.AI, nameGenerator));
+                Companies.Add(GenerateCompany(CompanyOwnerType.AI, nameGenerator, headquarters[i]));
             }
 
             if (settings.NumHumans > 0) {
-                Player = GenerateCompany(CompanyOwnerType.Human, nameGenerator);
+                Player = GenerateCompany(CompanyOwnerType.Human, nameGenerator, headquarters[settings.NumAIs]);
                 Player.Name = settings.PlayerName;
                 Companies.Add(Player);
             }
@@ -126,24 +127,27 @@ namespace DCTC.Model {
                 CustomerChanged(customer, company);
         }
 
-        private Company GenerateCompany(CompanyOwnerType type, NameGenerator nameGenerator) {
+        private Company GenerateCompany(CompanyOwnerType type, NameGenerator nameGenerator, 
+            TilePosition headquartersLocation) {
+            TilePosition truckPosition = Map.NearestRoad(headquartersLocation);
             Company c = new Company {
                 ID = Guid.NewGuid().ToString(),
                 Name = nameGenerator.CompanyName(),
                 OwnerType = type,
                 Game = this,
                 Trucks = new List<Truck>() {
-                    GenerateTruck()
+                    GenerateTruck(truckPosition)
                 },
-                Color = UnityEngine.Random.ColorHSV(0, 1, 1, 1, 0.7f, 1, 1, 1)
+                Color = UnityEngine.Random.ColorHSV(0, 1, 1, 1, 0.7f, 1, 1, 1),
+                HeadquartersLocation = headquartersLocation
             };
             return c;
         }
 
-        private Truck GenerateTruck() {
+        private Truck GenerateTruck(TilePosition position) {
             return new Truck() {
                 ID = Guid.NewGuid().ToString(),
-                Position = new TilePosition(0, 0),
+                Position = position,
                 Status = TruckStatus.Idle,
                 Game = this
             };

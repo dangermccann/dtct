@@ -62,7 +62,7 @@ namespace DCTC.Map {
 		public Tile() : this(new TilePosition(0, 0)) { }
 
 		public bool CanBuildOn() {
-			return Type != TileType.Road && Type != TileType.Water;
+			return Type != TileType.Road;
 		}
 
 		public void RemoveAllListeners() {
@@ -78,15 +78,8 @@ namespace DCTC.Map {
 	public enum TileType {
 		Empty,
 		Grass,
-		Dirt,
-		Cement,
-		Sand,
 		Road,
-		Water,
-		TilledSoil,
-		FruitFarm,
-		VegetableFarm,
-		SoybeanFarm,
+        Connector
 	}
 
 	public enum RoadType {

@@ -17,7 +17,6 @@ namespace DCTC.Map {
         public ThreeDCameraController cameraController;
 
         public delegate void TileSelectEventHandler(Tile tile);
-        public event TileSelectEventHandler TileSelected;
         public event GameEvent OverlayModeChanged;
         public event GameEvent DrawComplete;
 
@@ -165,6 +164,7 @@ namespace DCTC.Map {
             foreach (Company company in gameController.Game.Companies) {
                 company.ItemAdded += PlaceItem;
                 company.ItemRemoved += RemoveItem;
+                HighlightBuilding(company.HeadquartersLocation, company.Color, 0.50f);
             }
 
             gameController.Game.Player.ServiceAreaChanged += OnServiceAreaChanged;
@@ -173,13 +173,14 @@ namespace DCTC.Map {
             if (DrawComplete != null)
                 DrawComplete();
             gameController.OnMapDrawComplete();
+
+            NavigateCameraTo(gameController.Game.Player.HeadquartersLocation);
         }
 
 
-        public void EnterTileDetails(TilePosition pos) {
+        public void NavigateCameraTo(TilePosition pos) {
             Tile tile = map.Tiles[pos];
             Vector3 world = PositionToWorld(pos);
-            cameraController.SaveCameraLocation();
 
             int tileCount = 1;
             if (tile.Lot != null)
@@ -187,23 +188,8 @@ namespace DCTC.Map {
             float distance = Mathf.Lerp(15, 60, tileCount / 30f);
 
             Direction cameraFacing = Direction.North;
-            if (tile.Building != null)
-                cameraFacing = MapConfiguration.OppositeDirection(tile.Building.FacingDirection);
 
             cameraController.FocusOnPosition(world, cameraFacing, distance);
-            cameraController.SelectionEnabled = false;
-
-            if (TileSelected != null)
-                TileSelected(tile);
-        }
-
-        public void ExitLotDetails() {
-            Debug.Log("ExitLotDetails " + cameraController.SelectionEnabled);
-
-            if(cameraController.SelectionEnabled == false) {
-                cameraController.RestoreCameraLocation();
-                cameraController.SelectionEnabled = true;
-            }
         }
 
         void Update() {
@@ -430,7 +416,8 @@ namespace DCTC.Map {
 
                     if (tile.Type == TileType.Road) {
                         prefab = prefabs["Road" + tile.RoadType.ToString()];
-                    } else {
+                    }  
+                    else {
                         // Optimization to stretch quad 
                         if(!completedQuads.ContainsKey(pos)) {
                             prefab = prefabs["Quad"];
@@ -441,7 +428,7 @@ namespace DCTC.Map {
 
                             while(quadZ < map.Height) {
                                 quadTile = map.Tiles[new TilePosition(x, quadZ)];
-                                if(quadTile.Type != tile.Type) {
+                                if(quadTile.Type == TileType.Road) {
                                     break;
                                 }
                                 else {
@@ -453,7 +440,7 @@ namespace DCTC.Map {
 
                             while (quadX < map.Width) {
                                 quadTile = map.Tiles[new TilePosition(quadX, z)];
-                                if (quadTile.Type != tile.Type) {
+                                if (quadTile.Type == TileType.Road) {
                                     break;
                                 } else {
                                     completedQuads.Add(quadTile.Position, prefab);
@@ -468,7 +455,7 @@ namespace DCTC.Map {
 
                     if (prefab != null) {
                         GameObject tileGo = Instantiate(prefab);
-                        tileGo.name = TileName(pos); ;
+                        tileGo.name = TileName(pos);
                         tileGo.transform.SetParent(this.transform, false);
                         tileGo.transform.position = new Vector3(x * 2, 0, z * 2);
                         tileGo.transform.localScale = scale;
@@ -476,6 +463,14 @@ namespace DCTC.Map {
 
                         if(++batchCount % BatchSize == 0) 
                             yield return null;
+                    }
+
+                    if (tile.Type == TileType.Connector) {
+                        prefab = prefabs["ConnectorTile"];
+                        GameObject tileGo = Instantiate(prefab);
+                        tileGo.name = TileName(pos);
+                        tileGo.transform.SetParent(this.transform, false);
+                        tileGo.transform.position = new Vector3(x * 2, 0.01f, z * 2);
                     }
                 }
             }
@@ -615,8 +610,9 @@ namespace DCTC.Map {
                 Cable cable = item as Cable;
                 GameObject go = InstantiateObject("Cable", cable.ID, TilePosition.Origin);
 
-                UI.CableGraphics graphics = go.GetComponent<UI.CableGraphics>();
-                graphics.Mode = UI.CableGraphics.GraphicsMode.Placed;
+                CableGraphics graphics = go.GetComponent<CableGraphics>();
+                graphics.Cable = cable;
+                graphics.Mode = CableGraphics.GraphicsMode.Placed;
                 graphics.Points = cable.Positions;
             }
             else if(item is Node) {
@@ -626,7 +622,7 @@ namespace DCTC.Map {
             else if(item is Truck) {
                 Truck truck = item as Truck;
                 GameObject go = InstantiateObject("Van", truck.ID, truck.Position);
-                go.GetComponent<Van>().Truck = truck;
+                go.GetComponent<TruckGraphics>().Truck = truck;
             }
         }
 

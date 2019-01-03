@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using DCTC.Map;
 
@@ -47,6 +48,20 @@ namespace DCTC.Model
             }
 
             return true;
+        }
+
+        public HashSet<TilePosition> Corners() {
+            int left = Tiles.Min(p => p.x);
+            int right = Tiles.Max(p => p.x);
+            int bottom = Tiles.Min(p => p.y);
+            int top = Tiles.Max(p => p.y);
+
+            return new HashSet<TilePosition>() {
+                new TilePosition(left, bottom),
+                new TilePosition(left, top),
+                new TilePosition(right, bottom),
+                new TilePosition(right, top),
+            };
         }
     }
 }

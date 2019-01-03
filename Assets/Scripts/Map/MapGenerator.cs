@@ -91,6 +91,48 @@ namespace DCTC.Map
             return map;
         }
 
+        public IList<TilePosition> GenerateHeadquarters(MapConfiguration map, int count) {
+            List<TilePosition> candidates = new List<TilePosition>();
+            foreach(Neighborhood neighborhood in map.Neighborhoods) {
+                foreach(Lot lot in neighborhood.Lots) {
+                    if(lot.Building != null) {
+                        if(lot.Building.Type == BuildingType.Retail || lot.Building.Type == BuildingType.Office) {
+                            candidates.Add(lot.Anchor);
+                        }
+                    }
+                }
+            }
+
+            if(candidates.Count <= count) {
+                UnityEngine.Debug.LogError("Couldn't find enough buildings to replace with headquarters");
+                return null;
+            }
+
+            List<TilePosition> replacements = new List<TilePosition>();
+            while(count > 0) {
+                TilePosition candidate = RandomUtils.RandomThing(candidates, random);
+                replacements.Add(candidate);
+                candidates.Remove(candidate);
+                count--;
+            }
+
+            foreach(TilePosition replacement in replacements) {
+                Lot lot = map.Tiles[replacement].Lot;
+                lot.Building.Type = BuildingType.Headquarters;
+
+                // Add connectors at all four corners
+                HashSet<TilePosition> corners = lot.Corners();
+                foreach(TilePosition corner in corners) {
+                    map.Tiles[corner].Type = TileType.Connector;
+                    map.Tiles[corner].MovementCost = 1;
+                }
+            }
+
+
+
+            return replacements;
+        }
+
         void GenerateStreet(MapConfiguration map, NameGenerator nameGenerator, Segment segment, Neighborhood neighborhood) {
             Street street = new Street(map);
             street.Name = nameGenerator.RandomMinorStreet();

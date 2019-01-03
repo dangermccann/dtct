@@ -15,6 +15,16 @@ LotTemplates:
     Width: 5
     Height: 5
     Facing: East
+  Headquarters:
+    BuildingType: Headquarters
+    Width: 5
+    Height: 5
+    Facing: East
+  Office:
+    BuildingType: Office
+    Width: 5
+    Height: 5
+    Facing: East
   RanchE:
     BuildingType: Ranch
     Width: 3
@@ -156,6 +166,15 @@ BlockTemplates:
       - Name: Apartment
         Position: {x: 0, y: 6}
       - Name: Apartment
+        Position: {x: 0, y: 12}
+
+  Offices:
+    Lots:
+      - Name: Office
+        Position: {x: 0, y: 0}
+      - Name: Office
+        Position: {x: 0, y: 6}
+      - Name: Office
         Position: {x: 0, y: 12}
 
   Retail:
@@ -332,7 +351,7 @@ Neighborhoods:
         Position: {x: 55, y: 1}
       - Name: Apartments
         Position: {x: 1, y: 21}
-      - Name: Apartments
+      - Name: Offices
         Position: {x: 7, y: 21}
       - Name: Apartments
         Position: {x: 13, y: 21}
@@ -344,7 +363,7 @@ Neighborhoods:
         Position: {x: 31, y: 21}
       - Name: Apartments
         Position: {x: 37, y: 21}
-      - Name: Apartments
+      - Name: Offices
         Position: {x: 43, y: 21}
       - Name: Apartments
         Position: {x: 49, y: 21}

@@ -5,7 +5,7 @@ using DCTC.Model;
 using DCTC.Controllers;
 
 namespace DCTC.Map {
-    public class Van : MonoBehaviour {
+    public class TruckGraphics : MonoBehaviour {
 
         public float speed = 10;
 
@@ -36,7 +36,7 @@ namespace DCTC.Map {
             get { return truck; }
             set {
                 truck = value;
-                truck.Dispatched += () => { Path = truck.Path; };
+                truck.Dispatched += OnDispatched;
             }
         }
 
@@ -49,6 +49,15 @@ namespace DCTC.Map {
         void Start() {
             graphics = transform.GetChild(0).gameObject;
             gameController = GameController.Get();
+        }
+
+        private void OnDestroy() {
+            if (truck != null)
+                truck.Dispatched -= OnDispatched;
+        }
+
+        private void OnDispatched() {
+            Path = truck.Path;
         }
 
         public void Pause() {

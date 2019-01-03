@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using DCTC.Map;
 using DCTC.Model;
@@ -42,6 +43,7 @@ namespace DCTC.Controllers {
         private Coroutine loopCoroutine;
         private int gameCounter = 0;
         private float lastUpdateTime;
+        private IList<TilePosition> headquarters;
 
         private int GameLoopBatchSize {
             get {
@@ -83,7 +85,7 @@ namespace DCTC.Controllers {
             }
         }
 
-        public void GenerateMap(NewGameSettings settings) {
+        void GenerateMap(NewGameSettings settings) {
             int seed = 100;
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
@@ -92,6 +94,7 @@ namespace DCTC.Controllers {
             nameGenerator = new NameGenerator(rand);
             MapGenerator generator = new MapGenerator(rand, settings, nameGenerator);
             Map = generator.Generate();
+            headquarters = generator.GenerateHeadquarters(Map, settings.NumAIs + settings.NumHumans);
 
             stopwatch.Stop();
             Debug.Log("Generate map time: " + stopwatch.ElapsedMilliseconds + "ms");
@@ -128,7 +131,7 @@ namespace DCTC.Controllers {
             GenerateMap(settings);
 
             Game = new Game();
-            Game.NewGame(settings, nameGenerator, Map);
+            Game.NewGame(settings, nameGenerator, Map, headquarters);
             Game.PopulateCustomers(nameGenerator);
 
             if (GameLoaded != null)

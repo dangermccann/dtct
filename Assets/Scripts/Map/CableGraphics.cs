@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DCTC.Map;
+using DCTC.Model;
 
-namespace DCTC.UI {
+namespace DCTC.Map {
     public class CableGraphics : MonoBehaviour {
 
         public enum GraphicsMode {
@@ -60,6 +60,16 @@ namespace DCTC.UI {
             }
         }
 
+        private Cable cable;
+        public Cable Cable { get {
+                return cable;
+            }
+            set {
+                cable = value;
+                cable.StatusChanged += RedrawLineColor;
+            }
+        } 
+
         [HideInInspector]
         private List<TilePosition> points = new List<TilePosition>();
         public List<TilePosition> Points {
@@ -70,6 +80,11 @@ namespace DCTC.UI {
             }
         }
 
+        void OnDestroy() {
+            if (cable != null)
+                cable.StatusChanged -= RedrawLineColor;
+        }
+
         private void Redraw() {
             if(Mode == GraphicsMode.Cursor) {
                 RedrawCursor();
@@ -77,15 +92,8 @@ namespace DCTC.UI {
             else {
                 RedrawPlaced();
             }
-            
 
-            if (valid) {
-                SetLineColor(vertical, ValidColor);
-                SetLineColor(horizontal, ValidColor);
-            } else {
-                SetLineColor(vertical, InvalidColor);
-                SetLineColor(horizontal, InvalidColor);
-            }
+            RedrawLineColor();
         }
 
         private void RedrawCursor() {
@@ -130,7 +138,23 @@ namespace DCTC.UI {
             LineRenderer lr = horizontal.GetComponent<LineRenderer>();
             lr.positionCount = positions.Count;
             lr.SetPositions(positions.ToArray());
+
+            
         }
+
+        private void RedrawLineColor() {
+            if (Mode == GraphicsMode.Placed)
+                valid = (Cable.Status == NetworkStatus.Active);
+
+            if (valid) {
+                SetLineColor(vertical, ValidColor);
+                SetLineColor(horizontal, ValidColor);
+            } else {
+                SetLineColor(vertical, InvalidColor);
+                SetLineColor(horizontal, InvalidColor);
+            }
+        }
+
 
         private void SetLineColor(GameObject go, Color color) {
             LineRenderer lr = go.GetComponent<LineRenderer>();

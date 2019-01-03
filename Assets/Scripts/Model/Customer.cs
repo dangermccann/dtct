@@ -83,8 +83,9 @@ namespace DCTC.Model {
                 if (provider == null) {
                     ChangeProvider(null);
                 } else {
-                    // Determine if customer wishes to switch to a different provider or cancel service
                     candidates.Remove(provider);
+
+                    // Determine if customer wishes to switch to a different provider or cancel service
                     if (WillChangeProvider()) {
                         ChangeProvider(ChooseProvider(candidates));
                     }
@@ -115,7 +116,16 @@ namespace DCTC.Model {
             return candidates;
         }
 
+        public void ServiceTruckArrived() {
+            if (Status == CustomerStatus.Outage || Status == CustomerStatus.Pending)
+                Status = CustomerStatus.Subscribed;
+            Game.OnCustomerChanged(this);
+        }
+
         private void UpdateDissatisfaction(float deltaTime) {
+            // TODO: consider price increases 
+            // TODO: remember what factors impact dissatisfaction the most per customer
+
             // Adjust Dissatisfaction due to wait times 
             if (Status == CustomerStatus.Outage)
                 Dissatisfaction += Patience * deltaTime * 0.25f;
@@ -173,6 +183,12 @@ namespace DCTC.Model {
 
         private ServiceTier ChooseServiceTier(Company provider) {
             Dictionary<ServiceTier, float> services = provider.FindServicesForLocation(HomeLocation);
+
+            if(services.Count == 0) {
+                Debug.LogError("Unable to choose service tier");
+                return ServiceTier.BasicTV;
+            }
+
             float maxScore = float.MinValue;
             ServiceTier bestTier = services.Keys.First();
             foreach (ServiceTier tier in services.Keys) {

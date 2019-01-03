@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using DCTC.Map;
 
@@ -21,6 +22,10 @@ namespace DCTC.Model {
             ServiceArea = new HashSet<TilePosition>();
         }
 
+        public bool AttachedToConnectors(HashSet<TilePosition> connectors) {
+            return Positions.Intersect(connectors).Count() > 0;
+        }
+
         public bool ContainsPosition(TilePosition position) {
             return Positions.Contains(position);
         }
@@ -32,6 +37,12 @@ namespace DCTC.Model {
                     positions.AddManySafely(cable.Positions);
                 }
                 return positions;
+            }
+        }
+
+        public bool Active {
+            get {
+                return (Nodes.Count > 0 && Nodes[0].Status == NetworkStatus.Active);
             }
         }
 
@@ -67,6 +78,20 @@ namespace DCTC.Model {
             }
         }
 
+        public bool IntersectsOneOf(HashSet<TilePosition> other) {
+            foreach(TilePosition position in Positions) {
+                if (other.Contains(position))
+                    return true;
+            }
+            return false;
+        }
+
+    }
+
+    public enum NetworkStatus {
+        Active,
+        Disconnected,
+        Overloaded
     }
 
     [Serializable]
@@ -74,9 +99,24 @@ namespace DCTC.Model {
         public string ID { get; set; }
         public CableType Type { get; set; }
         public List<TilePosition> Positions { get; set; }
+
+        private NetworkStatus status;
+        public NetworkStatus Status {
+            get { return status; }
+            set {
+                status = value;
+                if (StatusChanged != null)
+                    StatusChanged();
+            }
+       }
+
+        [field: NonSerialized]
+        public event ChangeDelegate StatusChanged;
+
         public Cable() {
             ID = Guid.NewGuid().ToString();
             Positions = new List<TilePosition>();
+            Status = NetworkStatus.Disconnected;
         }
 
         public bool Intersects(IEnumerable<TilePosition> positions) {
@@ -111,8 +151,22 @@ namespace DCTC.Model {
         public NodeType Type { get; set; }
         public TilePosition Position { get; set; }
 
+        private NetworkStatus status;
+        public NetworkStatus Status {
+            get { return status; }
+            set {
+                status = value;
+                if (StatusChanged != null)
+                    StatusChanged();
+            }
+        }
+
+        [field: NonSerialized]
+        public event ChangeDelegate StatusChanged;
+
         public Node() {
             ID = Guid.NewGuid().ToString();
+            Status = NetworkStatus.Disconnected;
         }
 
         public int ServiceRange {

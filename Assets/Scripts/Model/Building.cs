@@ -51,7 +51,9 @@ namespace DCTC.Model {
 		Barn,
         Factory,
         SmallFactory,
-        Warehouse
+        Warehouse,
+        Office,
+        Headquarters
 	}
 
     public enum BuildingClassification {
@@ -108,7 +110,7 @@ namespace DCTC.Model {
 												  (facing == Direction.East || facing == Direction.West) ? 2 : 1,
                                                   BuildingClassification.Residential, 290);
                 case BuildingType.Apartment:
-                    return new BuildingAttributes(2, 2, BuildingClassification.Residential, 670);
+                    return new BuildingAttributes(5, 5, BuildingClassification.Residential, 670);
 
                 // Commercial
                 case BuildingType.StripMall:
@@ -118,7 +120,13 @@ namespace DCTC.Model {
                     return new BuildingAttributes(1, 1, BuildingClassification.Commercial, 150);
 
                 case BuildingType.Retail:
-                    return new BuildingAttributes(2, 2, BuildingClassification.Commercial, 300);
+                    return new BuildingAttributes(5, 5, BuildingClassification.Commercial, 300);
+
+                case BuildingType.Office:
+                    return new BuildingAttributes(5, 5, BuildingClassification.Commercial, 1200);
+
+                case BuildingType.Headquarters:
+                    return new BuildingAttributes(5, 5, BuildingClassification.Commercial, 1500);
 
                 // Aggricultural
                 case BuildingType.Barn:

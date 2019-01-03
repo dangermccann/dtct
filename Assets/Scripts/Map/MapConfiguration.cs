@@ -6,7 +6,7 @@ using DCTC.Pathfinding;
 namespace DCTC.Map {
 
 	public class MapConfiguration {
-		public static TileType DefaultTileType = TileType.Sand;
+		public static TileType DefaultTileType = TileType.Grass;
 		public static int DefaultMovementCost = 1000000;
         public static int BuildingMovementCost = 1000000;
         public static int RoadMovementCost = 1;

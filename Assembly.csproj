@@ -65,13 +65,14 @@
     <Compile Include="Assets\Scripts\Controllers\SelectionController.cs" />
     <Compile Include="Assets\Scripts\Controllers\ThreeDCameraController.cs" />
     <Compile Include="Assets\Scripts\Map\AbstractMap.cs" />
+    <Compile Include="Assets\Scripts\Map\CableGraphics.cs" />
     <Compile Include="Assets\Scripts\Map\Direction.cs" />
     <Compile Include="Assets\Scripts\Map\MapConfiguration.cs" />
     <Compile Include="Assets\Scripts\Map\MapGenerator.cs" />
     <Compile Include="Assets\Scripts\Map\ThreeDMap.cs" />
     <Compile Include="Assets\Scripts\Map\Tile.cs" />
     <Compile Include="Assets\Scripts\Map\TilePosition.cs" />
-    <Compile Include="Assets\Scripts\Map\Van.cs" />
+    <Compile Include="Assets\Scripts\Map\TruckGraphics.cs" />
     <Compile Include="Assets\Scripts\Model\Building.cs" />
     <Compile Include="Assets\Scripts\Model\Company.cs" />
     <Compile Include="Assets\Scripts\Model\Customer.cs" />
@@ -86,7 +87,6 @@
     <Compile Include="Assets\Scripts\Model\Street.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\AStar.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\PriorityQueue.cs" />
-    <Compile Include="Assets\Scripts\UI\CableGraphics.cs" />
     <Compile Include="Assets\Scripts\UI\CustomerDetails.cs" />
     <Compile Include="Assets\Scripts\UI\EnumToggleGroup.cs" />
     <Compile Include="Assets\Scripts\UI\Formatter.cs" />
