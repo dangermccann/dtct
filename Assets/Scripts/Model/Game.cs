@@ -39,11 +39,19 @@ namespace DCTC.Model {
         [NonSerialized]
         public System.Random Random;
 
+        [NonSerialized]
+        public NameGenerator NameGenerator;
+
         [OnDeserialized()]
         internal void OnSerializedMethod(StreamingContext context) {
-            foreach(Company c in Companies) {
+            foreach (Company c in Companies) {
                 c.Game = this;
                 c.RefreshCustomers();
+                c.CallCenter.Company = c;
+                foreach (Agent a in c.CallCenter.Agents) {
+                    a.Company = c;
+                }
+
                 foreach (Truck t in c.Trucks) {
                     t.Game = this;
                 }
@@ -60,21 +68,22 @@ namespace DCTC.Model {
             this.Settings = settings;
             this.Map = map;
             this.Random = new System.Random(Settings.Seed);
+            this.NameGenerator = nameGenerator;
             UnityEngine.Random.InitState(Settings.Seed);
 
             Companies = new List<Company>();
             for (int i = 0; i < settings.NumAIs; i++) {
-                Companies.Add(GenerateCompany(CompanyOwnerType.AI, nameGenerator, headquarters[i]));
+                Companies.Add(GenerateCompany(CompanyOwnerType.AI, headquarters[i]));
             }
 
             if (settings.NumHumans > 0) {
-                Player = GenerateCompany(CompanyOwnerType.Human, nameGenerator, headquarters[settings.NumAIs]);
+                Player = GenerateCompany(CompanyOwnerType.Human, headquarters[settings.NumAIs]);
                 Player.Name = settings.PlayerName;
                 Companies.Add(Player);
             }
         }
 
-        public void PopulateCustomers(NameGenerator nameGenerator) {
+        public void PopulateCustomers() {
             Customers = new List<Customer>();
             foreach (Neighborhood neighborhood in Map.Neighborhoods) {
                 foreach(Lot lot in neighborhood.Lots) {
@@ -85,7 +94,7 @@ namespace DCTC.Model {
                             case BuildingType.SuburbanHouse:
                             case BuildingType.Townhouse:
                                 // Create single customer account
-                                Customers.Add(GenerateCustomer(lot, nameGenerator));
+                                Customers.Add(GenerateCustomer(lot));
                                 break;
 
                             case BuildingType.Apartment:
@@ -101,7 +110,7 @@ namespace DCTC.Model {
             // Redispatch trucks so they restore their previous jobs
             foreach(Company c in Companies) {
                 foreach(Truck t in c.Trucks) {
-                    if(t.Status == TruckStatus.EnRoute) {
+                    if(t.Status != TruckStatus.Idle) {
                         t.Dispatch(t.DestinationCustomerID, t.Path);
                     }
                 }
@@ -127,12 +136,11 @@ namespace DCTC.Model {
                 CustomerChanged(customer, company);
         }
 
-        private Company GenerateCompany(CompanyOwnerType type, NameGenerator nameGenerator, 
-            TilePosition headquartersLocation) {
+        private Company GenerateCompany(CompanyOwnerType type, TilePosition headquartersLocation) {
             TilePosition truckPosition = Map.NearestRoad(headquartersLocation);
-            Company c = new Company {
+            Company company = new Company {
                 ID = Guid.NewGuid().ToString(),
-                Name = nameGenerator.CompanyName(),
+                Name = NameGenerator.CompanyName(),
                 OwnerType = type,
                 Game = this,
                 Trucks = new List<Truck>() {
@@ -141,58 +149,59 @@ namespace DCTC.Model {
                 Color = UnityEngine.Random.ColorHSV(0, 1, 1, 1, 0.7f, 1, 1, 1),
                 HeadquartersLocation = headquartersLocation
             };
-            return c;
+
+            company.CallCenter.Company = company;
+
+            // Start with one agent
+            Agent agent = GenerateAgent(company);
+            company.CallCenter.Agents.Add(agent);
+
+            return company;
         }
 
         private Truck GenerateTruck(TilePosition position) {
+            string name = RandomUtils.Chance(Random, 0.5) ? NameGenerator.RandomMaleName() : NameGenerator.RandomFemaleName();
+
             return new Truck() {
                 ID = Guid.NewGuid().ToString(),
+                Name = name,
                 Position = position,
                 Status = TruckStatus.Idle,
+                Speed = RandomUtils.RandomFloat(0.2f, 1.0f, this.Random),
                 Game = this
             };
         }
 
-        private Customer GenerateCustomer(Lot home, NameGenerator nameGenerator) {
+        private Customer GenerateCustomer(Lot home) {
             Customer customer = new Customer {
                 HomeLocation = home.Anchor,
                 ID = Guid.NewGuid().ToString(),
-                Name = nameGenerator.RandomSurname(),
+                Name = NameGenerator.RandomSurname(),
                 Game = this,
                 IncomeLevel = RandomUtils.RandomFloat(1.5f, 2.5f, this.Random),
                 Patience = RandomUtils.RandomFloat(0.2f, 1.0f, this.Random)
             };
             return customer;
         }
+
+        public Agent GenerateAgent(Company company) {
+            string name = RandomUtils.Chance(Random, 0.5) ? NameGenerator.RandomMaleName() : NameGenerator.RandomFemaleName();
+
+            Agent agent = new Agent() {
+                ID = Guid.NewGuid().ToString(),
+                Name = name,
+                Speed = RandomUtils.RandomFloat(0.2f, 0.99f, Random),
+                Friendliness = RandomUtils.RandomFloat(0.2f, 0.99f, Random),
+                Performance = RandomUtils.RandomFloat(0.2f, 0.99f, Random),
+                Company = company
+            };
+            return agent;
+        }
     }
 
     public enum CompanyOwnerType {
         AI,
         Human
-    }
-
-
-
-
-    public enum EmployeeRole {
-        CallCenter,
-        FieldTech
-    }
-
-    public enum EmployeeGender {
-        Male,
-        Female
-    }
-
-    [Serializable]
-    public class Employee {
-        public string ID { get; set; }
-        public string Name { get; set; }
-        public EmployeeRole Role { get; set; }
-        public EmployeeGender Gender { get; set; }
-        public int Age { get; set; }
-        public float Salary { get; set; }
-        public float Competency { get; set; }
     }
 }
 

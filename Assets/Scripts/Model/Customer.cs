@@ -15,6 +15,8 @@ namespace DCTC.Model {
 
     [Serializable]
     public class Customer {
+        private const float baseTurnoverCooldown = 25f;
+
         public string ID { get; set; }
         public string Name { get; set; }
         public TilePosition HomeLocation { get; set; }
@@ -29,6 +31,7 @@ namespace DCTC.Model {
         public ServiceTier ServiceTier { get; set; }
 
         private int invocationsSinceProviderChange = 0;
+        private float turnoverCooldown = 0;
 
 
         [NonSerialized]
@@ -72,7 +75,13 @@ namespace DCTC.Model {
 
             List<Company> candidates = FindServiceProviders();
 
-            if (ProviderID == null) {
+            if (Status == CustomerStatus.NoProvider) {
+                if(turnoverCooldown > 0 && turnoverCooldown - deltaTime <= 0) {
+                    Debug.Log(Name + " reached end of cooldown period");
+                }
+
+                turnoverCooldown -= deltaTime;
+
                 if (candidates.Count > 0 && WillChangeProvider()) {
                     ChangeProvider(ChooseProvider(candidates));
                 }
@@ -122,6 +131,15 @@ namespace DCTC.Model {
             Game.OnCustomerChanged(this);
         }
 
+        public void ResolveOutage() {
+            Status = CustomerStatus.Subscribed;
+            Game.OnCustomerChanged(this);
+        }
+
+        public void OffendedByAgent() {
+            Dissatisfaction += Patience * 0.3f;
+        }
+
         private void UpdateDissatisfaction(float deltaTime) {
             // TODO: consider price increases 
             // TODO: remember what factors impact dissatisfaction the most per customer
@@ -131,8 +149,10 @@ namespace DCTC.Model {
                 Dissatisfaction += Patience * deltaTime * 0.25f;
             else if (Status == CustomerStatus.Pending)
                 Dissatisfaction += Patience * deltaTime * 0.05f;
-            else
+            else if (Status == CustomerStatus.Subscribed)
                 Dissatisfaction -= deltaTime * 0.005f;
+            else
+                Dissatisfaction -= deltaTime * 0.003f;
 
             Dissatisfaction = Mathf.Clamp01(Dissatisfaction);
         }
@@ -149,18 +169,22 @@ namespace DCTC.Model {
             switch (Status) {
                 case CustomerStatus.NoProvider:
                     churnChance = RandomUtils.LinearLikelihood(100f, 1000f, Wealth);
-                    churnChance *= (1.0f - Mathf.Min(1f, Dissatisfaction * 2f));
-                    timeChance = RandomUtils.LinearLikelihood(0, 150, invocationsSinceProviderChange);
+                    churnChance *= (1.0f - Mathf.Min(1f, Dissatisfaction * 3f));
+
+                    if (turnoverCooldown > 0)
+                        timeChance = 0;
+                    else
+                        timeChance = RandomUtils.LinearLikelihood(0, 150, invocationsSinceProviderChange);
                     break;
 
                 case CustomerStatus.Subscribed:
                     churnChance = Mathf.Max(0.1f, Dissatisfaction) * Patience;
-                    timeChance = 0.1f;
+                    timeChance = 0.05f;
                     break;
 
                 case CustomerStatus.Outage:
                     churnChance = Mathf.Max(0.1f, Dissatisfaction) * Patience;
-                    timeChance = 0.25f;
+                    timeChance = 0.20f;
                     break;
 
                 case CustomerStatus.Pending:
@@ -219,7 +243,7 @@ namespace DCTC.Model {
         private void ChangeProvider(Company company) {
                
             if(company != null) {
-                Dissatisfaction /= 3.0f;
+                Dissatisfaction /= 2.0f;
                 ProviderID = company.ID;
                 Status = CustomerStatus.Pending;
                 ServiceTier = ChooseServiceTier(company);
@@ -227,6 +251,9 @@ namespace DCTC.Model {
             else {
                 ProviderID = null;
                 Status = CustomerStatus.NoProvider;
+                turnoverCooldown = baseTurnoverCooldown * RandomUtils.RandomFloat(0.25f, 1.0f, Game.Random);
+
+                Debug.Log(Name + " turned over (" + UI.Formatter.FormatDissatisfaction(Dissatisfaction) + ")");
             }
 
             invocationsSinceProviderChange = 0;

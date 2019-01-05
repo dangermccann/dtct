@@ -7,7 +7,7 @@ using DCTC.Model;
 namespace DCTC.UI {
     public class GlobalInfo : MonoBehaviour {
         GameController gameController;
-        Text money, customerCount, score;
+        Text money, customerCount, score, calls, trucks;
         int coolOff = 0;
         bool running = false;
 
@@ -17,9 +17,11 @@ namespace DCTC.UI {
             if (gameController.Game != null && gameController.Game.Player != null)
                 running = true;
 
-            money = transform.Find("Money").gameObject.GetComponent<Text>();
-            customerCount = transform.Find("CustomerCount").gameObject.GetComponent<Text>();
-            score = transform.Find("Score").gameObject.GetComponent<Text>();
+            money = transform.FindChildRecursive("Money").gameObject.GetComponent<Text>();
+            customerCount = transform.FindChildRecursive("CustomerCount").gameObject.GetComponent<Text>();
+            score = transform.FindChildRecursive("Score").gameObject.GetComponent<Text>();
+            calls = transform.FindChildRecursive("Calls").gameObject.GetComponent<Text>();
+            trucks = transform.FindChildRecursive("Trucks").gameObject.GetComponent<Text>();
         }
 
         void Update() {
@@ -44,6 +46,9 @@ namespace DCTC.UI {
             customerCount.text = countStr;
 
             score.text = player.Satisfaction.ToString("0") + "% Satisfaction";
+
+            calls.text = player.CallCenter.CallQueue.Count.ToString() + " Queued Calls";
+            trucks.text = player.TruckRollQueue.Count.ToString() + " Queued Trucks";
         }
     }
 }

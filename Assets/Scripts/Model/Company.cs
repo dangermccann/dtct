@@ -28,12 +28,12 @@ namespace DCTC.Model {
         public List<Cable> Cables { get; set; }
         public Dictionary<TilePosition, Node> Nodes { get; set; }
         public Dictionary<ServiceTier, float> ServicePrices { get; set; }
-        public List<Employee> Employees { get; set; }
         public List<Truck> Trucks { get; set; }
         public List<string> TruckRollQueue { get; set; }
         public CompanyOwnerType OwnerType { get; set; }
         public float Money { get; set; }
         public TilePosition HeadquartersLocation { get; set; }
+        public CallCenter CallCenter { get; set; }
 
         private SerializableColor color;
         public Color Color {
@@ -112,6 +112,10 @@ namespace DCTC.Model {
             }
         }
 
+        public void RollTruck(Customer customer) {
+            TruckRollQueue.Insert(TruckRollQueue.Count, customer.ID);
+        }
+
         private void OnCustomerChanged(Customer customer, Company company) {
             if (TruckRollQueue.Contains(customer.ID))
                 TruckRollQueue.Remove(customer.ID);
@@ -121,11 +125,10 @@ namespace DCTC.Model {
                     customers.Add(customer);
 
                 if (customer.Status == CustomerStatus.Pending)
-                    TruckRollQueue.Insert(TruckRollQueue.Count, customer.ID);
+                    CallCenter.Enqueue(customer.ID);
 
-                // TODO: maybe allow outages to go to the begining of the queue
-                if(customer.Status == CustomerStatus.Outage)
-                    TruckRollQueue.Insert(TruckRollQueue.Count, customer.ID);
+                if (customer.Status == CustomerStatus.Outage)
+                    CallCenter.Enqueue(customer.ID);
 
 
             } else if (customers.Contains(customer)) {
@@ -143,10 +146,14 @@ namespace DCTC.Model {
             Cables = new List<Cable>();
             Nodes = new Dictionary<TilePosition, Node>();
             ServicePrices = new Dictionary<ServiceTier, float>();
-            Employees = new List<Employee>();
             TruckRollQueue = new List<string>();
+            CallCenter = new CallCenter();
 
             InitPrices();
+        }
+
+        public Customer GetCustomer(string id) {
+            return Customers.FirstOrDefault(c => c.ID == id);
         }
 
         public Cable PlaceCable(CableType type, List<TilePosition> positions) {
@@ -280,7 +287,7 @@ namespace DCTC.Model {
                 Truck truck = Trucks.Last();
                 Trucks.Remove(truck);
 
-                if (truck.Status == TruckStatus.EnRoute) {
+                if (truck.Status != TruckStatus.Idle) {
                     TruckRollQueue.Insert(0, truck.DestinationCustomerID);
                 }
 
@@ -288,6 +295,21 @@ namespace DCTC.Model {
             }
             else {
                 Debug.LogWarning("Can not delete last truck");
+            }
+        }
+
+        public void HireAgent() {
+            Agent agent = Game.GenerateAgent(this);
+            CallCenter.HireAgent(agent);
+        }
+
+        public void FireAgent() {
+            if(CallCenter.Agents.Count > 1) {
+                Agent agent = CallCenter.Agents.Last();
+                CallCenter.FireAgent(agent);
+            }
+            else {
+                Debug.LogWarning("Can not fire last agent");
             }
         }
 
@@ -419,6 +441,8 @@ namespace DCTC.Model {
         }
 
         public void Update(float deltaTime) {
+            CallCenter.Update(deltaTime);
+
             foreach (Truck truck in Trucks) {
                 if (truck.Status == TruckStatus.Idle) {
                     if(TruckRollQueue.Count > 0) {
@@ -427,6 +451,8 @@ namespace DCTC.Model {
                         DispatchTruck(truck, customerID);
                     }
                 }
+
+                Money -= truck.Salary * deltaTime;
             }
 
             HashSet<Customer> customers = Customers;

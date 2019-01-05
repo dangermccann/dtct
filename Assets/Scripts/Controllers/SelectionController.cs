@@ -288,6 +288,14 @@ namespace DCTC.Controllers {
             if (Input.GetKeyDown(KeyCode.KeypadMinus)) {
                 gameController.Game.Player.DeleteTruck();
             }
+
+            if (Input.GetKeyDown(KeyCode.Keypad9)) {
+                gameController.Game.Player.HireAgent();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Keypad6)) {
+                gameController.Game.Player.FireAgent();
+            }
         }
 
         private void CameraController_TileDragged(Vector3 world, TilePosition position) {

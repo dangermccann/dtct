@@ -7,14 +7,18 @@ using DCTC.Controllers;
 namespace DCTC.Map {
     public class TruckGraphics : MonoBehaviour {
 
-        public float speed = 10;
+        private const float baseTravelSpeed = 15;
+        private const float baseWorkSpeed = 2;
+        private const float baseWork = 1;
 
         GameObject graphics;
         int currentIndex = 0;
         Vector3 currentDestination, currentStart;
         Quaternion startRotation, destRotation;
         float elapsed = 0;
+        float workRemaining = 0;
         bool running = false;
+        bool destinationReached = false;
         GameController gameController;
 
         List<TilePosition> path;
@@ -25,9 +29,9 @@ namespace DCTC.Map {
             set {
                 path = value;
                 if (path.Count > 1)
-                    Go();
+                    BeginJob();
                 else
-                    Pause();
+                    CompleteJob();
             }
         }
 
@@ -60,16 +64,18 @@ namespace DCTC.Map {
             Path = truck.Path;
         }
 
-        public void Pause() {
+        public void CompleteJob() {
             running = false;
-            Truck.DestinationReached();
+            Truck.JobComplete();
         }
 
-        public void Go() {
+        public void BeginJob() {
             running = true;
             currentIndex = 0;
+            workRemaining = baseWork;
+            destinationReached = false;
             transform.position = ThreeDMap.PositionToWorld(path[0]);
-            Next();
+            NextTile();
         }
 
 
@@ -77,21 +83,41 @@ namespace DCTC.Map {
             if (!running || gameController.GameSpeed == GameSpeed.Pause)
                 return;
 
-            if( ( transform.position - currentDestination).magnitude < 0.05f ) {
-                Next();
+            if(destinationReached) {
+                workRemaining -= Time.deltaTime * baseWorkSpeed * Truck.Speed * (float)gameController.GameSpeed;
+                if (workRemaining <= 0)
+                    CompleteJob();
+
+                return;
             }
-            elapsed += Time.deltaTime * speed *  (float) gameController.GameSpeed;
+
+            if ( ( transform.position - currentDestination).magnitude < 0.05f ) {
+                destinationReached = NextTile();
+
+                if (destinationReached)
+                    Truck.DestinationReached();
+            }
+
+            elapsed += Time.deltaTime * baseTravelSpeed * Truck.Speed * (float)gameController.GameSpeed;
 
             transform.position = Vector3.Lerp(currentStart, currentDestination, elapsed);
             graphics.transform.rotation = Quaternion.Lerp(startRotation, destRotation, 5.0f * elapsed);
         }
 
-        void Next() {
+        bool CheckWorkRemaining() {
+            if (workRemaining <= 0) {
+                return true;
+            } else {
+                workRemaining -= Time.deltaTime * Truck.Speed * (float)gameController.GameSpeed;
+                return false;
+            }
+        }
+
+        bool NextTile() {
             currentIndex++;
 
             if (currentIndex >= path.Count) {
-                Pause();
-                return;
+                return true;
             }
 
             startRotation = graphics.transform.rotation;
@@ -120,6 +146,8 @@ namespace DCTC.Map {
             elapsed = 0;
             currentDestination = ThreeDMap.PositionToWorld(path[currentIndex]);
             Truck.Position = path[currentIndex];
+
+            return false;
         }
     }
 

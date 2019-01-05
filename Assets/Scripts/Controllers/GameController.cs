@@ -44,6 +44,7 @@ namespace DCTC.Controllers {
         private int gameCounter = 0;
         private float lastUpdateTime;
         private IList<TilePosition> headquarters;
+        private System.Random random;
 
         private int GameLoopBatchSize {
             get {
@@ -86,13 +87,10 @@ namespace DCTC.Controllers {
         }
 
         void GenerateMap(NewGameSettings settings) {
-            int seed = 100;
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 
-            System.Random rand = new System.Random(seed);
-            nameGenerator = new NameGenerator(rand);
-            MapGenerator generator = new MapGenerator(rand, settings, nameGenerator);
+            MapGenerator generator = new MapGenerator(random, settings, nameGenerator);
             Map = generator.Generate();
             headquarters = generator.GenerateHeadquarters(Map, settings.NumAIs + settings.NumHumans);
 
@@ -112,6 +110,9 @@ namespace DCTC.Controllers {
 
             Game = saver.LoadGame(SaveName);
             UnityEngine.Random.state = Game.RandomState;
+            random = Game.Random;
+            nameGenerator = new NameGenerator(random);
+            Game.NameGenerator = nameGenerator;
             Game.Player = Game.Companies.First(c => c.OwnerType == CompanyOwnerType.Human);
             Map = saver.LoadMap(SaveName);
             Game.Map = Map;
@@ -128,11 +129,15 @@ namespace DCTC.Controllers {
         public void New() { StartCoroutine( AsyncNew() ); }
         private IEnumerator AsyncNew() {
             NewGameSettings settings = defaultNewGameSettings;
+
+            random = new System.Random(settings.Seed);
+            nameGenerator = new NameGenerator(random);
+
             GenerateMap(settings);
 
             Game = new Game();
             Game.NewGame(settings, nameGenerator, Map, headquarters);
-            Game.PopulateCustomers(nameGenerator);
+            Game.PopulateCustomers();
 
             if (GameLoaded != null)
                 GameLoaded();
