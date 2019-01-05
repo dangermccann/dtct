@@ -150,6 +150,10 @@ namespace DCTC.Model {
         }
 
         public Cable PlaceCable(CableType type, List<TilePosition> positions) {
+
+            string posStr = positions.Aggregate("", (current, next) => current + " " + next);
+            Debug.Log("Place: " + posStr);
+
             Cable cable = new Cable();
             cable.Type = type;
             cable.Positions.AddRange(positions);
@@ -172,6 +176,16 @@ namespace DCTC.Model {
             TriggerItemRemoved(cable);
             TriggerItemAdded(cable);
         }
+
+        public void RemoveCable(Cable cable) {
+            string posStr = cable.Positions.Aggregate("", (current, next) => current + " " + next);
+            Debug.Log("Remove: " + posStr);
+
+            Cables.Remove(cable);
+            InvalidateNetworks();
+            TriggerItemRemoved(cable);
+        }
+
 
         public void RemoveCablePosition(TilePosition pos) {
             List<Cable> allCables = new List<Cable>();
@@ -217,6 +231,17 @@ namespace DCTC.Model {
                     }
                 }
             }
+
+            // Clean up any cables of length 1
+            allCables = new List<Cable>();
+            allCables.AddRange(Cables);
+            foreach (Cable cable in allCables) {
+                if(cable.Positions.Count <= 1) {
+                    Cables.Remove(cable);
+                    InvalidateNetworks();
+                    TriggerItemRemoved(cable);
+                }
+            }
         }
 
         public void PlaceNode(NodeType type, TilePosition position) {
@@ -237,6 +262,36 @@ namespace DCTC.Model {
             }
         }
 
+        public void CreateTruck() {
+            TilePosition position = Game.Map.NearestRoad(HeadquartersLocation);
+            Truck truck = new Truck() {
+                ID = Guid.NewGuid().ToString(),
+                Position = position,
+                Status = TruckStatus.Idle,
+                Game = this.Game
+            };
+
+            Trucks.Add(truck);
+            TriggerItemAdded(truck);
+        }
+
+        public void DeleteTruck() {
+            if(Trucks.Count > 1) {
+                Truck truck = Trucks.Last();
+                Trucks.Remove(truck);
+
+                if (truck.Status == TruckStatus.EnRoute) {
+                    TruckRollQueue.Insert(0, truck.DestinationCustomerID);
+                }
+
+                TriggerItemRemoved(truck);
+            }
+            else {
+                Debug.LogWarning("Can not delete last truck");
+            }
+        }
+
+
         public Dictionary<ServiceTier, float> FindServicesForLocation(TilePosition position) {
             HashSet<ServiceTier> services = new HashSet<ServiceTier>();
             foreach(Network network in Networks) {
@@ -252,7 +307,7 @@ namespace DCTC.Model {
             return results;
         }
 
-        public void CalculateServiceArea() {
+        private void CalculateServiceArea() {
             HashSet<TilePosition> serviceArea = new HashSet<TilePosition>();
             foreach (Network network in Networks) {
                 network.ServiceArea.Clear();
@@ -278,9 +333,8 @@ namespace DCTC.Model {
             this.serviceArea = serviceArea;
         }
 
-        public void CalculateNetworks() {
+        private void CalculateNetworks() {
             List<Network> networks = new List<Network>();
-
             HashSet<Node> usedNodes = new HashSet<Node>();
 
             OrphanedCables = new HashSet<Cable>();
@@ -323,14 +377,20 @@ namespace DCTC.Model {
                     networks.Add(network);
                     network.Cables.Add(orphan);
 
-                    foreach (Cable otherCable in Cables) {
-                        // TODO: Check for cable type compatibility 
-                        if (!network.Cables.Contains(otherCable) &&
-                            otherCable.Intersects(orphan.Positions)) {
-                            network.Cables.Add(otherCable);
-                            usedCables.Add(otherCable);
+                    bool found;
+                    do {
+                        found = false;
+                        foreach (Cable otherCable in Cables) {
+                            // TODO: Check for cable type compatibility 
+                            if (!network.Cables.Contains(otherCable) &&
+                                network.IntersectsOneOf(new HashSet<TilePosition>(otherCable.Positions))) {
+                                network.Cables.Add(otherCable);
+                                usedCables.Add(otherCable);
+                                found = true;
+                            }
                         }
                     }
+                    while (found);
                 }
             }
 
@@ -468,56 +528,5 @@ namespace DCTC.Model {
         }
     }
 
-    public enum TruckStatus {
-        Idle,
-        EnRoute
-    }
 
-    [System.Serializable]
-    public class SerializableColor {
-        public float R;
-        public float G;
-        public float B;
-        public float A;
-        public SerializableColor(Color color) {
-            R = color.r;
-            G = color.g;
-            B = color.b;
-            A = color.a;
-        }
-        public Color GetColor() {
-            return new Color(R, G, B, A);
-        }
-    }
-
-    [Serializable]
-    public class Truck {
-        public string ID { get; set; }
-        public TilePosition Position { get; set; }
-        public string DestinationCustomerID { get; set; }
-        public TruckStatus Status { get; set; }
-        public List<TilePosition> Path { get; set; }
-
-        [NonSerialized]
-        public Game Game;
-
-        [field: NonSerialized]
-        public event ChangeDelegate Dispatched;
-
-        public void Dispatch(string customerID, IList<TilePosition> path) {
-            DestinationCustomerID = customerID;
-            Status = TruckStatus.EnRoute;
-            Path = new List<TilePosition>(path);
-
-            if (Dispatched != null)
-                Dispatched();
-        }
-
-        public void DestinationReached() {
-            Status = TruckStatus.Idle;
-
-            Customer customer = Game.GetCustomer(DestinationCustomerID);
-            customer.ServiceTruckArrived();
-        }
-    }
 }

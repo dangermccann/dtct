@@ -42,6 +42,7 @@ namespace DCTC.Controllers {
 
 
         Vector3 lastMousePosition = Vector3.zero;
+        bool isScrolling = false;
         bool isDragging = false;
         bool ignoreMouse = false;
         Vector3 clickCoordinates = Vector3.zero;
@@ -248,20 +249,20 @@ namespace DCTC.Controllers {
         void UpdatePosition() {
 
             if (Input.GetMouseButtonDown(ScrollMouseButton) && !ignoreMouse && NavigationEnabled) {
-                isDragging = true;
+                isScrolling = true;
                 lastMousePosition = ScreenPointToGroundPoint(Input.mousePosition);
 
                 currentAnimation = null;    // cancel current animation 
             }
 
-            if(isDragging) {
+            if(isScrolling) {
                 Vector3 current = ScreenPointToGroundPoint(Input.mousePosition);
                 MoveCameraRelative(lastMousePosition - current);
                 lastMousePosition = ScreenPointToGroundPoint(Input.mousePosition);
             }
 
             // keyboard shortcuts
-            if (isDragging == false) {
+            if (isScrolling == false) {
                 Vector3 keyDiff = new Vector3(0, 0, 0);
                 if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) {
                     keyDiff.z += KeyboardScrollSpeed * Time.deltaTime;
@@ -287,9 +288,9 @@ namespace DCTC.Controllers {
         }
 
         void UpdateMouse() {
-            // releasing the middle mouse stops dragging
+            // releasing the middle mouse stops scrolling
             if (Input.GetMouseButtonUp(ScrollMouseButton)) {
-                isDragging = false;
+                isScrolling = false;
                 lastMousePosition = Vector3.zero;
             }
 
@@ -314,7 +315,7 @@ namespace DCTC.Controllers {
                 }
             }
 
-            if (Input.GetMouseButton(0)) {
+            if (Input.GetMouseButton(SelectMouseButton)) {
                 TilePosition position = PositionOfMouse();
                 if(!position.Equals(lastDragPosition)) {
                     lastDragPosition = position;

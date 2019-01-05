@@ -217,10 +217,7 @@ namespace DCTC.Model {
         }
 
         private void ChangeProvider(Company company) {
-            if(Status == CustomerStatus.Pending && company == null) {
-                Debug.LogWarning("Dropping while Pending " + Dissatisfaction.ToString());
-            }
-                
+               
             if(company != null) {
                 Dissatisfaction /= 3.0f;
                 ProviderID = company.ID;

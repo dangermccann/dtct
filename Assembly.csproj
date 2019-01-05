@@ -85,6 +85,7 @@
     <Compile Include="Assets\Scripts\Model\Network.cs" />
     <Compile Include="Assets\Scripts\Model\Sizes.cs" />
     <Compile Include="Assets\Scripts\Model\Street.cs" />
+    <Compile Include="Assets\Scripts\Model\Truck.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\AStar.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\PriorityQueue.cs" />
     <Compile Include="Assets\Scripts\UI\CustomerDetails.cs" />

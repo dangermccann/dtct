@@ -143,7 +143,7 @@ namespace DCTC.Map {
         }
 
         private void RedrawLineColor() {
-            if (Mode == GraphicsMode.Placed)
+            if (Mode == GraphicsMode.Placed && Cable != null)
                 valid = (Cable.Status == NetworkStatus.Active);
 
             if (valid) {

@@ -636,7 +636,7 @@ namespace DCTC.Map {
                 RemoveObject("Node", node.ID);
             } else if (item is Truck) {
                 Truck truck = item as Truck;
-                RemoveObject("Truck", truck.ID);
+                RemoveObject("Van", truck.ID);
             }
         }
 
@@ -654,6 +654,9 @@ namespace DCTC.Map {
             GameObject go = GameObject.Find(prefabName + " " + ID);
             if (go != null) {
                 Destroy(go);
+            }
+            else {
+                Debug.LogWarning("Could not find " + prefabName + " " + ID);
             }
         }
 

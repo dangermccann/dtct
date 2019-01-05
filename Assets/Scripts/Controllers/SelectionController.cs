@@ -91,6 +91,8 @@ namespace DCTC.Controllers {
             if (gameController.Map == null)
                 return;
 
+            UpdateKeyShortcuts();
+
             bool ignoreMouse;
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 ignoreMouse = true;
@@ -108,6 +110,9 @@ namespace DCTC.Controllers {
                 }
             }
             if(Input.GetMouseButtonUp(0)) {
+                if(dragCable != null && dragCable.Positions.Count == 1) {
+                    gameController.Game.Player.RemoveCable(dragCable);
+                }
                 dragCable = null;
             }
 
@@ -262,7 +267,9 @@ namespace DCTC.Controllers {
                 } else {
                     // Second click
                     // Finalize cable placement and create new graphic
-                    gameController.Game.Player.PlaceCable(Model.CableType.Copper, cableCursor.Points);
+                    if (cableCursor.Points.Count > 1) {
+                        gameController.Game.Player.PlaceCable(Model.CableType.Copper, cableCursor.Points);
+                    }
 
                     Destroy(cursorObject);
                     CreateCursor();
@@ -270,6 +277,16 @@ namespace DCTC.Controllers {
             } else if (Mode == SelectionModes.Destroy) {
                 gameController.Game.Player.RemoveCablePosition(position);
                 gameController.Game.Player.RemoveNode(position);
+            }
+        }
+
+        private void UpdateKeyShortcuts() {
+            if(Input.GetKeyDown(KeyCode.KeypadPlus)) {
+                gameController.Game.Player.CreateTruck();
+            }
+
+            if (Input.GetKeyDown(KeyCode.KeypadMinus)) {
+                gameController.Game.Player.DeleteTruck();
             }
         }
 
@@ -283,8 +300,12 @@ namespace DCTC.Controllers {
                 if (tile.Type != TileType.Road && tile.Type != TileType.Connector)
                     return;
 
+                if (cableCursor.Mode != CableGraphics.GraphicsMode.Cursor)
+                    return;
+
                 if(dragCable == null) {
-                    dragCable = gameController.Game.Player.PlaceCable(CableType.Copper, new List<TilePosition>() { position });
+                    dragCable = gameController.Game.Player.PlaceCable(CableType.Copper, 
+                        new List<TilePosition>() { position });
                 }
                 else {
                     if(!dragCable.Positions.Contains(position)) {
