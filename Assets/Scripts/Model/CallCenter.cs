@@ -49,10 +49,12 @@ namespace DCTC.Model {
 
     [Serializable]
     public class Agent {
+        public const float BaseCost = 1f;
+
         [NonSerialized]
         public Company Company;
 
-        const float MaxCallDuration = 0.5f;
+        const float MaxCallDuration = 0.4f;
 
         public float Speed { get; set; }
         public float Friendliness { get; set; }
@@ -88,13 +90,17 @@ namespace DCTC.Model {
                 }
                 else {
                     // Chance that call agent will offend customer
-                    if (RandomUtils.Chance(Company.Game.Random, (1f - Friendliness) * 0.05f)) {
+                    if (RandomUtils.Chance(Company.Game.Random, 
+                        (1f - Friendliness) * 0.05f * Company.Attributes.CallCenterFriendliness)) {
+
                         customer.OffendedByAgent();
-                        UnityEngine.Debug.Log("Agent offenced " + customer.Name);
+                        UnityEngine.Debug.LogWarning("Agent offended " + customer.Name);
                     }
 
                     // Chance that call agent can resolve the problem
-                    if (RandomUtils.Chance(Company.Game.Random, Performance)) {
+                    if (RandomUtils.Chance(Company.Game.Random, 
+                        Performance * Company.Attributes.CallCenterEffectiveness)) {
+
                         customer.ResolveOutage();
                     }
                     else {

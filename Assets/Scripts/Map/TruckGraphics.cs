@@ -8,7 +8,7 @@ namespace DCTC.Map {
     public class TruckGraphics : MonoBehaviour {
 
         private const float baseTravelSpeed = 15;
-        private const float baseWorkSpeed = 2;
+        private const float baseWorkSpeed = 1.5f;
         private const float baseWork = 1;
 
         GameObject graphics;
@@ -84,7 +84,8 @@ namespace DCTC.Map {
                 return;
 
             if(destinationReached) {
-                workRemaining -= Time.deltaTime * baseWorkSpeed * Truck.Speed * (float)gameController.GameSpeed;
+                workRemaining -= Time.deltaTime * baseWorkSpeed * Truck.WorkSpeed 
+                    * (float)gameController.GameSpeed * Truck.Company.Attributes.TruckWorkSpeed;
                 if (workRemaining <= 0)
                     CompleteJob();
 
@@ -98,19 +99,11 @@ namespace DCTC.Map {
                     Truck.DestinationReached();
             }
 
-            elapsed += Time.deltaTime * baseTravelSpeed * Truck.Speed * (float)gameController.GameSpeed;
+            elapsed += Time.deltaTime * baseTravelSpeed * Truck.TravelSpeed 
+                * (float)gameController.GameSpeed * Truck.Company.Attributes.TruckTravelSpeed;
 
             transform.position = Vector3.Lerp(currentStart, currentDestination, elapsed);
             graphics.transform.rotation = Quaternion.Lerp(startRotation, destRotation, 5.0f * elapsed);
-        }
-
-        bool CheckWorkRemaining() {
-            if (workRemaining <= 0) {
-                return true;
-            } else {
-                workRemaining -= Time.deltaTime * Truck.Speed * (float)gameController.GameSpeed;
-                return false;
-            }
         }
 
         bool NextTile() {

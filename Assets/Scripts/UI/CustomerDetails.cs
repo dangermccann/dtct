@@ -61,17 +61,13 @@ namespace DCTC.UI {
             SetText("Provider", provider == null ? "[No Service Provider]" : provider.Name);
             if (provider == null) {
                 SetActive("ServiceTier", false);
-                SetActive("Satisfaction", false);
             } else {
                 SetActive("ServiceTier", true);
                 SetText("ServiceTier", Customer.ServiceTier.ToString());
-
-                SetActive("Satisfaction", true);
-                string satisfaction = "Satisfaction: " + Formatter.FormatDissatisfaction(Customer.Dissatisfaction);
-                satisfaction += " (" + Customer.Dissatisfaction.ToString("0.00") + ")";
-                SetText("Satisfaction", satisfaction);
             }
-            
+
+            string satisfaction = "Satisfaction: " + Formatter.FormatDissatisfaction(Customer.Dissatisfaction);
+            SetText("Satisfaction", satisfaction);
             SetText("Income", "Income: " + Formatter.FormatCurrency(Customer.Wealth * 10));
             SetText("Patience", "Demeanor: " + Formatter.FormatPatience(Customer.Patience));
         }

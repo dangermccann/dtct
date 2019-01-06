@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -570,7 +571,7 @@ namespace DCTC.Map {
                     labelGO.transform.Rotate(Vector3.up, 90, Space.World);
                 }
 
-                labelGO.GetComponent<Text>().text = street.Name;
+                labelGO.GetComponent<TextMeshPro>().text = street.Name;
                 labels.Add(street.Name, labelGO);
 
                 index++;

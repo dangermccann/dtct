@@ -13,24 +13,31 @@ namespace DCTC.Model {
 
     [Serializable]
     public class Truck {
+        public const float BaseCost = 2f;
+
         public string ID { get; set; }
         public string Name { get; set; }
         public TilePosition Position { get; set; }
         public string DestinationCustomerID { get; set; }
         public TruckStatus Status { get; set; }
         public List<TilePosition> Path { get; set; }
-        public float Speed { get; set; }
+        public float TravelSpeed { get; set; }
+        public float WorkSpeed { get; set; }
         public float Salary { get; set; }
 
         [NonSerialized]
         public Game Game;
+
+        [NonSerialized]
+        public Company Company;
 
         [field: NonSerialized]
         public event ChangeDelegate Dispatched;
 
         public Truck() {
             Salary = 0.1f;
-            Speed = 1;
+            TravelSpeed = 1;
+            WorkSpeed = 1;
         }
 
         public void Dispatch(string customerID, IList<TilePosition> path) {

@@ -15,6 +15,7 @@ namespace DCTC.Model {
         public int NeighborhoodCountX = 3;
         public int NeighborhoodCountY = 3;
         public string PlayerName = "Human";
+        public CompanyAttributes PlayerAttributes = new CompanyAttributes();
     }
 
     public delegate void CustomerChangedEvent(Customer customer, Company company);
@@ -54,6 +55,7 @@ namespace DCTC.Model {
 
                 foreach (Truck t in c.Trucks) {
                     t.Game = this;
+                    t.Company = c;
                 }
             }
             foreach(Customer c in Customers) {
@@ -73,12 +75,16 @@ namespace DCTC.Model {
 
             Companies = new List<Company>();
             for (int i = 0; i < settings.NumAIs; i++) {
-                Companies.Add(GenerateCompany(CompanyOwnerType.AI, headquarters[i]));
+                Company company = GenerateCompany(CompanyOwnerType.AI, headquarters[i]);
+                // TODO: give opponants "personalities"
+                company.Attributes = new CompanyAttributes();
+                Companies.Add(company);
             }
 
             if (settings.NumHumans > 0) {
                 Player = GenerateCompany(CompanyOwnerType.Human, headquarters[settings.NumAIs]);
                 Player.Name = settings.PlayerName;
+                Player.Attributes = settings.PlayerAttributes;
                 Companies.Add(Player);
             }
         }
@@ -143,13 +149,12 @@ namespace DCTC.Model {
                 Name = NameGenerator.CompanyName(),
                 OwnerType = type,
                 Game = this,
-                Trucks = new List<Truck>() {
-                    GenerateTruck(truckPosition)
-                },
+                Trucks = new List<Truck>(),
                 Color = UnityEngine.Random.ColorHSV(0, 1, 1, 1, 0.7f, 1, 1, 1),
                 HeadquartersLocation = headquartersLocation
             };
 
+            company.Trucks.Add(GenerateTruck(company, truckPosition));
             company.CallCenter.Company = company;
 
             // Start with one agent
@@ -159,7 +164,7 @@ namespace DCTC.Model {
             return company;
         }
 
-        private Truck GenerateTruck(TilePosition position) {
+        public Truck GenerateTruck(Company company, TilePosition position) {
             string name = RandomUtils.Chance(Random, 0.5) ? NameGenerator.RandomMaleName() : NameGenerator.RandomFemaleName();
 
             return new Truck() {
@@ -167,7 +172,9 @@ namespace DCTC.Model {
                 Name = name,
                 Position = position,
                 Status = TruckStatus.Idle,
-                Speed = RandomUtils.RandomFloat(0.2f, 1.0f, this.Random),
+                TravelSpeed = RandomUtils.RandomFloat(0.2f, 1.0f, this.Random),
+                WorkSpeed = RandomUtils.RandomFloat(0.2f, 1.0f, this.Random),
+                Company = company,
                 Game = this
             };
         }
@@ -190,7 +197,7 @@ namespace DCTC.Model {
             Agent agent = new Agent() {
                 ID = Guid.NewGuid().ToString(),
                 Name = name,
-                Speed = RandomUtils.RandomFloat(0.2f, 0.99f, Random),
+                Speed = RandomUtils.RandomFloat(0.45f, 0.99f, Random),
                 Friendliness = RandomUtils.RandomFloat(0.2f, 0.99f, Random),
                 Performance = RandomUtils.RandomFloat(0.2f, 0.99f, Random),
                 Company = company

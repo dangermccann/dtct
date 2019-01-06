@@ -138,6 +138,18 @@ namespace DCTC.Model {
                 return 0;
             }
         }
+
+        public float Cost {
+            get {
+                switch(Type) {
+                    case CableType.Copper:
+                        return 1;
+                    case CableType.Fiber:
+                        return 2;
+                }
+                return 0;
+            }
+        }
     }
 
     public enum CableType {
@@ -178,6 +190,20 @@ namespace DCTC.Model {
                         return 6;
                     case NodeType.Fiber:
                         return 6;
+                }
+                return 0;
+            }
+        }
+
+        public float Cost {
+            get {
+                switch (Type) {
+                    case NodeType.Small:
+                        return 4;
+                    case NodeType.Large:
+                        return 6;
+                    case NodeType.Fiber:
+                        return 8;
                 }
                 return 0;
             }

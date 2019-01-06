@@ -15,7 +15,7 @@ namespace DCTC.Model {
 
     [Serializable]
     public class Customer {
-        private const float baseTurnoverCooldown = 25f;
+        private const float baseTurnoverCooldown = 75f;
 
         public string ID { get; set; }
         public string Name { get; set; }
@@ -146,13 +146,13 @@ namespace DCTC.Model {
 
             // Adjust Dissatisfaction due to wait times 
             if (Status == CustomerStatus.Outage)
-                Dissatisfaction += Patience * deltaTime * 0.25f;
+                Dissatisfaction += Patience * deltaTime * 0.15f;
             else if (Status == CustomerStatus.Pending)
-                Dissatisfaction += Patience * deltaTime * 0.05f;
+                Dissatisfaction += Patience * deltaTime * 0.02f;
             else if (Status == CustomerStatus.Subscribed)
-                Dissatisfaction -= deltaTime * 0.005f;
+                Dissatisfaction -= deltaTime * 0.005f * Provider.Attributes.ServiceSatisfaction;
             else
-                Dissatisfaction -= deltaTime * 0.003f;
+                Dissatisfaction -= deltaTime * 0.002f;
 
             Dissatisfaction = Mathf.Clamp01(Dissatisfaction);
         }
@@ -169,7 +169,7 @@ namespace DCTC.Model {
             switch (Status) {
                 case CustomerStatus.NoProvider:
                     churnChance = RandomUtils.LinearLikelihood(100f, 1000f, Wealth);
-                    churnChance *= (1.0f - Mathf.Min(1f, Dissatisfaction * 3f));
+                    churnChance *= (1.0f - Mathf.Min(1f, Dissatisfaction * 5f));
 
                     if (turnoverCooldown > 0)
                         timeChance = 0;
@@ -178,7 +178,7 @@ namespace DCTC.Model {
                     break;
 
                 case CustomerStatus.Subscribed:
-                    churnChance = Mathf.Max(0.1f, Dissatisfaction) * Patience;
+                    churnChance = Mathf.Max(0.1f, Dissatisfaction) * Patience / Provider.Attributes.CustomerRetention;
                     timeChance = 0.05f;
                     break;
 

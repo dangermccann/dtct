@@ -1,3 +1,10 @@
-﻿{
-	"name": "Assembly"
+{
+    "name": "Assembly",
+    "references": [
+        "Unity.TextMeshPro"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
 }

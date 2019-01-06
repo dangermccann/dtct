@@ -61,8 +61,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Controllers\GameController.cs" />
+    <Compile Include="Assets\Scripts\Controllers\KeyboardController.cs" />
     <Compile Include="Assets\Scripts\Controllers\MaterialController.cs" />
     <Compile Include="Assets\Scripts\Controllers\SelectionController.cs" />
+    <Compile Include="Assets\Scripts\Controllers\StateController.cs" />
     <Compile Include="Assets\Scripts\Controllers\ThreeDCameraController.cs" />
     <Compile Include="Assets\Scripts\Map\AbstractMap.cs" />
     <Compile Include="Assets\Scripts\Map\CableGraphics.cs" />
@@ -95,8 +97,12 @@
     <Compile Include="Assets\Scripts\UI\GameSpeedToggles.cs" />
     <Compile Include="Assets\Scripts\UI\GlobalInfo.cs" />
     <Compile Include="Assets\Scripts\UI\LotOutline.cs" />
+    <Compile Include="Assets\Scripts\UI\NewGameUI.cs" />
     <Compile Include="Assets\Scripts\UI\OverlayToggles.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>C:/Users/John McCann/Documents/Bottlenose Bits/DCTC/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
     </Reference>

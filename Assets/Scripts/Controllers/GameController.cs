@@ -60,14 +60,13 @@ namespace DCTC.Controllers {
             }
         }
 
-        private NewGameSettings defaultNewGameSettings = new NewGameSettings() {
-            NeighborhoodCountX = 2,
-            NeighborhoodCountY = 2
-        };
-
         void Awake() {
             saver = new GameSaver();
             this.GameLoaded += OnGameLoaded;
+        }
+
+        private void Start() {
+            StateController.Get().PushState(States.GameMenu);
         }
 
         public void Unpause() {
@@ -103,8 +102,13 @@ namespace DCTC.Controllers {
             saver.SaveGame(Game, SaveName);
         }
 
-        public void Load() { StartCoroutine( AsyncLoad() ); }
+        public void Load() {
+            StateController.Get().ExitAndPushState(States.Loading);
+            StartCoroutine( AsyncLoad() );
+        }
         public IEnumerator AsyncLoad() {
+            yield return null;
+
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 
@@ -126,9 +130,15 @@ namespace DCTC.Controllers {
             yield return null;
         }
 
-        public void New() { StartCoroutine( AsyncNew() ); }
-        private IEnumerator AsyncNew() {
-            NewGameSettings settings = defaultNewGameSettings;
+        public void NewGameMenu() {
+            StateController.Get().ExitAndPushState(States.NewGame);
+        }
+        public void New(NewGameSettings settings) {
+            StateController.Get().ExitAndPushState(States.Loading);
+            StartCoroutine(AsyncNew(settings));
+        }
+        private IEnumerator AsyncNew(NewGameSettings settings) {
+            yield return null;
 
             random = new System.Random(settings.Seed);
             nameGenerator = new NameGenerator(random);
@@ -161,7 +171,7 @@ namespace DCTC.Controllers {
         }
 
         private void OnGameLoaded() {
-            
+            StateController.Get().ExitAndPushState(States.Map);
         }
 
         private IEnumerator GameLoop() {

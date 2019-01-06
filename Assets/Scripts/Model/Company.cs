@@ -24,6 +24,7 @@ namespace DCTC.Model {
         public string ID { get; set; }
         public string Name { get; set; }
         public string Logo { get; set; }
+        public CompanyAttributes Attributes { get; set; }
 
         public List<Cable> Cables { get; set; }
         public Dictionary<TilePosition, Node> Nodes { get; set; }
@@ -165,6 +166,7 @@ namespace DCTC.Model {
             cable.Type = type;
             cable.Positions.AddRange(positions);
             Cables.Add(cable);
+            Money -= cable.Cost * positions.Count * Attributes.InfrastructureCost;
             InvalidateNetworks();
             TriggerItemAdded(cable);
             return cable;
@@ -172,6 +174,7 @@ namespace DCTC.Model {
 
         public void PrependCable(Cable cable, TilePosition position) {
             cable.Positions.Insert(0, position);
+            Money -= cable.Cost * Attributes.InfrastructureCost;
             InvalidateNetworks();
             TriggerItemRemoved(cable);
             TriggerItemAdded(cable);
@@ -179,6 +182,7 @@ namespace DCTC.Model {
 
         public void AppendCable(Cable cable, TilePosition position) {
             cable.Positions.Add(position);
+            Money -= cable.Cost * Attributes.InfrastructureCost;
             InvalidateNetworks();
             TriggerItemRemoved(cable);
             TriggerItemAdded(cable);
@@ -256,6 +260,7 @@ namespace DCTC.Model {
             node.Type = type;
             node.Position = position;
             Nodes.Add(position, node);
+            Money -= node.Cost * Attributes.InfrastructureCost;
             InvalidateNetworks();
             TriggerItemAdded(node);
         }
@@ -271,14 +276,10 @@ namespace DCTC.Model {
 
         public void CreateTruck() {
             TilePosition position = Game.Map.NearestRoad(HeadquartersLocation);
-            Truck truck = new Truck() {
-                ID = Guid.NewGuid().ToString(),
-                Position = position,
-                Status = TruckStatus.Idle,
-                Game = this.Game
-            };
+            Truck truck = Game.GenerateTruck(this, position);
 
             Trucks.Add(truck);
+            Money -= Truck.BaseCost;
             TriggerItemAdded(truck);
         }
 
@@ -301,6 +302,7 @@ namespace DCTC.Model {
         public void HireAgent() {
             Agent agent = Game.GenerateAgent(this);
             CallCenter.HireAgent(agent);
+            Money -= Agent.BaseCost;
         }
 
         public void FireAgent() {
@@ -554,5 +556,15 @@ namespace DCTC.Model {
         }
     }
 
-
+    [Serializable]
+    public class CompanyAttributes {
+        public float CallCenterFriendliness = 1f;
+        public float CallCenterEffectiveness = 1f;
+        public float TruckTravelSpeed = 1f;
+        public float TruckWorkSpeed = 1f;
+        public float CustomerRetention = 1f;
+        public float InfrastructureCost = 1f;
+        public float ResearchSpeed = 1f;
+        public float ServiceSatisfaction = 1f;
+    }
 }

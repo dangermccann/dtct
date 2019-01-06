@@ -91,8 +91,6 @@ namespace DCTC.Controllers {
             if (gameController.Map == null)
                 return;
 
-            UpdateKeyShortcuts();
-
             bool ignoreMouse;
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 ignoreMouse = true;
@@ -277,24 +275,6 @@ namespace DCTC.Controllers {
             } else if (Mode == SelectionModes.Destroy) {
                 gameController.Game.Player.RemoveCablePosition(position);
                 gameController.Game.Player.RemoveNode(position);
-            }
-        }
-
-        private void UpdateKeyShortcuts() {
-            if(Input.GetKeyDown(KeyCode.KeypadPlus)) {
-                gameController.Game.Player.CreateTruck();
-            }
-
-            if (Input.GetKeyDown(KeyCode.KeypadMinus)) {
-                gameController.Game.Player.DeleteTruck();
-            }
-
-            if (Input.GetKeyDown(KeyCode.Keypad9)) {
-                gameController.Game.Player.HireAgent();
-            }
-
-            if (Input.GetKeyDown(KeyCode.Keypad6)) {
-                gameController.Game.Player.FireAgent();
             }
         }
 
