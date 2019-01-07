@@ -124,6 +124,11 @@ namespace DCTC.Controllers {
             }
 
             UIStateInvocation invocation = UrlProcessor.MatchState(states, url);
+            foreach (string key in parameters.Keys) {
+                if(!invocation.Parameters.ContainsKey(key)) {
+                    invocation.Parameters.Add(key, parameters[key]);
+                }
+            }
 
             if (invocation == null) {
 				Debug.LogWarning("Invalid state uri: " + url);

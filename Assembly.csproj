@@ -64,6 +64,7 @@
     <Compile Include="Assets\Scripts\Controllers\KeyboardController.cs" />
     <Compile Include="Assets\Scripts\Controllers\MaterialController.cs" />
     <Compile Include="Assets\Scripts\Controllers\SelectionController.cs" />
+    <Compile Include="Assets\Scripts\Controllers\SpriteController.cs" />
     <Compile Include="Assets\Scripts\Controllers\StateController.cs" />
     <Compile Include="Assets\Scripts\Controllers\ThreeDCameraController.cs" />
     <Compile Include="Assets\Scripts\Map\AbstractMap.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="Assets\Scripts\UI\Formatter.cs" />
     <Compile Include="Assets\Scripts\UI\GameSpeedToggles.cs" />
     <Compile Include="Assets\Scripts\UI\GlobalInfo.cs" />
+    <Compile Include="Assets\Scripts\UI\LoadingUI.cs" />
     <Compile Include="Assets\Scripts\UI\LotOutline.cs" />
     <Compile Include="Assets\Scripts\UI\NewGameUI.cs" />
     <Compile Include="Assets\Scripts\UI\OverlayToggles.cs" />

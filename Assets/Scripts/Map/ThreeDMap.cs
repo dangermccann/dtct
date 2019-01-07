@@ -132,6 +132,7 @@ namespace DCTC.Map {
 
             HighlightRadius = 0;
             colorizedBuildings.Clear();
+            map = null;
         }
 
         public override void Init(MapConfiguration config) {
@@ -194,7 +195,7 @@ namespace DCTC.Map {
         }
 
         void Update() {
-            if (gameController.Game == null)
+            if (gameController.Game == null || map == null)
                 return;
 
 

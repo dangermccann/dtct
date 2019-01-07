@@ -103,7 +103,10 @@ namespace DCTC.Controllers {
         }
 
         public void Load() {
-            StateController.Get().ExitAndPushState(States.Loading);
+            Game = saver.LoadGame(SaveName);
+
+            StateController.Get().ExitAndPushState(States.Loading,
+                new Dictionary<string, string>() { { "Company", Game.Settings.PlayerName } });
             StartCoroutine( AsyncLoad() );
         }
         public IEnumerator AsyncLoad() {
@@ -112,7 +115,7 @@ namespace DCTC.Controllers {
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 
-            Game = saver.LoadGame(SaveName);
+            
             UnityEngine.Random.state = Game.RandomState;
             random = Game.Random;
             nameGenerator = new NameGenerator(random);
@@ -134,7 +137,8 @@ namespace DCTC.Controllers {
             StateController.Get().ExitAndPushState(States.NewGame);
         }
         public void New(NewGameSettings settings) {
-            StateController.Get().ExitAndPushState(States.Loading);
+            StateController.Get().ExitAndPushState(States.Loading, 
+                new Dictionary<string, string>() { { "Company", settings.PlayerName } });
             StartCoroutine(AsyncNew(settings));
         }
         private IEnumerator AsyncNew(NewGameSettings settings) {
@@ -185,10 +189,6 @@ namespace DCTC.Controllers {
 
                 foreach(Company company in Game.Companies) {
                     company.Update(Time.time - lastUpdateTime);
-                }
-
-                if(gameCounter % 1000000 == 0) {
-                    Debug.Log("Game Counter: " + gameCounter);
                 }
 
                 lastUpdateTime = Time.time;

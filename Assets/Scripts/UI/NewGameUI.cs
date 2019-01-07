@@ -27,6 +27,7 @@ namespace DCTC.UI {
             random = new System.Random();
             GenerateSeed();
             SetBehaviorDescription();
+            LoadBrands();
         }
 
         public void GenerateSeed() {
@@ -83,6 +84,14 @@ namespace DCTC.UI {
 
         private string InputValue(string name) {
             return transform.FindChildRecursive(name).GetComponent<TMP_InputField>().text;
+        }
+
+        private void LoadBrands() {
+            var brands = new List<string>(Loader.LoadBrands());
+            TMP_Dropdown dd = Dropdown("CompanyDropdown");
+
+            dd.ClearOptions();
+            dd.AddOptions(brands);
         }
 
         
