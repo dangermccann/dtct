@@ -147,11 +147,15 @@ namespace DCTC.Controllers {
             random = new System.Random(settings.Seed);
             nameGenerator = new NameGenerator(random);
 
+            //UnityEngine.Profiling.Profiler.BeginSample("generate-map");
             GenerateMap(settings);
+            //UnityEngine.Profiling.Profiler.EndSample();
 
+            //UnityEngine.Profiling.Profiler.BeginSample("new-game");
             Game = new Game();
             Game.NewGame(settings, nameGenerator, Map, headquarters);
             Game.PopulateCustomers();
+            //UnityEngine.Profiling.Profiler.EndSample();
 
             if (GameLoaded != null)
                 GameLoaded();

@@ -200,7 +200,7 @@ namespace DCTC.Controllers {
             Vector3 zoomDirection = mainCamera.transform.forward;
 
             if(zoom > 0) {
-                zoomDirection = Camera.main.ScreenPointToRay(Input.mousePosition).direction;
+                zoomDirection = mainCamera.ScreenPointToRay(Input.mousePosition).direction;
             }
 
 			if(Input.GetKey(KeyCode.PageUp) || Input.GetKey(KeyCode.Q)) {
@@ -406,7 +406,7 @@ namespace DCTC.Controllers {
 
         // Returns the POINT at which the screen point ray intersects the XZ plane
         Vector3 ScreenPointToGroundPoint(Vector3 screenPoint) {
-            Ray mouseRay = Camera.main.ScreenPointToRay(screenPoint);
+            Ray mouseRay = mainCamera.ScreenPointToRay(screenPoint);
 
             if (mouseRay.direction.y >= 0) {
                 //Debug.LogError("Why is mouse pointing up?");
