@@ -24,20 +24,17 @@ namespace DCTC.Controllers {
                     stateController.PushState(States.GameMenu);
             }
 
-            if (Input.GetKeyDown(KeyCode.KeypadPlus)) {
-                gameController.Game.Player.CreateTruck();
-            }
-
-            if (Input.GetKeyDown(KeyCode.KeypadMinus)) {
-                gameController.Game.Player.DeleteTruck();
-            }
-
             if (Input.GetKeyDown(KeyCode.Keypad9)) {
                 gameController.Game.Player.HireAgent();
             }
 
             if (Input.GetKeyDown(KeyCode.Keypad6)) {
                 gameController.Game.Player.FireAgent();
+            }
+
+            if (Input.GetKeyDown(KeyCode.F1)) {
+                if(gameController.Game != null)
+                    StateController.Get().PushState(States.Workforce);
             }
         }
 

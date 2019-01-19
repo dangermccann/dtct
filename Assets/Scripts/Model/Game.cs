@@ -150,11 +150,16 @@ namespace DCTC.Model {
                 OwnerType = type,
                 Game = this,
                 Trucks = new List<Truck>(),
+                UnhiredTrucks = new List<Truck>(),
                 Color = UnityEngine.Random.ColorHSV(0, 1, 1, 1, 0.7f, 1, 1, 1),
                 HeadquartersLocation = headquartersLocation
             };
 
             company.Trucks.Add(GenerateTruck(company, truckPosition));
+
+            for(int i = 0; i < 10; i++) {
+                company.UnhiredTrucks.Add(GenerateTruck(company, truckPosition));
+            }
             company.CallCenter.Company = company;
 
             // Start with one agent

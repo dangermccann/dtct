@@ -11,6 +11,10 @@ namespace DCTC.UI {
             return String.Format("{0:#,##0}", val);
         }
 
+        public static string FormatPercent(float val) {
+            return String.Format("{0:#,##0}%", val * 100f);
+        }
+
         public static string FormatPatience(float amount) {
             if (amount < 0.25f)
                 return "Forgiving";

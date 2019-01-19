@@ -101,6 +101,8 @@
     <Compile Include="Assets\Scripts\UI\LotOutline.cs" />
     <Compile Include="Assets\Scripts\UI\NewGameUI.cs" />
     <Compile Include="Assets\Scripts\UI\OverlayToggles.cs" />
+    <Compile Include="Assets\Scripts\UI\TruckCard.cs" />
+    <Compile Include="Assets\Scripts\UI\WorkforceDetails.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
     <Reference Include="Unity.TextMeshPro">
       <HintPath>C:/Users/John McCann/Documents/Bottlenose Bits/DCTC/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>

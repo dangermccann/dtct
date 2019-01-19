@@ -30,6 +30,7 @@ namespace DCTC.Model {
         public Dictionary<TilePosition, Node> Nodes { get; set; }
         public Dictionary<ServiceTier, float> ServicePrices { get; set; }
         public List<Truck> Trucks { get; set; }
+        public List<Truck> UnhiredTrucks { get; set; }
         public List<string> TruckRollQueue { get; set; }
         public CompanyOwnerType OwnerType { get; set; }
         public float Money { get; set; }
@@ -274,29 +275,22 @@ namespace DCTC.Model {
             }
         }
 
-        public void CreateTruck() {
-            TilePosition position = Game.Map.NearestRoad(HeadquartersLocation);
-            Truck truck = Game.GenerateTruck(this, position);
-
+        public void HireTruck(Truck truck) {
+            UnhiredTrucks.Remove(truck);
             Trucks.Add(truck);
             Money -= Truck.BaseCost;
             TriggerItemAdded(truck);
         }
 
-        public void DeleteTruck() {
-            if(Trucks.Count > 1) {
-                Truck truck = Trucks.Last();
-                Trucks.Remove(truck);
+        public void FireTruck(Truck truck) {
+            UnhiredTrucks.Add(truck);
+            Trucks.Remove(truck);
 
-                if (truck.Status != TruckStatus.Idle) {
-                    TruckRollQueue.Insert(0, truck.DestinationCustomerID);
-                }
+            if (truck.Status != TruckStatus.Idle) {
+                TruckRollQueue.Insert(0, truck.DestinationCustomerID);
+            }
 
-                TriggerItemRemoved(truck);
-            }
-            else {
-                Debug.LogWarning("Can not delete last truck");
-            }
+            TriggerItemRemoved(truck);
         }
 
         public void HireAgent() {

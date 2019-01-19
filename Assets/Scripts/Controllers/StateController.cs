@@ -11,6 +11,7 @@ namespace DCTC.Controllers {
         public static readonly string Map = "/map";
         public static readonly string NewGame = "/new-game";
         public static readonly string Loading = "/loading";
+        public static readonly string Workforce = "/workforce";
     }
 
     public class UrlProcessor {
@@ -102,7 +103,7 @@ namespace DCTC.Controllers {
             get { return stack.Count; }
         }
 
-		void Start() {
+		void Awake() {
 			uiRoot.SetActive(true);
 			for(int i = 0; i < uiRoot.transform.childCount; i++) {
 				uiRoot.transform.GetChild(i).gameObject.SetActive(false);
@@ -137,7 +138,7 @@ namespace DCTC.Controllers {
 
             invocation.Url = url;
 
-            Debug.Log("Push state: " + url);
+            Debug.Log("Push state " + url);
 
 			InvokeBeforeExit();
 			HideCurrentState();
