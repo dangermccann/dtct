@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TMPro;
 using DCTC.Model;
@@ -16,6 +17,7 @@ namespace DCTC.UI {
         private GameController gameController;
 
         private const string prefix = "Details-";
+        private const int maxLines = 7;
 
         private Lot lot = null;
         private Customer customer = null;
@@ -110,7 +112,22 @@ namespace DCTC.UI {
                         SetText("Name", "Unknown Road");
                     }
 
+                    foreach(Company company in gameController.Game.Companies) {
+                        if(company.Nodes.ContainsKey(location)) {
+                            AppendNode(company, company.Nodes[location]);
+                        }
+                        IEnumerable<Cable> cables = company.Cables.Where(c => c.Positions.Contains(location));
 
+                        // Prevent displaying duplicate cables of same type
+                        HashSet<CableType> types = new HashSet<CableType>();
+
+                        foreach(Cable cable in cables) {
+                            if (!types.Contains(cable.Type)) {
+                                AppendCable(company, cable);
+                                types.Add(cable.Type);
+                            }
+                        }
+                    }
                 }
                 else {
                     SetText("Name", tile.Type.ToString());
@@ -131,12 +148,16 @@ namespace DCTC.UI {
             }
         }
 
-        void AppendNode(Node node) {
-
+        void AppendNode(Company company, Node node) {
+            Append(node.Type.ToString() + " Node");
+            Append("   - Owned by  " + company.Name);
+            Append("   - " + node.Status);
         }
 
-        void AppendCable(Cable cable) {
-
+        void AppendCable(Company company, Cable cable) {
+            Append(cable.Type.ToString() + " Cable");
+            Append("   - Owned by  " + company.Name);
+            Append("   - " + cable.Status);
         }
 
         void DrawInactiveBuilding() {
@@ -150,9 +171,14 @@ namespace DCTC.UI {
             Append(customer.Address);
 
             Company provider = customer.Provider;
-            Append(provider == null ? "[No Service Provider]" : provider.Name);
+            Append(provider == null ? "No service provider" : provider.Name);
             if (provider != null) {
-                Append(customer.ServiceTier.ToString());
+                if (customer.Status == CustomerStatus.Pending)
+                    Append("Awaiting installer");
+                else if (customer.Status == CustomerStatus.Outage)
+                    Append("<color=\"red\">Outage");
+                else
+                    Append(customer.ServiceTier.ToString());
             }
 
             Append(Formatter.FormatDissatisfaction(customer.Dissatisfaction));
@@ -168,6 +194,9 @@ namespace DCTC.UI {
         }
 
         void Append(string str) {
+            if (transform.childCount >= maxLines)
+                return;
+
             GameObject go = Instantiate(DetailsPrefab, transform);
             go.name = prefix + (transform.childCount - 1);
             go.GetComponent<TextMeshProUGUI>().text = str;
