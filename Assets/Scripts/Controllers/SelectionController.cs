@@ -26,7 +26,7 @@ namespace DCTC.Controllers {
         public GameObject NodeCursorPrefab;
         public GameObject MapGameObject;
         public GameObject LotSelection;
-        public GameObject CustomerDetails;
+        public GameObject LocationDetails;
 
         [HideInInspector]
         public SelectionModes Mode = SelectionModes.None;
@@ -49,7 +49,6 @@ namespace DCTC.Controllers {
             cameraController.TileClicked += CameraController_TileClicked;
             cameraController.TileDragged += CameraController_TileDragged;
             LotSelection.SetActive(false);
-            CustomerDetails.SetActive(false);
         }
 
         public void ValueChanged() {
@@ -104,7 +103,6 @@ namespace DCTC.Controllers {
                 if((Input.mousePosition - mouseDownPosition).magnitude < 0.25f) {
                     ConstructionToggleGroup.SetAllTogglesOff();
                     LotSelection.SetActive(false);
-                    CustomerDetails.SetActive(false);
                 }
             }
             if(Input.GetMouseButtonUp(0)) {
@@ -114,9 +112,13 @@ namespace DCTC.Controllers {
                 dragCable = null;
             }
 
-            if(Input.GetMouseButtonDown(0) && !ignoreMouse && Mode == SelectionModes.None) {
-                Vector3 world = cameraController.MouseCursorInWorld();
-                TilePosition pos = ThreeDMap.WorldToPosition(world);
+
+            Vector3 world = cameraController.MouseCursorInWorld();
+            TilePosition pos = ThreeDMap.WorldToPosition(world);
+            LocationDetails.GetComponent<LocationDetails>().Location = pos;
+
+
+            if (Input.GetMouseButtonDown(0) && !ignoreMouse && Mode == SelectionModes.None) {
                 if (gameController.Map.Tiles.ContainsKey(pos)) {
                     var outline = LotSelection.GetComponent<LotOutline>();
                     var lot = gameController.Map.Tiles[pos].Lot;
@@ -124,17 +126,12 @@ namespace DCTC.Controllers {
                         outline.Positions = lot.Tiles;
                         LotSelection.SetActive(true);
                         outline.Redraw();
-
-                        CustomerDetails.SetActive(true);
-                        CustomerDetails.GetComponent<CustomerDetails>().Customer = gameController.Game.FindCustomerByAddress(lot.Anchor);
                     }
                 }
             }
 
             if(cursorObject != null) {
                 // Snap to the tile
-                Vector3 world = cameraController.MouseCursorInWorld();
-                TilePosition pos = ThreeDMap.WorldToPosition(world);
                 world = ThreeDMap.PositionToWorld(pos);
 
                 // Hide if we're off the map

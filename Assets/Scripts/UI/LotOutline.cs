@@ -21,6 +21,7 @@ namespace DCTC.UI {
             lineRenderer = GetComponent<LineRenderer>();
         }
 
+        // TODO: this doesn't work for non-rectangular lots!
         public void Redraw() {
             Vector3[] points = CalculatePoints();
             lineRenderer.positionCount = points.Length;

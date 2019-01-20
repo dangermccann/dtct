@@ -102,7 +102,7 @@ namespace DCTC.Model {
                     val += c.Dissatisfaction;
                 }
                 val /= actives.Count;
-                return (1 - val) * 100f;
+                return (1 - val);
             }
         }
 
@@ -277,13 +277,13 @@ namespace DCTC.Model {
 
         public void HireTruck(Truck truck) {
             UnhiredTrucks.Remove(truck);
-            Trucks.Add(truck);
+            Trucks.Insert(0, truck);
             Money -= Truck.BaseCost;
             TriggerItemAdded(truck);
         }
 
         public void FireTruck(Truck truck) {
-            UnhiredTrucks.Add(truck);
+            UnhiredTrucks.Insert(0, truck);
             Trucks.Remove(truck);
 
             if (truck.Status != TruckStatus.Idle) {
@@ -293,20 +293,13 @@ namespace DCTC.Model {
             TriggerItemRemoved(truck);
         }
 
-        public void HireAgent() {
-            Agent agent = Game.GenerateAgent(this);
+        public void HireAgent(Agent agent) {
             CallCenter.HireAgent(agent);
             Money -= Agent.BaseCost;
         }
 
-        public void FireAgent() {
-            if(CallCenter.Agents.Count > 1) {
-                Agent agent = CallCenter.Agents.Last();
-                CallCenter.FireAgent(agent);
-            }
-            else {
-                Debug.LogWarning("Can not fire last agent");
-            }
+        public void FireAgent(Agent agent) {
+            CallCenter.FireAgent(agent);
         }
 
 

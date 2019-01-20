@@ -166,6 +166,10 @@ namespace DCTC.Model {
             Agent agent = GenerateAgent(company);
             company.CallCenter.Agents.Add(agent);
 
+            for (int i = 0; i < 10; i++) {
+                company.CallCenter.UnhiredAgents.Add(GenerateAgent(company));
+            }
+
             return company;
         }
 

@@ -9,6 +9,7 @@ namespace DCTC.Model {
         public Company Company;
 
         public List<Agent> Agents = new List<Agent>();
+        public List<Agent> UnhiredAgents = new List<Agent>();
         public List<string> CallQueue = new List<string>();
 
         public void FireAgent(Agent agent) {
@@ -16,10 +17,12 @@ namespace DCTC.Model {
                 CallQueue.Add(agent.CurrentCustomerId);
             }
             Agents.Remove(agent);
+            UnhiredAgents.Insert(0, agent);
         }
 
         public void HireAgent(Agent agent) {
-            Agents.Add(agent);
+            Agents.Insert(0, agent);
+            UnhiredAgents.Remove(agent);
         }
 
         public void Enqueue(string customerId) {

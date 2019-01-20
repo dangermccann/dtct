@@ -1,19 +1,13 @@
 ﻿using System;
 using UnityEngine;
-using TMPro;
 using DCTC.Model;
 
 namespace DCTC.UI {
-    public class TruckCard : MonoBehaviour {
+    public class TruckCard : UIContainer {
 
         public Action<Truck> HireFireClicked;
 
-        private GameObject hireButton, fireButton;
-
-        void Awake() {
-            hireButton = transform.Find("HireButton").gameObject;
-            fireButton = transform.Find("FireButton").gameObject;
-        }
+        public GameObject hireButton, fireButton;
 
         private Truck truck;
         public Truck Truck {
@@ -39,14 +33,6 @@ namespace DCTC.UI {
             SetText("TruckAttributes/TravelSpeed", Formatter.FormatPercent(Truck.TravelSpeed));
             SetText("TruckAttributes/WorkSpeed", Formatter.FormatPercent(Truck.WorkSpeed));
             SetText("TruckAttributes/Salary", Formatter.FormatCurrency(Truck.Salary * 100f) + " / day");
-        }
-
-        void SetText(string name, string value) {
-            GetText(name).text = value;
-        }
-
-        TextMeshProUGUI GetText(string name) {
-            return transform.Find(name).GetComponent<TextMeshProUGUI>();
         }
 
         public void OnHireFireClicked() {

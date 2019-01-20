@@ -45,7 +45,7 @@ namespace DCTC.UI {
 
             customerCount.text = countStr;
 
-            score.text = player.Satisfaction.ToString("0") + "% Satisfaction";
+            score.text = Formatter.FormatPercent(player.Satisfaction) + " Satisfaction";
 
             calls.text = player.CallCenter.CallQueue.Count.ToString() + " Queued Calls";
             trucks.text = player.TruckRollQueue.Count.ToString() + " Queued Trucks";
