@@ -51,21 +51,23 @@ namespace DCTC.Controllers {
             LotSelection.SetActive(false);
         }
 
-        public void ValueChanged() {
+        public void SetSelection(string mode) {
+            SetSelection((SelectionModes)Enum.Parse(typeof(SelectionModes), mode));
+        }
+
+        public void SetSelection(SelectionModes mode) {
+            if (mode == Mode)
+                return;
+
             if (cursorObject != null) {
                 DestroyImmediate(cursorObject);
                 cursorObject = null;
             }
 
-            if (ConstructionToggleGroup.AnyTogglesOn()) {
-                string selected = ConstructionToggleGroup.ActiveToggles().First().name;
-                Mode = (SelectionModes) Enum.Parse(typeof(SelectionModes), selected);
+            Mode = mode;
 
+            if(Mode != SelectionModes.None)
                 CreateCursor();
-            }
-            else {
-                Mode = SelectionModes.None;
-            }
 
             mapComponent.HighlightRadius = 0;
 

@@ -93,6 +93,7 @@
     <Compile Include="Assets\Scripts\Pathfinding\AStar.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\PriorityQueue.cs" />
     <Compile Include="Assets\Scripts\UI\AgentCard.cs" />
+    <Compile Include="Assets\Scripts\UI\ConstructionMenu.cs" />
     <Compile Include="Assets\Scripts\UI\EnumToggleGroup.cs" />
     <Compile Include="Assets\Scripts\UI\Formatter.cs" />
     <Compile Include="Assets\Scripts\UI\GameSpeedToggles.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Assets\Scripts\UI\LotOutline.cs" />
     <Compile Include="Assets\Scripts\UI\NewGameUI.cs" />
     <Compile Include="Assets\Scripts\UI\OverlayToggles.cs" />
+    <Compile Include="Assets\Scripts\UI\TriStateToggle.cs" />
     <Compile Include="Assets\Scripts\UI\TruckCard.cs" />
     <Compile Include="Assets\Scripts\UI\UIContainer.cs" />
     <Compile Include="Assets\Scripts\UI\WorkforceDetails.cs" />
