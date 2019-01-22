@@ -86,10 +86,7 @@ namespace DCTC.UI {
 
             Clear();
 
-            if (gameController.Map.IsInBounds(location)) {
-                this.gameObject.SetActive(true);
-            } else {
-                this.gameObject.SetActive(false);
+            if (!gameController.Map.IsInBounds(location)) {
                 return;
             }
 
@@ -133,9 +130,6 @@ namespace DCTC.UI {
                     SetText("Name", tile.Type.ToString());
                 }
             }
-            else {
-                this.gameObject.SetActive(false);
-            }            
         }
 
         void DrawHeadquarters() {

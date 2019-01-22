@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 using DCTC.Controllers;
 using DCTC.Model;
 
 namespace DCTC.UI {
     public class GlobalInfo : MonoBehaviour {
         GameController gameController;
-        Text money, customerCount, score, calls, trucks;
+        TextMeshProUGUI money, customerCount, score, calls, trucks;
         int coolOff = 0;
         bool running = false;
 
@@ -17,11 +17,11 @@ namespace DCTC.UI {
             if (gameController.Game != null && gameController.Game.Player != null)
                 running = true;
 
-            money = transform.FindChildRecursive("Money").gameObject.GetComponent<Text>();
-            customerCount = transform.FindChildRecursive("CustomerCount").gameObject.GetComponent<Text>();
-            score = transform.FindChildRecursive("Score").gameObject.GetComponent<Text>();
-            calls = transform.FindChildRecursive("Calls").gameObject.GetComponent<Text>();
-            trucks = transform.FindChildRecursive("Trucks").gameObject.GetComponent<Text>();
+            money = transform.FindChildRecursive("Money").gameObject.GetComponent<TextMeshProUGUI>();
+            customerCount = transform.FindChildRecursive("CustomerCount").gameObject.GetComponent<TextMeshProUGUI>();
+            score = transform.FindChildRecursive("Score").gameObject.GetComponent<TextMeshProUGUI>();
+            calls = transform.FindChildRecursive("Calls").gameObject.GetComponent<TextMeshProUGUI>();
+            trucks = transform.FindChildRecursive("Trucks").gameObject.GetComponent<TextMeshProUGUI>();
         }
 
         void Update() {
