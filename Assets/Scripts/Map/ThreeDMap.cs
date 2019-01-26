@@ -467,7 +467,7 @@ namespace DCTC.Map {
                             yield return null;
                     }
 
-                    if (tile.Type == TileType.Connector) {
+                    if (tile.Type == TileType.Connector && gameController.Game.Player.Headquarters.Contains(pos)) {
                         prefab = prefabs["ConnectorTile"];
                         GameObject tileGo = Instantiate(prefab);
                         tileGo.name = TileName(pos);
@@ -614,12 +614,13 @@ namespace DCTC.Map {
 
                 CableGraphics graphics = go.GetComponent<CableGraphics>();
                 graphics.Cable = cable;
+                graphics.CableType = cable.Type;
                 graphics.Mode = CableGraphics.GraphicsMode.Placed;
                 graphics.Points = cable.Positions;
             }
             else if(item is Node) {
                 Node node = item as Node;
-                InstantiateObject("Node", node.ID, node.Position);
+                InstantiateObject("Node" + node.Type.ToString(), node.ID, node.Position);
             }
             else if(item is Truck) {
                 Truck truck = item as Truck;

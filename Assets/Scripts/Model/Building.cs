@@ -36,6 +36,11 @@ namespace DCTC.Model {
             return BuildingAttributes.GetAttributes(Type, FacingDirection);
         }
 
+        public bool Contains(TilePosition pos) {
+            return (pos.x >= Anchor.x && pos.x < Anchor.x + Width &&
+                    pos.y >= Anchor.y && pos.y < Anchor.y + Height);
+        }
+
 	}
 
 	public enum BuildingType {

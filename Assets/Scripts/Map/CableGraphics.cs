@@ -14,8 +14,12 @@ namespace DCTC.Map {
         private GameObject vertical, horizontal;
         private readonly float y = 0.1f;
 
-        public Color ValidColor = Color.green;
+        public Color CopperColor = Color.green;
+        public Color FiberColor = Color.green;
         public Color InvalidColor = Color.red;
+
+        [HideInInspector]
+        public CableType CableType = CableType.Copper;
 
         private void Awake() {
             vertical = transform.Find("Vertical").gameObject;
@@ -147,15 +151,17 @@ namespace DCTC.Map {
                 valid = (Cable.Status == NetworkStatus.Active);
 
             if (valid) {
-                SetLineColor(vertical, ValidColor);
-                SetLineColor(horizontal, ValidColor);
+                SetLineColor(vertical, ValidColor());
+                SetLineColor(horizontal, ValidColor());
             } else {
                 SetLineColor(vertical, InvalidColor);
                 SetLineColor(horizontal, InvalidColor);
             }
         }
 
-
+        private Color ValidColor() {
+            return CableType == CableType.Copper ? CopperColor : FiberColor;
+        }
         private void SetLineColor(GameObject go, Color color) {
             LineRenderer lr = go.GetComponent<LineRenderer>();
             lr.startColor = color;

@@ -181,8 +181,8 @@ namespace DCTC.Model {
                 Name = name,
                 Position = position,
                 Status = TruckStatus.Idle,
-                TravelSpeed = RandomUtils.RandomFloat(0.2f, 1.0f, this.Random),
-                WorkSpeed = RandomUtils.RandomFloat(0.2f, 1.0f, this.Random),
+                TravelSpeed = RandomUtils.RandomFloat(0.55f, 1.0f, this.Random),
+                WorkSpeed = RandomUtils.RandomFloat(0.55f, 1.0f, this.Random),
                 Company = company,
                 Game = this
             };
@@ -207,8 +207,8 @@ namespace DCTC.Model {
                 ID = Guid.NewGuid().ToString(),
                 Name = name,
                 Speed = RandomUtils.RandomFloat(0.45f, 0.99f, Random),
-                Friendliness = RandomUtils.RandomFloat(0.2f, 0.99f, Random),
-                Performance = RandomUtils.RandomFloat(0.2f, 0.99f, Random),
+                Friendliness = RandomUtils.RandomFloat(0.35f, 0.99f, Random),
+                Performance = RandomUtils.RandomFloat(0.55f, 0.99f, Random),
                 Company = company
             };
             return agent;

@@ -63,15 +63,18 @@ namespace DCTC.Model {
         public float Friendliness { get; set; }
         public float Performance { get; set; }
         public string CurrentCustomerId { get; set; }
-        public float Salary { get; set; }
         public string Name { get; set; }
         public string ID { get; set; }
 
+        public float Salary {
+            get {
+                return UnityEngine.Mathf.Max(0.2f * Performance * Friendliness, 0.05f);
+            }
+        }
+
         private float elapsed = 0;
 
-        public Agent() {
-            Salary = 0.1f;
-        }
+        public Agent() { }
 
         public void Update(float deltaTime) {
             if (CurrentCustomerId != null) {

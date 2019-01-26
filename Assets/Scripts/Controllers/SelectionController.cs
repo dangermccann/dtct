@@ -23,13 +23,19 @@ namespace DCTC.Controllers {
         public ToggleGroup ConstructionToggleGroup;
         public GameObject DestroyPrefab;
         public GameObject CableCursorPrefab;
-        public GameObject NodeCursorPrefab;
+        public GameObject NodeCursorPrefabSmall, NodeCursorPrefabLarge, NodeCursorPrefabFiber;
         public GameObject MapGameObject;
         public GameObject LotSelection;
         public GameObject LocationDetails;
 
         [HideInInspector]
         public SelectionModes Mode = SelectionModes.None;
+
+        [HideInInspector]
+        public NodeType NodeType;
+
+        [HideInInspector]
+        public CableType CableType;
 
         private GameObject cursorObject = null;
         private GameController gameController;
@@ -56,9 +62,6 @@ namespace DCTC.Controllers {
         }
 
         public void SetSelection(SelectionModes mode) {
-            if (mode == Mode)
-                return;
-
             if (cursorObject != null) {
                 DestroyImmediate(cursorObject);
                 cursorObject = null;
@@ -78,9 +81,21 @@ namespace DCTC.Controllers {
             if (Mode == SelectionModes.Cable) {
                 cursorObject = Instantiate(CableCursorPrefab);
                 cableCursor = cursorObject.GetComponent<CableGraphics>();
+                cableCursor.CableType = CableType;
             }
             else if (Mode == SelectionModes.Node) {
-                cursorObject = Instantiate(NodeCursorPrefab);
+                switch(NodeType) {
+                    case NodeType.Small:
+                        cursorObject = Instantiate(NodeCursorPrefabSmall);
+                        break;
+                    case NodeType.Large:
+                        cursorObject = Instantiate(NodeCursorPrefabLarge);
+                        break;
+                    case NodeType.Fiber:
+                        cursorObject = Instantiate(NodeCursorPrefabFiber);
+                        break;
+                }
+                
             }
             else if(Mode == SelectionModes.Destroy) {
                 cursorObject = Instantiate(DestroyPrefab);
@@ -208,7 +223,7 @@ namespace DCTC.Controllers {
                                 cableCursor.Orientation = Orientation.Vertical;
                             }
                         } 
-                        else if(tile.Type == TileType.Connector) {
+                        else if(tile.Type == TileType.Connector && gameController.Game.Player.Headquarters.Contains(pos)) {
                             cableCursor.Valid = true;
                         }
                         else {
@@ -244,7 +259,7 @@ namespace DCTC.Controllers {
                     return;
                 }
 
-                gameController.Game.Player.PlaceNode(NodeType.Small, position);
+                gameController.Game.Player.PlaceNode(NodeType, position);
 
                 Destroy(cursorObject);
                 CreateCursor();
@@ -265,7 +280,7 @@ namespace DCTC.Controllers {
                     // Second click
                     // Finalize cable placement and create new graphic
                     if (cableCursor.Points.Count > 1) {
-                        gameController.Game.Player.PlaceCable(Model.CableType.Copper, cableCursor.Points);
+                        gameController.Game.Player.PlaceCable(CableType, cableCursor.Points);
                     }
 
                     Destroy(cursorObject);
@@ -283,24 +298,26 @@ namespace DCTC.Controllers {
                 gameController.Game.Player.RemoveNode(position);
             }
             else if(Mode == SelectionModes.Cable) {
-                Tile tile = gameController.Map.Tiles[position];
-                if (tile.Type != TileType.Road && tile.Type != TileType.Connector)
-                    return;
-
                 if (cableCursor.Mode != CableGraphics.GraphicsMode.Cursor)
                     return;
 
-                if(dragCable == null) {
-                    dragCable = gameController.Game.Player.PlaceCable(CableType.Copper, 
-                        new List<TilePosition>() { position });
-                }
-                else {
-                    if(!dragCable.Positions.Contains(position)) {
-                        if(dragCable.Positions[0].IsAdjacent(position)) {
-                            gameController.Game.Player.PrependCable(dragCable, position);
-                        }
-                        else if (dragCable.Positions.Last().IsAdjacent(position)) {
-                            gameController.Game.Player.AppendCable(dragCable, position);
+                if (!gameController.Map.IsInBounds(position))
+                    return;
+
+                Tile tile = gameController.Map.Tiles[position];
+                if (tile.Type == TileType.Road || 
+                   (tile.Type == TileType.Connector && gameController.Game.Player.Headquarters.Contains(position))) {
+
+                    if (dragCable == null) {
+                        dragCable = gameController.Game.Player.PlaceCable(CableType,
+                            new List<TilePosition>() { position });
+                    } else {
+                        if (!dragCable.Positions.Contains(position)) {
+                            if (dragCable.Positions[0].IsAdjacent(position)) {
+                                gameController.Game.Player.PrependCable(dragCable, position);
+                            } else if (dragCable.Positions.Last().IsAdjacent(position)) {
+                                gameController.Game.Player.AppendCable(dragCable, position);
+                            }
                         }
                     }
                 }

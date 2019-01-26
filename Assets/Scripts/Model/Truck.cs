@@ -23,7 +23,11 @@ namespace DCTC.Model {
         public List<TilePosition> Path { get; set; }
         public float TravelSpeed { get; set; }
         public float WorkSpeed { get; set; }
-        public float Salary { get; set; }
+        public float Salary {
+            get {
+                return UnityEngine.Mathf.Max(0.2f * TravelSpeed * WorkSpeed, 0.05f);
+            }
+        }
 
         [NonSerialized]
         public Game Game;
@@ -35,7 +39,6 @@ namespace DCTC.Model {
         public event ChangeDelegate Dispatched;
 
         public Truck() {
-            Salary = 0.1f;
             TravelSpeed = 1;
             WorkSpeed = 1;
         }

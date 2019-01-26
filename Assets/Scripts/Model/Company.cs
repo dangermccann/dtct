@@ -37,6 +37,12 @@ namespace DCTC.Model {
         public TilePosition HeadquartersLocation { get; set; }
         public CallCenter CallCenter { get; set; }
 
+        public Building Headquarters {
+            get {
+                return game.Map.Tiles[HeadquartersLocation].Building;
+            }
+        }
+
         private SerializableColor color;
         public Color Color {
             get { return color.GetColor(); }
@@ -73,6 +79,9 @@ namespace DCTC.Model {
 
         public HashSet<TilePosition> HeadquartersConnectors {
             get {
+                if (HeadquartersLocation.Equals(TilePosition.Origin))
+                    return new HashSet<TilePosition>();
+
                 return Game.Map.Tiles[HeadquartersLocation].Lot.Corners();
             }
         }
@@ -106,38 +115,6 @@ namespace DCTC.Model {
             }
         }
 
-        public void RefreshCustomers() {
-            customers = new HashSet<Customer>();
-            foreach (Customer customer in game.Customers) {
-                if (customer.ProviderID == ID)
-                    customers.Add(customer);
-            }
-        }
-
-        public void RollTruck(Customer customer) {
-            TruckRollQueue.Insert(TruckRollQueue.Count, customer.ID);
-        }
-
-        private void OnCustomerChanged(Customer customer, Company company) {
-            if (TruckRollQueue.Contains(customer.ID))
-                TruckRollQueue.Remove(customer.ID);
-
-            if (company != null && company.ID == ID) {
-                if (!customers.Contains(customer))
-                    customers.Add(customer);
-
-                if (customer.Status == CustomerStatus.Pending)
-                    CallCenter.Enqueue(customer.ID);
-
-                if (customer.Status == CustomerStatus.Outage)
-                    CallCenter.Enqueue(customer.ID);
-
-
-            } else if (customers.Contains(customer)) {
-                customers.Remove(customer);
-            }
-        }
-
         public IEnumerable<TilePosition> CustomerHouses {
             get {
                 return Customers.Select(c => c.HomeLocation);
@@ -150,8 +127,22 @@ namespace DCTC.Model {
             ServicePrices = new Dictionary<ServiceTier, float>();
             TruckRollQueue = new List<string>();
             CallCenter = new CallCenter();
+            Attributes = new CompanyAttributes();
+            HeadquartersLocation = TilePosition.Origin;
 
             InitPrices();
+        }
+
+        public void RefreshCustomers() {
+            customers = new HashSet<Customer>();
+            foreach (Customer customer in game.Customers) {
+                if (customer.ProviderID == ID)
+                    customers.Add(customer);
+            }
+        }
+
+        public void RollTruck(Customer customer) {
+            TruckRollQueue.Insert(TruckRollQueue.Count, customer.ID);
         }
 
         public Customer GetCustomer(string id) {
@@ -318,6 +309,27 @@ namespace DCTC.Model {
             return results;
         }
 
+        private void OnCustomerChanged(Customer customer, Company company) {
+            if (TruckRollQueue.Contains(customer.ID))
+                TruckRollQueue.Remove(customer.ID);
+
+            if (company != null && company.ID == ID) {
+                if (!customers.Contains(customer))
+                    customers.Add(customer);
+
+                if (customer.Status == CustomerStatus.Pending)
+                    CallCenter.Enqueue(customer.ID);
+
+                if (customer.Status == CustomerStatus.Outage)
+                    CallCenter.Enqueue(customer.ID);
+
+
+            } else if (customers.Contains(customer)) {
+                customers.Remove(customer);
+            }
+        }
+
+
         private void CalculateServiceArea() {
             HashSet<TilePosition> serviceArea = new HashSet<TilePosition>();
             foreach (Network network in Networks) {
@@ -327,7 +339,6 @@ namespace DCTC.Model {
                     continue;
 
                 foreach (Node node in network.Nodes) {
-                    // TODO: does the area change for different network types?
                     IEnumerable<TilePosition> positions = Game.Map.Area(node.Position, node.ServiceRange);
                     network.ServiceArea.AddManySafely(positions);
                     serviceArea.AddManySafely(positions);
@@ -344,6 +355,8 @@ namespace DCTC.Model {
             this.serviceArea = serviceArea;
         }
 
+        
+
         private void CalculateNetworks() {
             List<Network> networks = new List<Network>();
             HashSet<Node> usedNodes = new HashSet<Node>();
@@ -356,6 +369,7 @@ namespace DCTC.Model {
                     usedNodes.Add(node);
 
                     Network network = new Network();
+                    network.CableType = node.CompatibleCableType;
                     networks.Add(network);
                     InsertNetworkNode(network, node);
 
@@ -365,9 +379,9 @@ namespace DCTC.Model {
                     do {
                         found = false;
                         foreach (Node otherNode in Nodes.Values) {
-                            // TODO: check for node type compatibility 
                             if (!network.Nodes.Contains(otherNode) &&
-                                network.ContainsPosition(otherNode.Position)) {
+                                network.ContainsPosition(otherNode.Position) &&
+                                otherNode.CompatibleCableType == network.CableType) {
                                 InsertNetworkNode(network, otherNode);
                                 usedNodes.Add(otherNode);
                                 found = true;
@@ -385,6 +399,7 @@ namespace DCTC.Model {
                     usedCables.Add(orphan);
 
                     Network network = new Network();
+                    network.CableType = orphan.Type;
                     networks.Add(network);
                     network.Cables.Add(orphan);
 
@@ -392,9 +407,9 @@ namespace DCTC.Model {
                     do {
                         found = false;
                         foreach (Cable otherCable in Cables) {
-                            // TODO: Check for cable type compatibility 
                             if (!network.Cables.Contains(otherCable) &&
-                                network.IntersectsOneOf(new HashSet<TilePosition>(otherCable.Positions))) {
+                                network.IntersectsOneOf(new HashSet<TilePosition>(otherCable.Positions)) &&
+                                otherCable.Type == network.CableType) {
                                 network.Cables.Add(otherCable);
                                 usedCables.Add(otherCable);
                                 found = true;
@@ -472,8 +487,7 @@ namespace DCTC.Model {
             network.Nodes.Add(node);
             IEnumerable<Cable> cables = IntersectingCables(node.Position);
             foreach (Cable cable in cables) {
-                // TODO: Check for cable type compatibility 
-                if (!network.Cables.Contains(cable)) {
+                if (!network.Cables.Contains(cable) && cable.Type == network.CableType) {
                     network.Cables.Add(cable);
 
                     if (OrphanedCables.Contains(cable))
@@ -483,9 +497,9 @@ namespace DCTC.Model {
                     do {
                         found = false;
                         foreach (Cable otherCable in Cables) {
-                            // TODO: Check for cable type compatibility 
                             if (!network.Cables.Contains(otherCable) &&
-                                otherCable.Intersects(network.Positions)) {
+                                otherCable.Intersects(network.Positions) &&
+                                otherCable.Type == network.CableType) {
                                 network.Cables.Add(otherCable);
 
                                 if (OrphanedCables.Contains(otherCable))

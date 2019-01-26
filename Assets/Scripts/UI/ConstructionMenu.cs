@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using DCTC.Controllers;
+using DCTC.Model;
 
 namespace DCTC.UI {
     public class ConstructionMenu : MonoBehaviour {
@@ -69,6 +70,11 @@ namespace DCTC.UI {
 
                     case "Copper":
                     case "Fiber":
+                        if (toggle.name == "Copper")
+                            SelectionController.CableType = CableType.Copper;
+                        else  if (toggle.name == "Fiber")
+                            SelectionController.CableType = CableType.Fiber;
+
                         SelectionController.SetSelection(SelectionController.SelectionModes.Cable);
                         GetTriState("Cables").IsSecondary = true;
                         break;
@@ -76,6 +82,13 @@ namespace DCTC.UI {
                     case "Small":
                     case "Advanced":
                     case "FiberNode":
+                        if (toggle.name == "Small")
+                            SelectionController.NodeType = NodeType.Small;
+                        else if(toggle.name == "Advanced")
+                            SelectionController.NodeType = NodeType.Large;
+                        else if (toggle.name == "FiberNode")
+                            SelectionController.NodeType = NodeType.Fiber;
+
                         SelectionController.SetSelection(SelectionController.SelectionModes.Node);
                         GetTriState("Nodes").IsSecondary = true;
                         break;

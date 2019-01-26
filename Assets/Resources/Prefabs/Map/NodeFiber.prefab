@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4594802247168172}
   m_Layer: 0
-  m_Name: Node
+  m_Name: NodeFiber
   m_TagString: Placed
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,13 +63,13 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1433807279207032}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: 0.174, z: 1}
-  m_LocalScale: {x: 1, y: 0.4, z: 1}
+  m_LocalRotation: {x: 0, y: 0.38268343, z: 0, w: 0.92387956}
+  m_LocalPosition: {x: 1, y: 0.269, z: 1}
+  m_LocalScale: {x: 1.1400789, y: 0.60181665, z: 0.4871699}
   m_Children: []
   m_Father: {fileID: 4594802247168172}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 45, z: 0}
 --- !u!23 &23512224459041448
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -85,7 +85,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 92408897267237c458f47fc2ba144e4b, type: 2}
+  - {fileID: 2100000, guid: 97b575b06745f0e4792444bc06d5e172, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

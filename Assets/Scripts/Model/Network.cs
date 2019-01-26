@@ -13,6 +13,8 @@ namespace DCTC.Model {
         public List<Cable> Cables;
         public List<Node> Nodes;
 
+        public CableType CableType;
+
         [NonSerialized]
         public HashSet<TilePosition> ServiceArea;
 
@@ -206,6 +208,20 @@ namespace DCTC.Model {
                         return 8;
                 }
                 return 0;
+            }
+        }
+
+        public CableType CompatibleCableType {
+            get {
+                switch (Type) {
+                    case NodeType.Small:
+                    case NodeType.Large:
+                        return CableType.Copper;
+
+                    case NodeType.Fiber:
+                        return CableType.Fiber;
+                }
+                return CableType.Copper;
             }
         }
     }

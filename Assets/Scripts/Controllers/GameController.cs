@@ -186,19 +186,23 @@ namespace DCTC.Controllers {
             lastUpdateTime = Time.time;
 
             while (true) {
-                
-
-                int householdIndex = gameCounter % Game.Customers.Count;
-                Game.Customers[householdIndex].Update(Time.time);
-
-                foreach(Company company in Game.Companies) {
-                    company.Update(Time.time - lastUpdateTime);
-                }
-
-                lastUpdateTime = Time.time;
-
-                if (++gameCounter % GameLoopBatchSize == 0) {
+                if (GameSpeed == GameSpeed.Pause) {
+                    lastUpdateTime = Time.time;
                     yield return null;
+                } else {
+
+                    int householdIndex = gameCounter % Game.Customers.Count;
+                    Game.Customers[householdIndex].Update(Time.time);
+
+                    foreach (Company company in Game.Companies) {
+                        company.Update(Time.time - lastUpdateTime);
+                    }
+
+                    lastUpdateTime = Time.time;
+
+                    if (++gameCounter % GameLoopBatchSize == 0) {
+                        yield return null;
+                    }
                 }
                 
             }
