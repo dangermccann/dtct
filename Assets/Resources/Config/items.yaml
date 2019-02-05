@@ -1,0 +1,296 @@
+﻿---
+CableAttributes:
+    Copper:
+        Range: 20
+        Color: '#D9A728'
+        ShortDescription: Copper Cable
+        Description: 'TODO'
+        Cost: 5
+        Technology: 
+    Coaxial:
+        Range: 35
+        Color: '#28E5C2'
+        ShortDescription: Coaxial Cable
+        Description: 'TODO'
+        Cost: 7
+        Technology: Analog Transmissions
+    Optical:
+        Range: 40
+        Color: '#DE2354'
+        ShortDescription: Fiber Optic Cable
+        Description: 'TODO'
+        Cost: 17
+        Technology: Fiber Optics
+
+NodeAttributes:
+    DR-100:
+        Wiring: Copper
+        ShortDescription: DSL Repeater
+        Description: 'TODO'
+        Image: ''
+        Cost: 50
+        Technology: Digital Subscriber Lines
+    CR-100:
+        Wiring: Coaxial
+        ShortDescription: Coaxial Repeater
+        Description: 'TODO'
+        Image: ''
+        Cost: 50
+        Technology: Advanced Cable Internet
+    OR-105:
+        Wiring: Optical
+        ShortDescription: Fiber Optic Repeater
+        Description: 'TODO'
+        Image: ''
+        Cost: 95
+        Technology: Optical Networks
+
+Termination:
+    D-150:
+        Throughput: 500
+        Subscribers: 50
+        RackSpace: 1
+        Requires: Backhaul
+        Heat: 10
+        Wiring: Copper
+        Service: Broadband
+        ShortDescription: 'DSL Access Multiplexer'
+        Description: 'TODO'
+        Image: ''
+        Cost: 125
+        Technology: Digital Subscriber Lines
+
+    C-1000:
+        Throughput: 1000
+        Subscribers: 100
+        RackSpace: 1
+        Requires: Backhaul
+        Heat: 10
+        Wiring: Coaxial
+        Service: Broadband
+        ShortDescription: 'Cable Termination'
+        Description: 'The Cable Modem Termination System (CMTS) supplies broadband internet connectivity over coaxial circuits to customers with cable modems.'
+        Image: ''
+        Cost: 150
+        Technology: Cable Internet
+    C-5000:
+        Throughput: 5000
+        Subscribers: 500
+        RackSpace: 4
+        Requires: Backhaul
+        Heat: 50
+        Wiring: Coaxial
+        Service: Broadband
+        ShortDescription: 'Advanced Cable Termination'
+        Description: 'The Advanced Cable Modem Termination System (CMTS) is a higher capcity version of the Cable Termination, allowing more customers to be serviced by the headend.'
+        Image: ''
+        Cost: 600
+        Technology: Cable Internet
+        
+    OT-1325:
+        Throughput: 5000
+        Subscribers: 250
+        RackSpace: 4
+        Requires: Backhaul
+        Heat: 20
+        Wiring: Optical
+        Service: Broadband
+        ShortDescription: 'Optical Line Terminal'
+        Description: 'TODO'
+        Image: ''
+        Cost: 255
+        Technology: Optical Networks
+    OT-1625:
+        Throughput: 25000
+        Subscribers: 1500
+        RackSpace: 8
+        Requires: Backhaul
+        Heat: 75
+        Wiring: Optical
+        Service: Broadband
+        ShortDescription: 'High Capacity Optical Line Terminal'
+        Description: 'TODO'
+        Image: ''
+        Cost: 1225
+        Technology: Optical Networks
+
+    TV-200:
+        Throughput: 25
+        Subscribers: 130
+        RackSpace: 2
+        Heat: 20
+        Wiring: Coaxial
+        Service: TV
+        ShortDescription: 'Video Modulator'
+        Description: 'TODO'
+        Image: ''
+        Cost: 105
+        Technology: Analog Transmissions
+    TV-1200:
+        Throughput: 200
+        Subscribers: 175
+        RackSpace: 2
+        Heat: 20
+        Wiring: Coaxial
+        Service: TV
+        ShortDescription: 'Digital Video Modulator'
+        Description: 'TODO'
+        Image: ''
+        Cost: 195
+        Technology: Digital Video
+    TV-2200:
+        Throughput: 200
+        Subscribers: 250
+        RackSpace: 2
+        Heat: 20
+        Wiring: Optical
+        Service: TV
+        ShortDescription: 'Optical Video Transmitter'
+        Description: 'TODO'
+        Image: ''
+        Cost: 215
+        Technology: Optical Networks
+
+    POTS-1:
+        Throughput: -1
+        Subscribers: 500
+        RackSpace: 2
+        Heat: 5
+        Wiring: Copper
+        Service: Phone
+        ShortDescription: 'Telephone Switch'
+        Description: 'TODO'
+        Image: ''
+        Cost: 75
+        Technology: Telephony
+
+Backhaul:
+    R-2500:
+        Throughput: 1000
+        RackSpace: 2
+        ShortDescription: 'Internet Router (Small)'
+        Description: 'TODO'
+        Image: ''
+        Cost: 95
+        Technology: 
+    R-3500:
+        Throughput: 5000
+        RackSpace: 2
+        ShortDescription: 'Internet Router (Large)'
+        Description: 'TODO'
+        Image: ''
+        Cost: 95
+        Technology: Backhaul Capacity
+    R-5500:
+        Throughput: 45000
+        RackSpace: 4
+        ShortDescription: 'Internet Router (Mega)'
+        Description: 'TODO'
+        Image: ''
+        Cost: 95
+        Technology: Backhaul Capacity
+
+Fan:
+    F-5:
+        Cooling: 50
+        RackSpace: 1
+        ShortDescription: 'Simple Fan'
+        Description: 'TODO'
+        Image: ''
+        Cost: 25
+        Technology: 
+
+    F-25:
+        Cooling: 125
+        RackSpace: 1
+        ShortDescription: 'High Speed Fan'
+        Description: 'TODO'
+        Image: ''
+        Cost: 45
+        Technology: High Speed Cooling
+
+Rack:
+    HR-15:
+        Slots: 16
+        ShortDescription: 'Headend Rack'
+        Description: 'TODO'
+        Image: ''
+        Cost: 50
+        Technology:
+
+CPE:
+    RJ-11:
+        ShortDescription: 'Telephone Terminator'
+        Description: 'TODO'
+        Image: ''
+        Cost: 1
+        Technology: Telephony
+        Throughput: -1
+        Reliability: 0.9
+        Wiring:
+            - Copper
+        Services: 
+            - Phone
+    STB-5:
+        ShortDescription: 'Analog Set-top Box'
+        Description: 'TODO'
+        Image: ''
+        Cost: 3
+        Technology: Analog Transmissions
+        Throughput: 25
+        Reliability: 0.75
+        Wiring:
+            - Coaxial
+        Services: 
+            - TV
+    STB-6:
+        ShortDescription: 'Digital Set-top Box'
+        Description: 'TODO'
+        Image: ''
+        Cost: 5
+        Technology: Digital Video
+        Throughput: 200
+        Reliability: 0.85
+        Wiring:
+            - Coaxial
+        Services: 
+            - TV
+    M-101:
+        ShortDescription: 'DSL Modem'
+        Description: 'TODO'
+        Image: ''
+        Cost: 4
+        Technology: Digital Subscriber Lines
+        Throughput: 25
+        Reliability: 0.8
+        Wiring:
+            - Copper
+        Services: 
+            - Broadband
+    M-201:
+        ShortDescription: 'Cable Modem'
+        Description: 'TODO'
+        Image: ''
+        Cost: 4
+        Technology: Cable Internet
+        Throughput: 55
+        Reliability: 0.85
+        Wiring:
+            - Coaxial
+        Services: 
+            - Broadband
+            - Phone
+    M-301:
+        ShortDescription: 'Fiber Optic Modem'
+        Description: 'TODO'
+        Image: ''
+        Cost: 12
+        Technology: Optical Networks
+        Throughput: 250
+        Reliability: 0.95
+        Wiring:
+            - Optical
+        Services: 
+            - Broadband
+            - TV
+            - Phone

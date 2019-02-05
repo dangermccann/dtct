@@ -43,6 +43,12 @@ namespace DCTC.Model {
         [NonSerialized]
         public NameGenerator NameGenerator;
 
+        [NonSerialized]
+        public Items Items;
+
+        [NonSerialized]
+        public Technology TechnologyGraph;
+
         [OnDeserialized()]
         internal void OnSerializedMethod(StreamingContext context) {
             foreach (Company c in Companies) {
@@ -63,6 +69,11 @@ namespace DCTC.Model {
             }
 
             this.Random = new System.Random(Settings.Seed);
+        }
+
+        public void LoadConfig() {
+            Items = Loader.LoadItems();
+            TechnologyGraph = Technology.BuildGraph(Loader.LoadTechnologies());
         }
 
         public void NewGame(NewGameSettings settings, NameGenerator nameGenerator, MapConfiguration map,

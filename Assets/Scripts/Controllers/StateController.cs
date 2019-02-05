@@ -7,11 +7,13 @@ using UnityEngine.Events;
 
 namespace DCTC.Controllers {
     public static class States {
+        public static readonly string Title = "/title";
         public static readonly string GameMenu = "/game-menu";
         public static readonly string Map = "/map";
         public static readonly string NewGame = "/new-game";
         public static readonly string Loading = "/loading";
         public static readonly string Workforce = "/workforce";
+        public static readonly string Finance = "/finance";
     }
 
     public class UrlProcessor {

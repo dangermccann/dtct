@@ -18,6 +18,8 @@ namespace DCTC.Model {
         private const string PlacesYaml = Package + "places";
         private const string Suffixes = Package + "suffixes";
         private const string MapYaml = Package + "map";
+        private const string ItemsYaml = Package + "items";
+        private const string TechnologiesYaml = Package + "technologies";
 
         public static IList<string> LoadBrands() {
             Dictionary<string, List<string>> parsed;
@@ -60,6 +62,22 @@ namespace DCTC.Model {
             MapTemplate template = new MapTemplate();
             Parse(MapYaml, out template);
             return template;
+        }
+
+        public static Items LoadItems() {
+            Items items = new Items();
+            Parse(ItemsYaml, out items);
+            items.AssignIDs();
+            return items;
+        }
+
+        public static Dictionary<string, Technology> LoadTechnologies() {
+            Dictionary<string, Technology> all = new Dictionary<string, Technology>();
+            Parse(TechnologiesYaml, out all);
+            foreach(string id in all.Keys) {
+                all[id].ID = id;
+            } 
+            return all;
         }
 
         private static void Parse<T>(string resource, out T result) {

@@ -27,9 +27,6 @@ namespace DCTC.UI {
         private void Start() {
             trucksTab.SetActive(true);
             agentsTab.SetActive(false);
-
-            transform.Find("Contents/CompanyLogo").GetComponent<Image>().sprite 
-                = SpriteController.Get().GetSprite(gameController.Game.Player.Name);
         }
 
         public void Show() {

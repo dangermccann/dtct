@@ -132,7 +132,9 @@ namespace DCTC.Controllers {
 
             Vector3 world = cameraController.MouseCursorInWorld();
             TilePosition pos = ThreeDMap.WorldToPosition(world);
-            LocationDetails.GetComponent<LocationDetails>().Location = pos;
+
+            if(!ignoreMouse)
+                LocationDetails.GetComponent<LocationDetails>().Location = pos;
 
 
             if (Input.GetMouseButtonDown(0) && !ignoreMouse && Mode == SelectionModes.None) {

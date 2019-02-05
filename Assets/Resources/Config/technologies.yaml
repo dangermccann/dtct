@@ -1,0 +1,51 @@
+﻿---
+Telephony:
+    Image: ''
+    Description: ''
+    Cost: 10
+    Prerequisite:
+Digital Subscriber Lines:
+    Image: ''
+    Description: ''
+    Cost: 10
+    Prerequisite: Telephony
+Analog Transmissions:
+    Image: ''
+    Description: ''
+    Cost: 10
+    Prerequisite: Telephony
+Digital Video:
+    Image: ''
+    Description: ''
+    Cost: 10
+    Prerequisite: Analog Transmissions
+Cable Internet:
+    Image: ''
+    Description: ''
+    Cost: 10
+    Prerequisite: Analog Transmissions
+Advanced Cable Internet:
+    Image: ''
+    Description: ''
+    Cost: 10
+    Prerequisite: Cable Internet
+High Speed Cooling:
+    Image: ''
+    Description: ''
+    Cost: 10
+    Prerequisite: Advanced Cable Internet
+Fiber Optics:
+    Image: ''
+    Description: ''
+    Cost: 10
+    Prerequisite: Advanced Cable Internet
+Optical Networks:
+    Image: ''
+    Description: ''
+    Cost: 10
+    Prerequisite: Fiber Optics
+Backhaul Capacity:
+    Image: ''
+    Description: ''
+    Cost: 10
+    Prerequisite: Advanced Cable Internet

@@ -36,6 +36,7 @@ namespace DCTC.Model {
         public float Money { get; set; }
         public TilePosition HeadquartersLocation { get; set; }
         public CallCenter CallCenter { get; set; }
+        public Inventory<int> Inventory { get; set; }
 
         public Building Headquarters {
             get {
@@ -129,6 +130,7 @@ namespace DCTC.Model {
             CallCenter = new CallCenter();
             Attributes = new CompanyAttributes();
             HeadquartersLocation = TilePosition.Origin;
+            Inventory = new Inventory<int>();
 
             InitPrices();
         }

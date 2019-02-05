@@ -66,7 +66,7 @@ namespace DCTC.Controllers {
         }
 
         private void Start() {
-            StateController.Get().PushState(States.GameMenu);
+            StateController.Get().PushState(States.Title);
         }
 
         public void Unpause() {
@@ -83,6 +83,10 @@ namespace DCTC.Controllers {
                 StopCoroutine(loopCoroutine);
                 loopCoroutine = null;
             }
+        }
+
+        public void QuitToTitle() {
+
         }
 
         void GenerateMap(NewGameSettings settings) {
@@ -115,7 +119,7 @@ namespace DCTC.Controllers {
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 
-            
+            Game.LoadConfig();
             UnityEngine.Random.state = Game.RandomState;
             random = Game.Random;
             nameGenerator = new NameGenerator(random);
@@ -153,6 +157,7 @@ namespace DCTC.Controllers {
 
             //UnityEngine.Profiling.Profiler.BeginSample("new-game");
             Game = new Game();
+            Game.LoadConfig();
             Game.NewGame(settings, nameGenerator, Map, headquarters);
             Game.PopulateCustomers();
             //UnityEngine.Profiling.Profiler.EndSample();

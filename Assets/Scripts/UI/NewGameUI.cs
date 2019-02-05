@@ -64,7 +64,7 @@ namespace DCTC.UI {
         }
 
         public void Back() {
-            StateController.Get().ExitAndPushState(States.GameMenu);
+            StateController.Get().ExitAndPushState(States.Title);
         }
 
         public void SetBehaviorDescription() {
