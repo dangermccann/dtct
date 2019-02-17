@@ -103,8 +103,8 @@
     <Compile Include="Assets\Scripts\UI\GameSpeedToggles.cs" />
     <Compile Include="Assets\Scripts\UI\GlobalInfo.cs" />
     <Compile Include="Assets\Scripts\UI\InventoryDetails.cs" />
+    <Compile Include="Assets\Scripts\UI\ItemDetails.cs" />
     <Compile Include="Assets\Scripts\UI\ItemTile.cs" />
-    <Compile Include="Assets\Scripts\UI\ItemTooltip.cs" />
     <Compile Include="Assets\Scripts\UI\LoadingUI.cs" />
     <Compile Include="Assets\Scripts\UI\LocationDetails.cs" />
     <Compile Include="Assets\Scripts\UI\LotOutline.cs" />

@@ -68,7 +68,7 @@ Termination:
         Heat: 10
         Wiring: Coaxial
         Service: Broadband
-        ShortDescription: 'Cable Termination'
+        ShortDescription: 'Cable Terminal'
         Description: 'The Cable Modem Termination System (CMTS) supplies broadband internet connectivity over coaxial circuits to customers with cable modems.'
         Image: ''
         Cost: 150
@@ -81,7 +81,7 @@ Termination:
         Heat: 50
         Wiring: Coaxial
         Service: Broadband
-        ShortDescription: 'Advanced Cable Termination'
+        ShortDescription: 'Advanced Cable Terminal'
         Description: 'The Advanced Cable Modem Termination System (CMTS) is a higher capcity version of the Cable Termination, allowing more customers to be serviced by the headend.'
         Image: ''
         Cost: 600

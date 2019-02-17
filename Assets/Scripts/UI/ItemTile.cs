@@ -6,12 +6,13 @@ using DCTC.Controllers;
 using DCTC.Model;
 
 namespace DCTC.UI {
-    public class ItemTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
+    public class ItemTile : MonoBehaviour, IPointerClickHandler {
+        public event ItemEvent ItemSelected;
 
         TextMeshProUGUI id;
         Image image;
 
-        void Awake() {
+        void Init() {
             id = transform.Find("ID").GetComponent<TextMeshProUGUI>();
             image = transform.Find("Image").GetComponent<Image>();
         }
@@ -26,16 +27,16 @@ namespace DCTC.UI {
         }
 
         public void Redraw() {
+            if (id == null)
+                Init();
+
             id.text = Item.ID;
             image.sprite = SpriteController.Get().GetSprite(Item.ID);
         }
 
-        public void OnPointerEnter(PointerEventData eventData) {
-            Debug.Log("Enter " + item.ID);
-        }
-
-        public void OnPointerExit(PointerEventData eventData) {
-            Debug.Log("Exit " + item.ID);
+        public void OnPointerClick(PointerEventData eventData) {
+            if (ItemSelected != null)
+                ItemSelected(Item);
         }
 
     }

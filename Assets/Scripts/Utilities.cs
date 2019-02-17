@@ -12,6 +12,18 @@ public static class Extensions {
         }
     }
 
+    public static void AddMany<K, V>(this Dictionary<K, V> set, Dictionary<K, V> items) {
+        foreach (K key in items.Keys) {
+            set.Add(key, items[key]);
+        }
+    }
+
+    public static void AddMany<K, E, V>(this Dictionary<K, V> set, Dictionary<K, E> items) where E : V {
+        foreach (K key in items.Keys) {
+            set.Add(key, items[key]);
+        }
+    }
+
     public static void RemoveMany<T>(this HashSet<T> set, IEnumerable<T> items) {
         foreach (T item in items) {
             set.Remove(item);
