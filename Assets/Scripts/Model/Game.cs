@@ -15,6 +15,7 @@ namespace DCTC.Model {
         public int NeighborhoodCountX = 3;
         public int NeighborhoodCountY = 3;
         public string PlayerName = "Human";
+        public int StartingMoney = 1000;
         public CompanyAttributes PlayerAttributes = new CompanyAttributes();
     }
 
@@ -89,6 +90,8 @@ namespace DCTC.Model {
                 Company company = GenerateCompany(CompanyOwnerType.AI, headquarters[i]);
                 // TODO: give opponants "personalities"
                 company.Attributes = new CompanyAttributes();
+                company.Inventory["HR-15"] = 1;
+                company.AppendRack();
                 Companies.Add(company);
             }
 
@@ -96,6 +99,9 @@ namespace DCTC.Model {
                 Player = GenerateCompany(CompanyOwnerType.Human, headquarters[settings.NumAIs]);
                 Player.Name = settings.PlayerName;
                 Player.Attributes = settings.PlayerAttributes;
+                Player.Inventory["HR-15"] = 1;
+                Player.AppendRack();
+                Player.Money = settings.StartingMoney;
                 Companies.Add(Player);
             }
         }

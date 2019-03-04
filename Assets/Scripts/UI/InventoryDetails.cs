@@ -1,93 +1,94 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DCTC.Model;
 using DCTC.Controllers;
+using System.Collections.Generic;
 
 namespace DCTC.UI {
-    public delegate void ItemEvent(Item item);
+    public class InventoryDetails : ItemGridContainer {
+        public GameObject fieldContent, fieldItemDetails, headendContent;
+        public GameObject rackContainer;
+        public GameObject RakedItemPrefab, RackPrefab;
 
-    public class InventoryDetails : MonoBehaviour {
-        public GameObject ItemTilePrefab, ItemGridPrefab;
-        public GameObject fieldContent, headendContent, fieldItemDetails, headendItemDetails;
-        private GameController gameController;
+        private SpriteController spriteController;
+
+        private static float rackedItemHeight = 31f;
 
         void Start() {
             fieldItemDetails.GetComponent<ItemDetails>().ItemBought += OnItemBought;
-            headendItemDetails.GetComponent<ItemDetails>().ItemBought += OnItemBought;
+            spriteController = SpriteController.Get();
+
+            fieldContent.SetActive(true);
+            headendContent.SetActive(false);
         }
 
-        void OnItemBought(Item i, int qty) {
-            Debug.Log("Bought " + qty.ToString() + " " + i.ID);
-            gameController.Game.Player.Inventory[i.ID] += qty;
+
+        protected override IEnumerator Redraw() {
+            yield return null;
+
+            if (gameController.Game != null) {
+
+                ClearGrids(fieldContent.transform);
+
+                fieldItemDetails.GetComponent<ItemDetails>().Item = null;
+
+                Items items = gameController.Game.Items;
+                AddCategory(fieldContent.transform, fieldItemDetails, "Devices", items.CPE);
+
+                DrawRacks();
+            }
         }
 
-        void OnEnable() {
-            gameController = GameController.Get();
-            Redraw();
-        }
+        void DrawRacks() {
+            Utilities.Clear(rackContainer.transform, 0, 1);
 
-        void Redraw() {
-            if (gameController.Game == null)
-                return;
+            List<GameObject> rackGOs = new List<GameObject>();
+            Company player = gameController.Game.Player;
 
-            ClearGrids(fieldContent.transform);
-            ClearGrids(headendContent.transform);
+            for(int i = 0; i < player.Racks.Count; i++) {
+                GameObject rackGO = Instantiate(RackPrefab, rackContainer.transform);
+                rackGO.GetComponent<Image>().sprite = spriteController.GetSprite("Rack");
+                rackGO.name = "Rack " + i;
+                rackGO.transform.SetSiblingIndex(i);
 
-            headendItemDetails.GetComponent<ItemDetails>().Item = null;
-            fieldItemDetails.GetComponent<ItemDetails>().Item = null;
+                int index = i;
+                rackGO.transform.Find("Buy").GetComponent<Button>().onClick.AddListener(() => {
+                    StateController.Get().PushState("/headend-buy/" + index);
+                });
 
-            Items items = gameController.Game.Items;
-            AddCategory(headendContent.transform, headendItemDetails, "Termination", items.Termination);
-            AddCategory(headendContent.transform, headendItemDetails, "Backhaul", items.Backhaul);
+                rackGOs.Add(rackGO);
+            }
 
-            Dictionary<string, Item> rackItems = new Dictionary<string, Item>();
-            rackItems.AddMany(items.Fan);
-            rackItems.AddMany(items.Rack);
+            int slotIndex = 0;
+            int rackIndex = 0;
 
-            AddCategory(headendContent.transform, headendItemDetails, "Racks", rackItems);
-            AddCategory(fieldContent.transform, fieldItemDetails, "Devices", items.CPE);
-        }
-
-        void AddCategory<T>(Transform _parent, GameObject details, 
-            string name, Dictionary<string, T> categoryItems) where T : Item {
-
-            GameObject grid = Instantiate(ItemGridPrefab, _parent);
-            grid.transform.SetSiblingIndex(_parent.childCount - 2);
-            Utilities.Clear(grid.transform);
-            ToggleGroup group = _parent.GetComponent<ToggleGroup>();
-            ItemDetails itemDetails = details.GetComponent<ItemDetails>();
-
-            List<string> orderedKeys = new List<string>(categoryItems.Keys);
-            orderedKeys.Sort();
-
-            foreach (string id in orderedKeys) {
-                T item = categoryItems[id];
-                GameObject tile = Instantiate(ItemTilePrefab, grid.transform);
-
-                ItemTile itemTile = tile.GetComponent<ItemTile>();
-                tile.GetComponent<Toggle>().group = group;
-                itemTile.Item = item;
-
-                if (itemDetails.Item == null) {
-                    itemDetails.Item = item;
-                    itemTile.GetComponent<Toggle>().isOn = true;
+            foreach(Rack rack in player.Racks) {
+                foreach(string id in rack.Contents) {
+                    Item item = gameController.Game.Items[id];
+                    RackedItem racked = item as RackedItem;
+                    Transform container = rackGOs[rackIndex].transform.Find("container");
+                    AppendRack(container, racked, slotIndex);
+                    slotIndex += racked.RackSpace;
                 }
-
-                // TODO: will this produce a memory leak?
-                itemTile.ItemSelected += (Item i) => {
-                    details.GetComponent<ItemDetails>().Item = i;
-                };
+                rackIndex++;
+                slotIndex = 0;
             }
         }
 
-        void ClearGrids(Transform container) {
-            for (int i = container.childCount - 2; i >= 1; i--) {
-                ClearGrids(container.GetChild(i));
-                Destroy(container.GetChild(i).gameObject);
-            }
+        void AppendRack(Transform container, RackedItem racked, int idx) {
+            GameObject go = Instantiate(RakedItemPrefab, container);
+            go.name = idx.ToString() + " " + racked.ID;
+            go.GetComponent<Image>().sprite = spriteController.GetSprite(racked.ID + "_flat");
+            go.GetComponent<RackedItemUI>().Item = racked;
+            go.GetComponent<RackedItemUI>().PointerEnter += OnItemPointerEnter;
+            go.GetComponent<RectTransform>().sizeDelta = new Vector2(
+                rackContainer.GetComponent<RectTransform>().sizeDelta.x,
+                rackedItemHeight * racked.RackSpace);
         }
-        
+
+        protected void OnItemPointerEnter(RackedItem item) {
+            Debug.Log("Mouse over " + item.ID);
+        }
     }
 }

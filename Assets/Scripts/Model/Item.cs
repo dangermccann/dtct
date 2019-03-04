@@ -13,6 +13,8 @@ namespace DCTC.Model {
         public Dictionary<string, Rack> Rack { get; set; }
         public Dictionary<string, CPE> CPE { get; set; }
 
+        private List<Item> all = new List<Item>();
+
         public Items() {
             CableAttributes = new Dictionary<string, CableAttributes>();
             NodeAttributes = new Dictionary<string, NodeAttributes>();
@@ -24,15 +26,22 @@ namespace DCTC.Model {
         }
 
         public List<Item> All() {
-            List<Item> all = new List<Item>();
-            all.AddRange(CableAttributes.Values.Cast<Item>());
-            all.AddRange(NodeAttributes.Values.Cast<Item>());
-            all.AddRange(Termination.Values.Cast<Item>());
-            all.AddRange(Backhaul.Values.Cast<Item>());
-            all.AddRange(Fan.Values.Cast<Item>());
-            all.AddRange(Rack.Values.Cast<Item>());
-            all.AddRange(CPE.Values.Cast<Item>());
+            if (all.Count == 0) {
+                all.AddRange(CableAttributes.Values.Cast<Item>());
+                all.AddRange(NodeAttributes.Values.Cast<Item>());
+                all.AddRange(Termination.Values.Cast<Item>());
+                all.AddRange(Backhaul.Values.Cast<Item>());
+                all.AddRange(Fan.Values.Cast<Item>());
+                all.AddRange(Rack.Values.Cast<Item>());
+                all.AddRange(CPE.Values.Cast<Item>());
+            }
             return all;
+        }
+
+        public Item this[string id] {
+            get {
+                return All().Find((item) => item.ID == id);
+            }
         }
 
         public void AssignIDs() {
@@ -98,6 +107,32 @@ namespace DCTC.Model {
     [Serializable]
     public class Rack : Item {
         public int Slots { get; set; }
+        public List<string> Contents { get; set; }
+        public Rack() {
+            Contents = new List<string>();
+        }
+
+        public Rack(Rack clone) {
+            this.ID = clone.ID;
+            this.ShortDescription = clone.ShortDescription;
+            this.Description = clone.Description;
+            this.Image = clone.Image;
+            this.Cost = clone.Cost;
+            this.Technology = clone.Technology;
+            this.Slots = clone.Slots;
+            Contents = new List<string>();
+        }
+
+        public int AvailableSlots(Items items) {
+            int available = Slots;
+
+            foreach(string id in Contents) {
+                Item item = items[id];
+                available -= (item as RackedItem).RackSpace;
+            }
+
+            return available;
+        }
     }
 
     [Serializable]

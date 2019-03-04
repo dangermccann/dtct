@@ -11,6 +11,23 @@ namespace DCTC.UI {
             return String.Format("{0:#,##0}", val);
         }
 
+        public static string FormatShortInteger(int val) {
+            if (val >= 1000000000) {
+                val = Mathf.RoundToInt(val / 1000000000f);
+                return val.ToString() + "B";
+            } else if (val >= 1000000) {
+                val = Mathf.RoundToInt(val / 1000000f);
+                return val.ToString() + "M";
+            }
+            else if (val >= 1000) {
+                val = Mathf.RoundToInt(val / 1000f);
+                return val.ToString() + "k";
+            }
+            else {
+                return val.ToString();
+            }
+        }
+
         public static string FormatPercent(float val) {
             return String.Format("{0:#,##0}%", val * 100f);
         }

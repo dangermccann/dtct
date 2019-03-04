@@ -90,7 +90,7 @@ Termination:
     OT-1325:
         Throughput: 5000
         Subscribers: 250
-        RackSpace: 4
+        RackSpace: 2
         Requires: Backhaul
         Heat: 20
         Wiring: Optical
@@ -103,7 +103,7 @@ Termination:
     OT-1625:
         Throughput: 25000
         Subscribers: 1500
-        RackSpace: 8
+        RackSpace: 4
         Requires: Backhaul
         Heat: 75
         Wiring: Optical
@@ -129,7 +129,7 @@ Termination:
     TV-1200:
         Throughput: 200
         Subscribers: 175
-        RackSpace: 2
+        RackSpace: 4
         Heat: 20
         Wiring: Coaxial
         Service: TV
@@ -141,7 +141,7 @@ Termination:
     TV-2200:
         Throughput: 200
         Subscribers: 250
-        RackSpace: 2
+        RackSpace: 4
         Heat: 20
         Wiring: Optical
         Service: TV
@@ -154,7 +154,7 @@ Termination:
     POTS-1:
         Throughput: -1
         Subscribers: 500
-        RackSpace: 2
+        RackSpace: 1
         Heat: 5
         Wiring: Copper
         Service: Phone
@@ -167,8 +167,8 @@ Termination:
 Backhaul:
     R-2500:
         Throughput: 1000
-        RackSpace: 2
-        ShortDescription: 'Internet Router (Small)'
+        RackSpace: 1
+        ShortDescription: 'Internet Router'
         Description: 'TODO'
         Image: ''
         Cost: 95
@@ -176,7 +176,7 @@ Backhaul:
     R-3500:
         Throughput: 5000
         RackSpace: 2
-        ShortDescription: 'Internet Router (Large)'
+        ShortDescription: 'Large Internet Router'
         Description: 'TODO'
         Image: ''
         Cost: 95
@@ -184,7 +184,7 @@ Backhaul:
     R-5500:
         Throughput: 45000
         RackSpace: 4
-        ShortDescription: 'Internet Router (Mega)'
+        ShortDescription: 'Mega Internet Router'
         Description: 'TODO'
         Image: ''
         Cost: 95
@@ -202,7 +202,7 @@ Fan:
 
     F-25:
         Cooling: 125
-        RackSpace: 1
+        RackSpace: 2
         ShortDescription: 'High Speed Fan'
         Description: 'TODO'
         Image: ''
@@ -211,7 +211,7 @@ Fan:
 
 Rack:
     HR-15:
-        Slots: 16
+        Slots: 12
         ShortDescription: 'Headend Rack'
         Description: 'TODO'
         Image: ''

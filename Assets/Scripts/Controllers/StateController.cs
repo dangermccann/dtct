@@ -27,21 +27,21 @@ namespace DCTC.Controllers {
 
             foreach(UIState state in states) {
 
-                string[] stateComponents = state.UrlPattern.Split(delimiters);
+                string[] patternComponents = state.UrlPattern.Split(delimiters);
 
-                if (pathComponents.Length > stateComponents.Length)
+                if (pathComponents.Length > patternComponents.Length)
                     continue;
 
                 bool matched = true;
-                for(int i = 0; i < stateComponents.Length; i++) {
+                for(int i = 0; i < patternComponents.Length; i++) {
                     // templates
-                    if (stateComponents[i].StartsWith("{#") && stateComponents[i].EndsWith("}")) {
-                        string variableName = stateComponents[i].Substring(2, stateComponents[i].Length - 3);
+                    if (patternComponents[i].StartsWith("{#") && patternComponents[i].EndsWith("}")) {
+                        string variableName = patternComponents[i].Substring(2, patternComponents[i].Length - 3);
                         if (pathComponents.Length > i) {
                             invocation.Parameters.Add(variableName, Uri.UnescapeDataString(pathComponents[i]));
                         }
                     } else {
-                        if (pathComponents.Length <= i || pathComponents[i] != stateComponents[i]) {
+                        if (pathComponents.Length <= i || pathComponents[i] != patternComponents[i]) {
                             matched = false;
                             break;
                         }

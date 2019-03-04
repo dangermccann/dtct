@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace DCTC.Model {
@@ -6,7 +7,7 @@ namespace DCTC.Model {
     public delegate void InventoryChangedEvent(string item);
 
     [Serializable]
-    public class Inventory<T> {
+    public class Inventory<T> : IEnumerable<string> {
         [field: NonSerialized]
         public event InventoryChangedEvent ItemChanged;
 
@@ -27,6 +28,14 @@ namespace DCTC.Model {
 
         public bool Contains(string item) {
             return inventory.ContainsKey(item);
+        }
+
+        public IEnumerator<string> GetEnumerator() {
+            return inventory.Keys.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return this.GetEnumerator();
         }
     }
 }

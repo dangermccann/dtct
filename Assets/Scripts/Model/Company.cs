@@ -37,6 +37,10 @@ namespace DCTC.Model {
         public TilePosition HeadquartersLocation { get; set; }
         public CallCenter CallCenter { get; set; }
         public Inventory<int> Inventory { get; set; }
+        public List<Rack> Racks { get; set; }
+
+        public int RackLimit = 3;
+        public int InventoryLimit = 750;
 
         public Building Headquarters {
             get {
@@ -131,8 +135,86 @@ namespace DCTC.Model {
             Attributes = new CompanyAttributes();
             HeadquartersLocation = TilePosition.Origin;
             Inventory = new Inventory<int>();
+            Racks = new List<Rack>();
 
             InitPrices();
+        }
+
+        public int InventoryConsumed() {
+            int total = 0;
+            foreach (string id in Game.Items.CPE.Keys) {
+                total += Inventory[id];
+            }
+            return total;
+        }
+
+        public int CanPurchase(Item item, int qty) {
+            return CanPurchaseInternal(item, qty, -1);
+        }
+
+        public int CanPurchase(RackedItem item, int qty, int rackIdx) {
+            return CanPurchaseInternal(item, qty, rackIdx);
+        }
+
+        private int CanPurchaseInternal(Item item, int qty, int rackIdx) {
+            if (item.Cost * qty > Money)
+                return Errors.INSUFFICIENT_MONEY;
+
+            if (item is RackedItem) {
+                Rack rack = Racks[rackIdx];
+                RackedItem racked = item as RackedItem;
+                if (rack.AvailableSlots(Game.Items) < racked.RackSpace * qty) {
+                    return Errors.INSUFFICIENT_RACKSPACE;
+                }
+            }
+            else if (item is Rack) {
+                if (Racks.Count >= RackLimit)
+                    return Errors.MAXIMUM_RACKS;
+            }
+            else if(item is CPE) {
+                int consumed = InventoryConsumed();
+                consumed += qty;
+                if (consumed > InventoryLimit)
+                    return Errors.INSUFFICIENT_INVENTORY;
+            }
+
+             return Errors.OK;
+        }
+
+        public void Purchase(Item item, int qty) {
+            PurchaseInternal(item, qty, -1);
+        }
+        public void Purchase(RackedItem item, int qty, int rackIdx) {
+            PurchaseInternal(item, qty, rackIdx);
+        }
+
+        private void PurchaseInternal(Item item, int qty, int rackIdx) {
+            int err = CanPurchaseInternal(item, qty, rackIdx);
+            if (!Errors.Success(err)) {
+                throw new Exception(String.Format("Purchase error: {0:X}", err));
+            }
+
+            if (item.ID == "HR-15") {
+                AppendRack();
+            }
+            else if(item is RackedItem) {
+                Rack rack = Racks[rackIdx];
+                RackedItem racked = item as RackedItem;
+
+                for (int i = 0; i < qty; i++) {
+                    rack.Contents.Add(racked.ID);
+                }
+            }
+
+            Inventory[item.ID] += qty;
+            Money -= item.Cost * qty;
+
+            Debug.Log("Bought " + qty.ToString() + " " + item.ID);
+        }
+
+        public void AppendRack() {
+            Rack rack = new Rack(Game.Items["HR-15"] as Rack);
+            Racks.Add(rack);
         }
 
         public void RefreshCustomers() {

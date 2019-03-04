@@ -190,7 +190,11 @@ public static class Utilities {
     }
 
     public static void Clear(Transform transform) {
-        for (int i = transform.childCount - 1; i >= 0; i--) {
+        Clear(transform, 0, 0);
+    }
+
+    public static void Clear(Transform transform, int offsetStart, int offsetEnd) {
+        for (int i = transform.childCount - offsetEnd - 1; i >= offsetStart; i--) {
             GameObject go = transform.GetChild(i).gameObject;
             SafeDestroy(go);
         }
