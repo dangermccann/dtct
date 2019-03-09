@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -10,7 +10,8 @@ namespace DCTC.UI {
 
     public class ItemDetails : MonoBehaviour {
 
-        TextMeshProUGUI price, description, shortDescription, attributes;
+        TextMeshProUGUI description, shortDescription;
+        AttributeTable attributes;
         Button buyButton;
         TMP_InputField quantity;
 
@@ -21,10 +22,9 @@ namespace DCTC.UI {
         }
 
         void Init() {
-            description = GetText("Description");
             shortDescription = GetText("ShortDescription");
-            price = GetText("Price");
-            attributes = GetText("Attributes");
+            description = GetText("Description");
+            attributes = transform.Find("AttributeTable").GetComponent<AttributeTable>();
             buyButton = transform.Find("ButtonRow/Button").GetComponent<Button>();
             quantity = transform.Find("ButtonRow/QuantityInput").GetComponent<TMP_InputField>();
 
@@ -47,63 +47,76 @@ namespace DCTC.UI {
             if (description == null)
                 Init();
 
+            attributes.Clear();
+
             if (Item != null) {
                 description.text = Item.Description;
                 shortDescription.text = Item.ID + " " + Item.ShortDescription;
-                price.text = FormatAttribute("Price", Formatter.FormatCurrency(Item.Cost));
-                string att = "";
+                FormatAttribute("Price", Formatter.FormatCurrency(Item.Cost));
 
-                if (Item is Termination) {
-                    Termination termination = Item as Termination;
-                    att += FormatAttribute("Service", termination.Service);
-                    att += FormatAttribute("Wiring", termination.Wiring);
-                    att += FormatAttribute("Capacity", termination.Subscribers + " subscribers");
-                    if(termination.Throughput != -1)
-                        att += FormatAttribute("Throughput", termination.Throughput + " Gbps");
-                    att += FormatRackspace(termination);
-                    att += FormatAttribute("Heat generated", termination.Heat + " thermal units");
-                } else if(Item is Backhaul) {
-                    Backhaul backhaul = Item as Backhaul;
-                    if(backhaul.Throughput != -1)
-                        att += FormatAttribute("Throughput", backhaul.Throughput + " Gbps");
-                    att += FormatRackspace(backhaul);
-                } else if(Item is Rack) {
-                    Rack rack = Item as Rack;
-                    att += FormatAttribute("Slots", rack.Slots.ToString());
-                } else if(Item is Fan) {
-                    Fan fan = Item as Fan;
-                    att += FormatAttribute("Cooling", fan.Cooling + " thermal units");
-                    att += FormatRackspace(fan);
-                } else if (Item is CPE) {
-                    CPE cpe = Item as CPE;
-                    att += FormatAttribute("Service", string.Join(", ", cpe.Services.ToArray()));
-                    att += FormatAttribute("Wiring", string.Join(", ", cpe.Wiring.ToArray()));
-                    if(cpe.Throughput != -1)
-                        att += FormatAttribute("Throughput", cpe.Throughput + " Gbps");
-                    att += FormatAttribute("Reliability", Formatter.FormatPercent(cpe.Reliability));
+                List<KeyValuePair<string, string>> values = ItemAttributesGenerator.GenerateAttributes(item);
+                foreach (var pair in values) {
+                    FormatAttribute(pair.Key, pair.Value);
                 }
 
-                attributes.text = att;
-
-            }
-            else {
+            } else {
                 description.text = "";
                 shortDescription.text = "";
-                price.text = "";
-                attributes.text = "";
             }
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
             LayoutRebuilder.ForceRebuildLayoutImmediate(transform.parent.GetComponent<RectTransform>());
         }
 
-        private string FormatRackspace(RackedItem ri) {
-            return FormatAttribute("Rack space required", ri.RackSpace + (ri.RackSpace == 1 ? " row" : " rows")); ;
+        private void FormatAttribute(string key, string value) {
+            attributes.Append("<color=#D1D1D1>" + key, "<color=#FFFFFF>" + value);
         }
 
-        private static string FormatAttribute(string key, string value) {
-            return "<color=#D1D1D1>" + key + ": <color=#FFFFFF>" + value + "\n";
+    }
+
+    public static class ItemAttributesGenerator {
+        public static List<KeyValuePair<string, string>> GenerateAttributes(Item item) {
+            List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>>();
+
+            if (item is Termination) {
+                Termination termination = item as Termination;
+                AddAttribute("Service", termination.Service, result);
+                AddAttribute("Wiring", termination.Wiring, result);
+                AddAttribute("Capacity", termination.Subscribers + " subscribers", result);
+                if (termination.Throughput != -1)
+                    AddAttribute("Throughput", termination.Throughput + " Gbps", result);
+                AddRackspace(termination, result);
+                AddAttribute("Heat generated", termination.Heat + " thermal units", result);
+            } else if (item is Backhaul) {
+                Backhaul backhaul = item as Backhaul;
+                if (backhaul.Throughput != -1)
+                    AddAttribute("Throughput", backhaul.Throughput + " Gbps", result);
+                AddRackspace(backhaul, result);
+            } else if (item is Rack) {
+                Rack rack = item as Rack;
+                AddAttribute("Slots", rack.Slots.ToString(), result);
+            } else if (item is Fan) {
+                Fan fan = item as Fan;
+                AddAttribute("Cooling", fan.Cooling + " thermal units", result);
+                AddRackspace(fan, result);
+            } else if (item is CPE) {
+                CPE cpe = item as CPE;
+                AddAttribute("Service", string.Join(", ", cpe.Services.ToArray()), result);
+                AddAttribute("Wiring", string.Join(", ", cpe.Wiring.ToArray()), result);
+                if (cpe.Throughput != -1)
+                    AddAttribute("Throughput", cpe.Throughput + " Gbps", result);
+                AddAttribute("Reliability", Formatter.FormatPercent(cpe.Reliability), result);
+            }
+
+            return result;
         }
 
+        private static void AddRackspace(RackedItem ri, List<KeyValuePair<string, string>> result) {
+            AddAttribute("Rack space", ri.RackSpace + (ri.RackSpace == 1 ? " row" : " rows"), result);
+        }
+
+        private static void AddAttribute(string key, string value, List<KeyValuePair<string, string>> result) {
+            result.Add(new KeyValuePair<string, string>(key, value));
+        }
     }
 }

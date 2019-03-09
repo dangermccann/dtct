@@ -97,6 +97,7 @@
     <Compile Include="Assets\Scripts\Pathfinding\AStar.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\PriorityQueue.cs" />
     <Compile Include="Assets\Scripts\UI\AgentCard.cs" />
+    <Compile Include="Assets\Scripts\UI\AttributeTable.cs" />
     <Compile Include="Assets\Scripts\UI\CompanyLogo.cs" />
     <Compile Include="Assets\Scripts\UI\ConstructionMenu.cs" />
     <Compile Include="Assets\Scripts\UI\EnumToggleGroup.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Assets\Scripts\UI\InventoryDetails.cs" />
     <Compile Include="Assets\Scripts\UI\ItemDetails.cs" />
     <Compile Include="Assets\Scripts\UI\ItemGridContainer.cs" />
+    <Compile Include="Assets\Scripts\UI\ItemInstanceDetails.cs" />
     <Compile Include="Assets\Scripts\UI\ItemTile.cs" />
     <Compile Include="Assets\Scripts\UI\LoadingUI.cs" />
     <Compile Include="Assets\Scripts\UI\LocationDetails.cs" />

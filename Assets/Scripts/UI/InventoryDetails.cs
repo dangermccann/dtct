@@ -9,7 +9,7 @@ namespace DCTC.UI {
     public class InventoryDetails : ItemGridContainer {
         public GameObject fieldContent, fieldItemDetails, headendContent;
         public GameObject rackContainer;
-        public GameObject RakedItemPrefab, RackPrefab;
+        public GameObject RakedItemPrefab, RackPrefab, HeadendItemDetails;
 
         private SpriteController spriteController;
 
@@ -57,6 +57,12 @@ namespace DCTC.UI {
                     StateController.Get().PushState("/headend-buy/" + index);
                 });
 
+                RackedItemUI ri = rackGO.GetComponent<RackedItemUI>();
+                ri.Item = player.Racks[i];
+                ri.PointerEnter += OnItemPointerEnter;
+                ri.PointerExit += OnItemPointerExit;
+                ri.PointerClick += OnItemPointerClick;
+
                 rackGOs.Add(rackGO);
             }
 
@@ -80,15 +86,29 @@ namespace DCTC.UI {
             GameObject go = Instantiate(RakedItemPrefab, container);
             go.name = idx.ToString() + " " + racked.ID;
             go.GetComponent<Image>().sprite = spriteController.GetSprite(racked.ID + "_flat");
-            go.GetComponent<RackedItemUI>().Item = racked;
-            go.GetComponent<RackedItemUI>().PointerEnter += OnItemPointerEnter;
+            RackedItemUI ri = go.GetComponent<RackedItemUI>();
+            ri.Item = racked;
+            ri.PointerEnter += OnItemPointerEnter;
+            ri.PointerExit += OnItemPointerExit;
+            ri.PointerClick += OnItemPointerClick;
             go.GetComponent<RectTransform>().sizeDelta = new Vector2(
                 rackContainer.GetComponent<RectTransform>().sizeDelta.x,
                 rackedItemHeight * racked.RackSpace);
         }
 
-        protected void OnItemPointerEnter(RackedItem item) {
-            Debug.Log("Mouse over " + item.ID);
+        protected void OnItemPointerEnter(Item item) {
+            HeadendItemDetails.GetComponent<ItemInstanceDetails>().Item = item;
+        }
+
+        protected void OnItemPointerClick(Item item) {
+        }
+
+        protected void OnItemPointerExit(Item item) {
+            ItemInstanceDetails id = HeadendItemDetails.GetComponent<ItemInstanceDetails>();
+
+            if (id.Item == item) {
+                id.Item = null;
+            }
         }
     }
 }

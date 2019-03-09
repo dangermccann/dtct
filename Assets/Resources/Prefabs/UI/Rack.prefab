@@ -39,6 +39,7 @@ GameObject:
   - component: {fileID: 224617981847547092}
   - component: {fileID: 222462411278478020}
   - component: {fileID: 114936511093909096}
+  - component: {fileID: 114968904129367168}
   m_Layer: 5
   m_Name: Rack
   m_TagString: Untagged
@@ -334,6 +335,17 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114968904129367168
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1614115824332994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ab3f88902c332148870cf02225b916c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!222 &222083232105152490
 CanvasRenderer:
   m_ObjectHideFlags: 1
