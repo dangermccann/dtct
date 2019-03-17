@@ -13,7 +13,7 @@ namespace DCTC.Test {
              *   |    *     |
              *   |    ^     |
              *   |    ^     |
-             *   |    ^^^^* |
+             *   |    ^^^^^ |
              *   |        ^ |
              *   |        ^ |
              *   |   *^^^^^ |
@@ -22,12 +22,11 @@ namespace DCTC.Test {
             List<Network> networks;
 
             Company company = new Company();
-            company.PlaceNode(NodeType.Small, new TilePosition(4, 0));
-            company.PlaceNode(NodeType.Small, new TilePosition(8, 3));
-            company.PlaceNode(NodeType.Small, new TilePosition(3, 6));
+            company.PlaceNode(CableType.Copper, new TilePosition(4, 0));
+            company.PlaceNode(CableType.Copper, new TilePosition(3, 6));
 
             networks = company.Networks;
-            Assert.AreEqual(3, networks.Count);
+            Assert.AreEqual(0, networks.Count);
 
             company.PlaceCable(CableType.Copper, new List<TilePosition>() {
                 new TilePosition(4, 0),
@@ -45,9 +44,8 @@ namespace DCTC.Test {
             });
 
             networks = company.Networks;
-            Assert.AreEqual(2, networks.Count);
+            Assert.AreEqual(1, networks.Count);
             Assert.AreEqual(2, networks[0].Cables.Count);
-            Assert.AreEqual(0, networks[1].Cables.Count);
 
             company.PlaceCable(CableType.Copper, new List<TilePosition>() {
                 new TilePosition(8, 3),
@@ -68,18 +66,99 @@ namespace DCTC.Test {
             networks = company.Networks;
             Assert.AreEqual(1, networks.Count);
             Assert.AreEqual(4, networks[0].Cables.Count);
-            Assert.AreEqual(3, networks[0].Nodes.Count);
+            Assert.AreEqual(2, networks[0].Nodes.Count);
             Assert.IsTrue(networks[0].ContainsPosition(new TilePosition(3, 6)));
             Assert.IsFalse(networks[0].ContainsPosition(new TilePosition(2, 2)));
+            Assert.AreEqual(NetworkStatus.Disconnected, networks[0].Cables[0].Status);
 
             company.RemoveCablePosition(new TilePosition(8, 6));
 
             networks = company.Networks;
             Assert.AreEqual(2, networks.Count);
             Assert.AreEqual(3, networks[0].Cables.Count);
-            Assert.AreEqual(2, networks[0].Nodes.Count);
+            Assert.AreEqual(1, networks[0].Nodes.Count);
             Assert.AreEqual(1, networks[1].Cables.Count);
             Assert.AreEqual(1, networks[1].Nodes.Count);
+        }
+
+        [Test]
+        public void TestAvailableServices() {
+            Game game = new Game();
+            game.LoadConfig();
+            
+            MapConfiguration map = new MapConfiguration(10, 10);
+            map.CreateTiles();
+            game.Map = map;
+
+            TilePosition hq = new TilePosition(1, 1);
+            map.Tiles[hq].Lot = new Lot() {
+                Tiles = new HashSet<TilePosition>() {
+                    hq,
+                    hq + new TilePosition(1, 0),
+                    hq + new TilePosition(0, 1),
+                    hq + new TilePosition(1, 1),
+                },
+                Anchor = hq,
+                Building = new Building(map.Tiles[hq], BuildingType.Headquarters)
+            };
+
+            Company company = new Company() {
+                Money = 100000,
+                Game = game,
+                HeadquartersLocation = hq
+            };
+            company.AppendRack();
+
+            company.PlaceNode(CableType.Copper, new TilePosition(2, 5));
+
+            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+                new TilePosition(2, 2),
+                new TilePosition(2, 3),
+                new TilePosition(2, 4),
+                new TilePosition(2, 5),
+            });
+
+            Assert.AreEqual(1, company.Networks.Count);
+            Assert.IsTrue(company.Networks[0].Active);
+            Assert.AreEqual(NetworkStatus.Active, company.Networks[0].Cables[0].Status);
+
+            Assert.AreEqual(0, company.Networks[0].AvailableServices.Count);
+
+            company.Purchase(game.Items["POTS-1"] as RackedItem, 1, 0);
+            Assert.AreEqual(1, company.Networks[0].AvailableServices.Count);
+            Assert.IsTrue(company.Networks[0].AvailableServices.Contains(Services.Phone));
+
+
+            company.Purchase(game.Items["D-150"] as RackedItem, 1, 0);
+            Assert.AreEqual(1, company.Networks[0].AvailableServices.Count);
+            Assert.IsFalse(company.Networks[0].AvailableServices.Contains(Services.Broadband));
+
+
+            company.Purchase(game.Items["R-2500"] as RackedItem, 1, 0);
+            Assert.AreEqual(2, company.Networks[0].AvailableServices.Count);
+            Assert.IsTrue(company.Networks[0].AvailableServices.Contains(Services.Broadband));
+
+            company.Purchase(game.Items["TV-200"] as RackedItem, 1, 0);
+            Assert.AreEqual(2, company.Networks[0].AvailableServices.Count);
+            Assert.IsFalse(company.Networks[0].AvailableServices.Contains(Services.TV));
+
+
+            company.PlaceCable(CableType.Coaxial, new List<TilePosition>() {
+                new TilePosition(1, 1),
+                new TilePosition(1, 0),
+                new TilePosition(2, 0),
+                new TilePosition(3, 0),
+            });
+
+            company.PlaceNode(CableType.Coaxial, new TilePosition(3, 0));
+
+            Assert.AreEqual(2, company.Networks.Count);
+
+            Assert.AreEqual(2, company.Networks[0].AvailableServices.Count);
+            Assert.IsTrue(company.Networks[1].AvailableServices.Contains(Services.TV));
+            Assert.IsTrue(company.Networks[0].AvailableServices.Contains(Services.Broadband));
+            Assert.IsTrue(company.Networks[0].AvailableServices.Contains(Services.Phone));
+
         }
        
     }

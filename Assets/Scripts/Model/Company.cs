@@ -27,8 +27,8 @@ namespace DCTC.Model {
         public CompanyAttributes Attributes { get; set; }
 
         public List<Cable> Cables { get; set; }
-        public Dictionary<TilePosition, Node> Nodes { get; set; }
-        public Dictionary<ServiceTier, float> ServicePrices { get; set; }
+        public List<Node> Nodes { get; set; }
+        public Dictionary<Services, float> ServicePrices { get; set; }
         public List<Truck> Trucks { get; set; }
         public List<Truck> UnhiredTrucks { get; set; }
         public List<string> TruckRollQueue { get; set; }
@@ -128,8 +128,8 @@ namespace DCTC.Model {
 
         public Company() {
             Cables = new List<Cable>();
-            Nodes = new Dictionary<TilePosition, Node>();
-            ServicePrices = new Dictionary<ServiceTier, float>();
+            Nodes = new List<Node>();
+            ServicePrices = new Dictionary<Services, float>();
             TruckRollQueue = new List<string>();
             CallCenter = new CallCenter();
             Attributes = new CompanyAttributes();
@@ -210,6 +210,8 @@ namespace DCTC.Model {
             Money -= item.Cost * qty;
 
             Debug.Log("Bought " + qty.ToString() + " " + item.ID);
+
+            InvalidateNetworks();
         }
 
         public void AppendRack() {
@@ -331,23 +333,29 @@ namespace DCTC.Model {
             }
         }
 
-        public void PlaceNode(NodeType type, TilePosition position) {
+        public void PlaceNode(CableType type, TilePosition position) {
             Node node = new Node();
             node.Type = type;
             node.Position = position;
-            Nodes.Add(position, node);
+            Nodes.Add(node);
             Money -= node.Cost * Attributes.InfrastructureCost;
             InvalidateNetworks();
             TriggerItemAdded(node);
         }
 
         public void RemoveNode(TilePosition pos) {
-            if (Nodes.ContainsKey(pos)) {
-                Node node = Nodes[pos];
-                Nodes.Remove(pos);
-                InvalidateNetworks();
-                TriggerItemRemoved(node);
+            for(int i = Nodes.Count - 1; i >= 0; i--) {
+                Node node = Nodes[i];
+                if (node.Position.Equals(pos)) {
+                    RemoveNode(node);
+                }
             }
+        }
+
+        public void RemoveNode(Node node) {
+            Nodes.Remove(node);
+            InvalidateNetworks();
+            TriggerItemRemoved(node);
         }
 
         public void HireTruck(Truck truck) {
@@ -378,16 +386,16 @@ namespace DCTC.Model {
         }
 
 
-        public Dictionary<ServiceTier, float> FindServicesForLocation(TilePosition position) {
-            HashSet<ServiceTier> services = new HashSet<ServiceTier>();
+        public Dictionary<Services, float> FindServicesForLocation(TilePosition position) {
+            HashSet<Services> services = new HashSet<Services>();
             foreach(Network network in Networks) {
-                if(network.ServiceArea.Contains(position)) {
+                if(network.ServiceArea.Contains(position) && network.AvailableServices.Count > 0) {
                     services.AddManySafely(network.AvailableServices);
                 }
             }
 
-            Dictionary<ServiceTier, float> results = new Dictionary<ServiceTier, float>();
-            foreach(ServiceTier service in services) {
+            Dictionary<Services, float> results = new Dictionary<Services, float>();
+            foreach(Services service in services) {
                 results.Add(service, ServicePrices[service]);
             }
             return results;
@@ -422,12 +430,6 @@ namespace DCTC.Model {
                 if (!network.Active)
                     continue;
 
-                foreach (Node node in network.Nodes) {
-                    IEnumerable<TilePosition> positions = Game.Map.Area(node.Position, node.ServiceRange);
-                    network.ServiceArea.AddManySafely(positions);
-                    serviceArea.AddManySafely(positions);
-                }
-
                 foreach (Cable cable in network.Cables) {
                     foreach (TilePosition pos in cable.Positions) {
                         IEnumerable<TilePosition> positions = Game.Map.Area(pos, cable.ServiceRange);
@@ -443,49 +445,17 @@ namespace DCTC.Model {
 
         private void CalculateNetworks() {
             List<Network> networks = new List<Network>();
-            HashSet<Node> usedNodes = new HashSet<Node>();
 
-            OrphanedCables = new HashSet<Cable>();
-            OrphanedCables.AddMany(Cables);
-
-            foreach (Node node in Nodes.Values) {
-                if (!usedNodes.Contains(node)) {
-                    usedNodes.Add(node);
-
-                    Network network = new Network();
-                    network.CableType = node.CompatibleCableType;
-                    networks.Add(network);
-                    InsertNetworkNode(network, node);
-
-                    // Find all Nodes that intersect this network
-                    // Do this iteratively until no additional nodes have been found to add
-                    bool found;
-                    do {
-                        found = false;
-                        foreach (Node otherNode in Nodes.Values) {
-                            if (!network.Nodes.Contains(otherNode) &&
-                                network.ContainsPosition(otherNode.Position) &&
-                                otherNode.CompatibleCableType == network.CableType) {
-                                InsertNetworkNode(network, otherNode);
-                                usedNodes.Add(otherNode);
-                                found = true;
-                            }
-                        }
-                    }
-                    while (found);
-                }
-            }
-
-            // Build network from each of the orphaned cables not connected to a node
+            // Build network from each of the individual cables
             HashSet<Cable> usedCables = new HashSet<Cable>();
-            foreach(Cable orphan in OrphanedCables) {
-                if (!usedCables.Contains(orphan)) {
-                    usedCables.Add(orphan);
+            foreach(Cable cable in Cables) {
+                if (!usedCables.Contains(cable)) {
+                    usedCables.Add(cable);
 
                     Network network = new Network();
-                    network.CableType = orphan.Type;
+                    network.CableType = cable.Type;
                     networks.Add(network);
-                    network.Cables.Add(orphan);
+                    network.Cables.Add(cable);
 
                     bool found;
                     do {
@@ -501,12 +471,19 @@ namespace DCTC.Model {
                         }
                     }
                     while (found);
+
+                    foreach(Node node in Nodes) {
+                        if(node.Type == network.CableType && network.ContainsPosition(node.Position)) {
+                            network.Nodes.Add(node);
+                        }
+                    }
                 }
             }
 
             this.networks = networks;
 
             UpdateNetworkStatus();
+            UpdateNetworkServices();
         }
 
         void UpdateNetworkStatus() {
@@ -524,6 +501,55 @@ namespace DCTC.Model {
 
                 foreach (Node node in network.Nodes) {
                     node.Status = intersects ? NetworkStatus.Active : NetworkStatus.Disconnected;
+                }
+            }
+        }
+
+        void UpdateNetworkServices() {
+            foreach (Network network in Networks) {
+                network.AvailableServices.Clear();
+                network.ServiceCapacity.Clear();
+                network.BroadbandThroughput = 0;
+
+                if (network.Active) {
+                    // Find backhaul items and throughput
+                    int backhaul = 0;
+                    float backhaulThroughput = 0;
+                    foreach (string itemID in Inventory) {
+                        Item item = Game.Items[itemID];
+                        if (item is Backhaul) {
+                            backhaul += Inventory[itemID];
+                            backhaulThroughput += (item as Backhaul).Throughput;
+                        }
+                    }
+
+                    // Find termination items to determine which services are available
+                    foreach (string itemID in Inventory) {
+                        Item item = Game.Items[itemID];
+                        if(item is Termination) {
+                            Termination term = item as Termination;
+                            CableType type = Utilities.ParseEnum<CableType>(term.Wiring);
+                            if (type == network.CableType) {
+                                if (term.Requires == null || (term.Requires == "Backhaul" && backhaul > 0)) {
+                                    Services s = Utilities.ParseEnum<Services>(term.Service);
+                                    if (!network.AvailableServices.Contains(s))
+                                        network.AvailableServices.Add(s);
+
+                                    if (!network.ServiceCapacity.ContainsKey(s)) {
+                                        network.ServiceCapacity[s] = term.Subscribers;
+                                    } else {
+                                        network.ServiceCapacity[s] += term.Subscribers;
+                                    }
+
+                                    if (s == Services.Broadband) {
+                                        network.BroadbandThroughput = Mathf.Max(network.BroadbandThroughput, term.Throughput);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    network.BroadbandThroughput = Mathf.Min(network.BroadbandThroughput, backhaulThroughput);
                 }
             }
         }
@@ -546,7 +572,8 @@ namespace DCTC.Model {
             HashSet<Customer> customers = Customers;
             foreach (Customer customer in customers) {
                 if(customer.Status == CustomerStatus.Subscribed) {
-                    Money += ServicePrices[customer.ServiceTier] * deltaTime;
+                    foreach(Services service in customer.Services)
+                    Money += ServicePrices[service] * deltaTime;
                 }
             }
         }
@@ -629,15 +656,9 @@ namespace DCTC.Model {
         }
 
         private void InitPrices() {
-            ServicePrices[ServiceTier.BasicInternet]        = 1.0f;
-            ServicePrices[ServiceTier.BasicTV]              = 1.0f;
-            ServicePrices[ServiceTier.BasicDoublePlay]      = 1.5f;
-            ServicePrices[ServiceTier.PremiumInternet]      = 2.0f;
-            ServicePrices[ServiceTier.PremiumTV]            = 2.0f;
-            ServicePrices[ServiceTier.PremiumDoublePlay]    = 3.5f;
-            ServicePrices[ServiceTier.FiberInternet]        = 4.0f;
-            ServicePrices[ServiceTier.FiberTV]              = 4.0f;
-            ServicePrices[ServiceTier.FiberDoublePlay]      = 5.5f;
+            ServicePrices[Services.Broadband] = 10.0f;
+            ServicePrices[Services.TV] = 10.0f;
+            ServicePrices[Services.Phone] = 3.0f;
         }
     }
 

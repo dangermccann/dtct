@@ -337,6 +337,11 @@ public static class Utilities {
             renderer.materials = materials.ToArray();
         }
     }
+
+    public static T ParseEnum<T>(string value) {
+        return (T)Enum.Parse(typeof(T), value);
+    }
+
 }
 
 [System.Serializable]

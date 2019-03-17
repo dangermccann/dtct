@@ -23,6 +23,7 @@ namespace DCTC.Model {
         public List<TilePosition> Path { get; set; }
         public float TravelSpeed { get; set; }
         public float WorkSpeed { get; set; }
+        public Inventory<int> Inventory { get; set; }
         public float Salary {
             get {
                 return UnityEngine.Mathf.Max(0.2f * TravelSpeed * WorkSpeed, 0.05f);
@@ -41,6 +42,7 @@ namespace DCTC.Model {
         public Truck() {
             TravelSpeed = 1;
             WorkSpeed = 1;
+            Inventory = new Inventory<int>();
         }
 
         public void Dispatch(string customerID, IList<TilePosition> path) {

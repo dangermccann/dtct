@@ -16,12 +16,23 @@ namespace DCTC.Model {
         public CableType CableType;
 
         [NonSerialized]
+        public HashSet<Services> AvailableServices;
+
+        [NonSerialized]
+        public Dictionary<Services, int> ServiceCapacity;
+
+        [NonSerialized]
+        public float BroadbandThroughput = 0f;
+
+        [NonSerialized]
         public HashSet<TilePosition> ServiceArea;
 
         public Network() {
             Cables = new List<Cable>();
             Nodes = new List<Node>();
+            AvailableServices = new HashSet<Services>();
             ServiceArea = new HashSet<TilePosition>();
+            ServiceCapacity = new Dictionary<Services, int>();
         }
 
         public bool AttachedToConnectors(HashSet<TilePosition> connectors) {
@@ -45,38 +56,6 @@ namespace DCTC.Model {
         public bool Active {
             get {
                 return (Nodes.Count > 0 && Nodes[0].Status == NetworkStatus.Active);
-            }
-        }
-
-        public HashSet<ServiceTier> AvailableServices {
-            get {
-                if (Nodes.Count == 0)
-                    return new HashSet<ServiceTier>();
-
-                if(Nodes[0].Type == NodeType.Fiber) {
-                    return new HashSet<ServiceTier>() {
-                        ServiceTier.FiberInternet, ServiceTier.FiberTV, ServiceTier.FiberDoublePlay
-                    };
-                }
-                else {
-                    NodeType lowestType = NodeType.Large;
-                    foreach(Node node in Nodes) {
-                        if (node.Type == NodeType.Small)
-                            lowestType = NodeType.Small;
-                    }
-
-                    if(lowestType == NodeType.Small) {
-                        return new HashSet<ServiceTier>() {
-                            ServiceTier.BasicInternet, ServiceTier.BasicTV, ServiceTier.BasicDoublePlay
-                        };
-                    }
-                    else {
-                        return new HashSet<ServiceTier>() {
-                            ServiceTier.BasicInternet, ServiceTier.BasicTV, ServiceTier.BasicDoublePlay,
-                            ServiceTier.PremiumInternet, ServiceTier.PremiumTV, ServiceTier.PremiumDoublePlay
-                        };
-                    }
-                }
             }
         }
 
@@ -131,13 +110,7 @@ namespace DCTC.Model {
 
         public int ServiceRange {
             get {
-                switch (Type) {
-                    case CableType.Copper:
-                        return 4;
-                    case CableType.Fiber:
-                        return 4;
-                }
-                return 0;
+                return 2;
             }
         }
 
@@ -146,7 +119,9 @@ namespace DCTC.Model {
                 switch(Type) {
                     case CableType.Copper:
                         return 1;
-                    case CableType.Fiber:
+                    case CableType.Coaxial:
+                        return 1;
+                    case CableType.Optical:
                         return 2;
                 }
                 return 0;
@@ -156,13 +131,14 @@ namespace DCTC.Model {
 
     public enum CableType {
         Copper,
-        Fiber
+        Coaxial,
+        Optical
     }
 
     [Serializable]
     public class Node {
         public string ID { get; set; }
-        public NodeType Type { get; set; }
+        public CableType Type { get; set; }
         public TilePosition Position { get; set; }
 
         private NetworkStatus status;
@@ -183,64 +159,25 @@ namespace DCTC.Model {
             Status = NetworkStatus.Disconnected;
         }
 
-        public int ServiceRange {
-            get {
-                switch (Type) {
-                    case NodeType.Small:
-                        return 4;
-                    case NodeType.Large:
-                        return 6;
-                    case NodeType.Fiber:
-                        return 6;
-                }
-                return 0;
-            }
-        }
-
         public float Cost {
             get {
                 switch (Type) {
-                    case NodeType.Small:
+                    case CableType.Copper:
                         return 4;
-                    case NodeType.Large:
+                    case CableType.Coaxial:
                         return 6;
-                    case NodeType.Fiber:
+                    case CableType.Optical:
                         return 8;
                 }
                 return 0;
             }
         }
-
-        public CableType CompatibleCableType {
-            get {
-                switch (Type) {
-                    case NodeType.Small:
-                    case NodeType.Large:
-                        return CableType.Copper;
-
-                    case NodeType.Fiber:
-                        return CableType.Fiber;
-                }
-                return CableType.Copper;
-            }
-        }
     }
 
-    public enum NodeType {
-        Small,
-        Large,
-        Fiber
+    public enum Services {
+        Broadband,
+        TV,
+        Phone
     }
-
-    public enum ServiceTier {
-        BasicTV,
-        BasicInternet,
-        BasicDoublePlay,
-        PremiumTV,
-        PremiumInternet,
-        PremiumDoublePlay,
-        FiberTV,
-        FiberInternet,
-        FiberDoublePlay
-    }
+    
 }

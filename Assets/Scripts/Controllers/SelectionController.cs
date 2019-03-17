@@ -23,7 +23,7 @@ namespace DCTC.Controllers {
         public ToggleGroup ConstructionToggleGroup;
         public GameObject DestroyPrefab;
         public GameObject CableCursorPrefab;
-        public GameObject NodeCursorPrefabSmall, NodeCursorPrefabLarge, NodeCursorPrefabFiber;
+        public GameObject NodeCursorPrefabCopper, NodeCursorPrefabCoaxial, NodeCursorPrefabOptical;
         public GameObject MapGameObject;
         public GameObject LotSelection;
         public GameObject LocationDetails;
@@ -32,7 +32,7 @@ namespace DCTC.Controllers {
         public SelectionModes Mode = SelectionModes.None;
 
         [HideInInspector]
-        public NodeType NodeType;
+        public CableType NodeType;
 
         [HideInInspector]
         public CableType CableType;
@@ -85,14 +85,14 @@ namespace DCTC.Controllers {
             }
             else if (Mode == SelectionModes.Node) {
                 switch(NodeType) {
-                    case NodeType.Small:
-                        cursorObject = Instantiate(NodeCursorPrefabSmall);
+                    case CableType.Copper:
+                        cursorObject = Instantiate(NodeCursorPrefabCopper);
                         break;
-                    case NodeType.Large:
-                        cursorObject = Instantiate(NodeCursorPrefabLarge);
+                    case CableType.Coaxial:
+                        cursorObject = Instantiate(NodeCursorPrefabCoaxial);
                         break;
-                    case NodeType.Fiber:
-                        cursorObject = Instantiate(NodeCursorPrefabFiber);
+                    case CableType.Optical:
+                        cursorObject = Instantiate(NodeCursorPrefabOptical);
                         break;
                 }
                 
@@ -239,7 +239,7 @@ namespace DCTC.Controllers {
                     if (tile.Type == TileType.Road) {
                         cursorObject.SetActive(true);
                         cursorObject.transform.position = world;
-                        mapComponent.HighlightRadius = new Node().ServiceRange;
+                        mapComponent.HighlightRadius = 1;
                     }
                     else {
                         cursorObject.SetActive(false);

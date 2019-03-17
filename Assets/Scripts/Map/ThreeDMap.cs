@@ -591,7 +591,7 @@ namespace DCTC.Map {
                     if (++batchCount % BatchSize == 0)
                         yield return null;
                 }
-                foreach(Node node in company.Nodes.Values) {
+                foreach(Node node in company.Nodes) {
                     PlaceItem(node);
 
                     if (++batchCount % BatchSize == 0)

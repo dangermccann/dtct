@@ -73,21 +73,21 @@ namespace DCTC.UI {
                         if (toggle.name == "Copper")
                             SelectionController.CableType = CableType.Copper;
                         else  if (toggle.name == "Fiber")
-                            SelectionController.CableType = CableType.Fiber;
+                            SelectionController.CableType = CableType.Optical;
 
                         SelectionController.SetSelection(SelectionController.SelectionModes.Cable);
                         GetTriState("Cables").IsSecondary = true;
                         break;
 
-                    case "Small":
-                    case "Advanced":
-                    case "FiberNode":
-                        if (toggle.name == "Small")
-                            SelectionController.NodeType = NodeType.Small;
-                        else if(toggle.name == "Advanced")
-                            SelectionController.NodeType = NodeType.Large;
-                        else if (toggle.name == "FiberNode")
-                            SelectionController.NodeType = NodeType.Fiber;
+                    case "NodeCopper":
+                    case "NodeCoaxial":
+                    case "NodeOptical":
+                        if (toggle.name == "NodeCopper")
+                            SelectionController.NodeType = CableType.Copper;
+                        else if(toggle.name == "NodeCoaxial")
+                            SelectionController.NodeType = CableType.Coaxial;
+                        else if (toggle.name == "NodeOptical")
+                            SelectionController.NodeType = CableType.Optical;
 
                         SelectionController.SetSelection(SelectionController.SelectionModes.Node);
                         GetTriState("Nodes").IsSecondary = true;

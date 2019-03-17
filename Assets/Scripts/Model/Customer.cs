@@ -24,11 +24,12 @@ namespace DCTC.Model {
         public float Patience { get; set; }
         public float Dissatisfaction { get; set; }
         public CustomerStatus Status { get; set; }
+        public Inventory<int> Equipment { get; set; }
 
         // ID of Company that provides service to this customer
         public string ProviderID { get; set; }
 
-        public ServiceTier ServiceTier { get; set; }
+        public List<Services> Services { get; set; }
 
         private int invocationsSinceProviderChange = 0;
         private float turnoverCooldown = 0;
@@ -66,6 +67,7 @@ namespace DCTC.Model {
 
         public Customer() {
             Status = CustomerStatus.NoProvider;
+            Equipment = new Inventory<int>();
         }
 
         public void Update(float time) {
@@ -118,7 +120,8 @@ namespace DCTC.Model {
         public List<Company> FindServiceProviders() {
             List<Company> candidates = new List<Company>();
             foreach (Company company in Game.Companies) {
-                if (company.ServiceArea.Contains(HomeLocation)) {
+                if (company.ServiceArea.Contains(HomeLocation) && 
+                    company.FindServicesForLocation(HomeLocation).Count > 0) {
                     candidates.Add(company);
                 }
             }
@@ -205,29 +208,26 @@ namespace DCTC.Model {
             return RandomUtils.RandomThing(companies, Game.Random);
         }
 
-        private ServiceTier ChooseServiceTier(Company provider) {
-            Dictionary<ServiceTier, float> services = provider.FindServicesForLocation(HomeLocation);
+        private List<Services> ChooseServices(Company provider) {
+            Dictionary<Services, float> services = provider.FindServicesForLocation(HomeLocation);
 
             if(services.Count == 0) {
-                Debug.LogError("Unable to choose service tier");
-                return ServiceTier.BasicTV;
+                return new List<Services>();
             }
 
-            float maxScore = float.MinValue;
-            ServiceTier bestTier = services.Keys.First();
-            foreach (ServiceTier tier in services.Keys) {
-                float score = ServiceTierScore(services[tier]);
-                if (score > maxScore) {
-                    maxScore = score;
-                    bestTier = tier;
+            List<Services> result = new List<Services>();
+            foreach(Services service in services.Keys) {
+                // TODO: adjust threshold
+                if(ServiceScore(services[service]) > 0) {
+                    result.Add(service);
                 }
             }
-            return bestTier;
+            return result;
         }
 
-        private float ServiceTierScore(float price) {
+        private float ServiceScore(float price) {
             // Normalize price to range from 0 to pi 
-            float maxPrice = 10f;
+            float maxPrice = 20f;
             float normalizedPrice = Mathf.Min(price, maxPrice) / maxPrice * Mathf.PI;
 
             // Normalize price to range from 0 to 2*pi/3
@@ -236,7 +236,7 @@ namespace DCTC.Model {
             float normalizedWealth = Mathf.Min(Mathf.Max(0, Wealth - minWealth), maxWealth) / (maxWealth - minWealth);
             normalizedWealth *= (2.0f * Mathf.PI / 3.0f);
 
-            return Mathf.Cos(normalizedPrice - normalizedWealth);
+            return Mathf.Cos(Math.Max(0, normalizedPrice - normalizedWealth));
 
         }
 
@@ -246,7 +246,7 @@ namespace DCTC.Model {
                 Dissatisfaction /= 2.0f;
                 ProviderID = company.ID;
                 Status = CustomerStatus.Pending;
-                ServiceTier = ChooseServiceTier(company);
+                Services = ChooseServices(company);
             }
             else {
                 ProviderID = null;

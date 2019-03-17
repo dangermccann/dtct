@@ -110,8 +110,9 @@ namespace DCTC.UI {
                     }
 
                     foreach(Company company in gameController.Game.Companies) {
-                        if(company.Nodes.ContainsKey(location)) {
-                            AppendNode(company, company.Nodes[location]);
+                        Node node = company.Nodes.Find(n => n.Position == location);
+                        if(node != null) {
+                            AppendNode(company, node);
                         }
                         IEnumerable<Cable> cables = company.Cables.Where(c => c.Positions.Contains(location));
 
@@ -172,7 +173,7 @@ namespace DCTC.UI {
                 else if (customer.Status == CustomerStatus.Outage)
                     Append("<color=\"red\">Outage");
                 else
-                    Append(customer.ServiceTier.ToString());
+                    Append(string.Join(", ", customer.Services.Select(s => s.ToString()).ToArray()));
             }
 
             Append(Formatter.FormatDissatisfaction(customer.Dissatisfaction));
