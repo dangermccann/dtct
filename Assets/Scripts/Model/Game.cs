@@ -131,6 +131,7 @@ namespace DCTC.Model {
 
         public void PostLoad() {
             // Redispatch trucks so they restore their previous jobs
+            /*
             foreach(Company c in Companies) {
                 foreach(Truck t in c.Trucks) {
                     if(t.Status != TruckStatus.Idle) {
@@ -138,6 +139,7 @@ namespace DCTC.Model {
                     }
                 }
             }
+            */
         }
 
         public Company GetCompany(string id) {
@@ -196,7 +198,7 @@ namespace DCTC.Model {
             return new Truck() {
                 ID = Guid.NewGuid().ToString(),
                 Name = name,
-                Position = position,
+                Position = ThreeDMap.PositionToWorld(position),
                 Status = TruckStatus.Idle,
                 TravelSpeed = RandomUtils.RandomFloat(0.55f, 1.0f, this.Random),
                 WorkSpeed = RandomUtils.RandomFloat(0.55f, 1.0f, this.Random),

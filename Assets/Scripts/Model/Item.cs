@@ -67,6 +67,15 @@ namespace DCTC.Model {
                 CPE[id].ID = id;
             }
         }
+
+        public IEnumerable<T> FromInventory<T>(Inventory inventory) where T : Item {
+            List<T> items = new List<T>();
+            foreach (string id in inventory) {
+                if(this[id] is T)
+                    items.Add(this[id] as T);
+            }
+            return items;
+        }
     }
 
     [Serializable]

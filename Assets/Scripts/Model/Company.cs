@@ -36,7 +36,7 @@ namespace DCTC.Model {
         public float Money { get; set; }
         public TilePosition HeadquartersLocation { get; set; }
         public CallCenter CallCenter { get; set; }
-        public Inventory<int> Inventory { get; set; }
+        public Inventory Inventory { get; set; }
         public List<Rack> Racks { get; set; }
 
         public int RackLimit = 3;
@@ -134,7 +134,7 @@ namespace DCTC.Model {
             CallCenter = new CallCenter();
             Attributes = new CompanyAttributes();
             HeadquartersLocation = TilePosition.Origin;
-            Inventory = new Inventory<int>();
+            Inventory = new Inventory();
             Racks = new List<Rack>();
 
             InitPrices();
@@ -385,6 +385,29 @@ namespace DCTC.Model {
             CallCenter.FireAgent(agent);
         }
 
+        public List<CPE> InventoryCpe {
+            get {
+                List<CPE> cpe = new List<CPE>();
+
+                foreach (string id in Inventory) {
+                    Item item = Game.Items[id];
+                    if (item is CPE) {
+                        cpe.Add(item as CPE);
+                    }
+                }
+                return cpe;
+            }
+        }
+
+        public Dictionary<string, int> InventoryCpeByService(Services service) {
+            Dictionary<string, int> inv = new Dictionary<string, int>();
+            foreach(CPE cpe in InventoryCpe) {
+                if(cpe.Services.Contains(service.ToString())) {
+                    inv.Add(cpe.ID, Inventory[cpe.ID]);
+                }
+            }
+            return inv;
+        }
 
         public Dictionary<Services, float> FindServicesForLocation(TilePosition position) {
             HashSet<Services> services = new HashSet<Services>();
@@ -560,10 +583,17 @@ namespace DCTC.Model {
             foreach (Truck truck in Trucks) {
                 if (truck.Status == TruckStatus.Idle) {
                     if(TruckRollQueue.Count > 0) {
-                        string customerID = TruckRollQueue[0];
-                        TruckRollQueue.RemoveAt(0);
-                        DispatchTruck(truck, customerID);
+                        for(int i = 0; i < TruckRollQueue.Count; i++) {
+                            string customerID = TruckRollQueue[i];
+                            if (truck.Dispatch(customerID)) {
+                                TruckRollQueue.RemoveAt(i);
+                                break;
+                            }
+                        }
                     }
+                }
+                else {
+                    truck.Update(deltaTime);
                 }
 
                 Money -= truck.Salary * deltaTime;
@@ -576,22 +606,6 @@ namespace DCTC.Model {
                     Money += ServicePrices[service] * deltaTime;
                 }
             }
-        }
-
-        private void DispatchTruck(Truck truck, string customerID) {
-            Customer customer = Game.GetCustomer(customerID);
-            TilePosition position = customer.HomeLocation;
-            position = Game.Map.NearestRoad(position);
-
-            IList<TilePosition> path = Game.Map.Pathfind(truck.Position, position);
-            if(path.Count == 0) {
-                UnityEngine.Debug.LogError("Unable to pathfind to truck destination: " + position.ToString());
-                return;
-            }
-
-            path = new List<TilePosition>(path.Reverse());
-
-            truck.Dispatch(customer.ID, path);
         }
 
         private void InsertNetworkNode(Network network, Node node) {

@@ -624,7 +624,7 @@ namespace DCTC.Map {
             }
             else if(item is Truck) {
                 Truck truck = item as Truck;
-                GameObject go = InstantiateObject("Van", truck.ID, truck.Position);
+                GameObject go = InstantiateObject("Van", truck.ID, truck.TilePosition);
                 go.GetComponent<TruckGraphics>().Truck = truck;
             }
         }

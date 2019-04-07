@@ -24,7 +24,7 @@ namespace DCTC.Model {
         public float Patience { get; set; }
         public float Dissatisfaction { get; set; }
         public CustomerStatus Status { get; set; }
-        public Inventory<int> Equipment { get; set; }
+        public Inventory Equipment { get; set; }
 
         // ID of Company that provides service to this customer
         public string ProviderID { get; set; }
@@ -67,7 +67,7 @@ namespace DCTC.Model {
 
         public Customer() {
             Status = CustomerStatus.NoProvider;
-            Equipment = new Inventory<int>();
+            Equipment = new Inventory();
         }
 
         public void Update(float time) {
@@ -249,6 +249,12 @@ namespace DCTC.Model {
                 Services = ChooseServices(company);
             }
             else {
+                // Return equipment
+                if(Provider != null) {
+                    Provider.Inventory.Add(Equipment);
+                    Equipment.Clear();
+                }
+
                 ProviderID = null;
                 Status = CustomerStatus.NoProvider;
                 turnoverCooldown = baseTurnoverCooldown * RandomUtils.RandomFloat(0.25f, 1.0f, Game.Random);

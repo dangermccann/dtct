@@ -52,9 +52,9 @@ namespace DCTC.Controllers {
                     case GameSpeed.Pause:
                         return 1;
                     case GameSpeed.Normal:
-                        return 100;
+                        return 10;
                     case GameSpeed.Fast:
-                        return 750;
+                        return 75;
                 }
                 return 1;
             }

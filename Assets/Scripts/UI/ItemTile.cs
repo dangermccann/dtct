@@ -32,8 +32,8 @@ namespace DCTC.UI {
             }
         }
 
-        private Inventory<int> inventory;
-        public Inventory<int> Inventory {
+        private Inventory inventory;
+        public Inventory Inventory {
             get { return inventory; }
             set {
                 inventory = value;

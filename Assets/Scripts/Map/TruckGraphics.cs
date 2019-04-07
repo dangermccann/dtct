@@ -12,35 +12,17 @@ namespace DCTC.Map {
         private const float baseWork = 1;
 
         GameObject graphics;
-        int currentIndex = 0;
-        Vector3 currentDestination, currentStart;
         Quaternion startRotation, destRotation;
-        float elapsed = 0;
-        float workRemaining = 0;
-        bool running = false;
-        bool destinationReached = false;
         GameController gameController;
 
-        List<TilePosition> path;
-        public List<TilePosition> Path {
-            get {
-                return path;
-            }
-            set {
-                path = value;
-                if (path.Count > 1)
-                    BeginJob();
-                else
-                    CompleteJob();
-            }
-        }
+        public float rotationSpeed = 900f;
 
         Truck truck;
         public Truck Truck {
             get { return truck; }
             set {
                 truck = value;
-                truck.Dispatched += OnDispatched;
+                transform.position = truck.Position;
             }
         }
 
@@ -55,92 +37,42 @@ namespace DCTC.Map {
             gameController = GameController.Get();
         }
 
-        private void OnDestroy() {
-            if (truck != null)
-                truck.Dispatched -= OnDispatched;
-        }
-
-        private void OnDispatched() {
-            Path = truck.Path;
-        }
-
-        public void CompleteJob() {
-            running = false;
-            Truck.JobComplete();
-        }
-
-        public void BeginJob() {
-            running = true;
-            currentIndex = 0;
-            workRemaining = baseWork;
-            destinationReached = false;
-            transform.position = ThreeDMap.PositionToWorld(path[0]);
-            NextTile();
-        }
-
-
         void Update() {
-            if (!running || gameController.GameSpeed == GameSpeed.Pause)
+            if (Truck == null || Truck.Status == TruckStatus.Idle)
                 return;
 
-            if(destinationReached) {
-                workRemaining -= Time.deltaTime * baseWorkSpeed * Truck.WorkSpeed 
-                    * (float)gameController.GameSpeed * Truck.Company.Attributes.TruckWorkSpeed;
-                if (workRemaining <= 0)
-                    CompleteJob();
-
+            if (gameController.GameSpeed == GameSpeed.Pause)
                 return;
-            }
 
-            if ( ( transform.position - currentDestination).magnitude < 0.05f ) {
-                destinationReached = NextTile();
-
-                if (destinationReached)
-                    Truck.DestinationReached();
-            }
-
-            elapsed += Time.deltaTime * baseTravelSpeed * Truck.TravelSpeed 
-                * (float)gameController.GameSpeed * Truck.Company.Attributes.TruckTravelSpeed;
-
-            transform.position = Vector3.Lerp(currentStart, currentDestination, elapsed);
-            graphics.transform.rotation = Quaternion.Lerp(startRotation, destRotation, 5.0f * elapsed);
+            transform.position = Truck.Position;
+            graphics.transform.rotation = Quaternion.RotateTowards(graphics.transform.rotation, CalculateRotation(Truck.CurrentIndex), 
+                Time.deltaTime * rotationSpeed);
         }
 
-        bool NextTile() {
-            currentIndex++;
 
-            if (currentIndex >= path.Count) {
-                return true;
-            }
-
-            startRotation = graphics.transform.rotation;
-
-            Direction direction = MapConfiguration.RelativeDirection(path[currentIndex - 1], path[currentIndex]);
-
+        Quaternion CalculateRotation(int index) {
             float y = 0;
-            switch(direction) {
-                case Direction.North:
-                    y = 0;
-                    break;
-                case Direction.East:
-                    y = 90;
-                    break;
-                case Direction.South:
-                    y = 180;
-                    break;
-                case Direction.West:
-                    y = 270;
-                    break;
+
+            if (index < Truck.Path.Count) {
+                Direction direction = MapConfiguration.RelativeDirection(Truck.Path[index - 1], Truck.Path[index]);
+                
+                switch (direction) {
+                    case Direction.North:
+                        y = 0;
+                        break;
+                    case Direction.East:
+                        y = 90;
+                        break;
+                    case Direction.South:
+                        y = 180;
+                        break;
+                    case Direction.West:
+                        y = 270;
+                        break;
+                }
             }
 
-            destRotation = Quaternion.Euler(new Vector3(0, y, 0));
-
-            currentStart = transform.position;
-            elapsed = 0;
-            currentDestination = ThreeDMap.PositionToWorld(path[currentIndex]);
-            Truck.Position = path[currentIndex];
-
-            return false;
+            return Quaternion.Euler(new Vector3(0, y, 0));
         }
     }
 

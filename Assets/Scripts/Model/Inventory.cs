@@ -7,11 +7,28 @@ namespace DCTC.Model {
     public delegate void InventoryChangedEvent(string item);
 
     [Serializable]
-    public class Inventory<T> : IEnumerable<string> {
+    public class Inventory : InventoryBase<int> {
+        public override void Add(string key, int amount) {
+            if (!inventory.ContainsKey(key))
+                inventory[key] = amount;
+            else
+                inventory[key] += amount;
+        }
+
+        public override void Subtract(string key, int amount) {
+            inventory[key] -= amount;
+            if(inventory[key] <= 0) {
+                inventory.Remove(key);
+            }
+        }
+    }
+
+    [Serializable]
+    public abstract class InventoryBase<T> : IEnumerable<string> {
         [field: NonSerialized]
         public event InventoryChangedEvent ItemChanged;
 
-        private Dictionary<string, T> inventory = new Dictionary<string, T>();
+        protected Dictionary<string, T> inventory = new Dictionary<string, T>();
 
         public T this[string item] {
             get {
@@ -26,8 +43,21 @@ namespace DCTC.Model {
             }
         }
 
+        public abstract void Add(string key, T amount);
+        public abstract void Subtract(string key, T amount);
+
+        public void Add(InventoryBase<T> added) {
+            foreach(string key in added) {
+                Add(key, added[key]);
+            }
+        }
+
         public bool Contains(string item) {
             return inventory.ContainsKey(item);
+        }
+
+        public void Clear() {
+            inventory.Clear();
         }
 
         public IEnumerator<string> GetEnumerator() {
