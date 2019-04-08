@@ -227,6 +227,11 @@ namespace DCTC.Model {
 
                 Path = new List<TilePosition>();
                 Path.AddRange(PathTo(customer.HomeLocation));
+
+                CurrentIndex = 0;
+
+                if (NextTile())
+                    DestinationReached();
             }
             else if(Status == TruckStatus.EnRoute) {
                 Status = TruckStatus.Working;

@@ -36,6 +36,9 @@ namespace DCTC.UI {
         public Inventory Inventory {
             get { return inventory; }
             set {
+                if (inventory != null)
+                    inventory.ItemChanged -= Inventory_ItemChanged;
+
                 inventory = value;
                 inventory.ItemChanged += Inventory_ItemChanged;
             }
