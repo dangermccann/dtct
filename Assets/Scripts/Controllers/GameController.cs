@@ -107,6 +107,8 @@ namespace DCTC.Controllers {
         }
 
         public void Load() {
+            Pause(); // Make sure game loop stops
+
             Game = saver.LoadGame(SaveName);
 
             StateController.Get().ExitAndPushState(States.Loading,

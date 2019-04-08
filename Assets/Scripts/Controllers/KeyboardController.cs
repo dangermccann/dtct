@@ -19,6 +19,7 @@ namespace DCTC.Controllers {
 
             if(Input.GetKeyDown(KeyCode.Escape)) {
                 if (stateController.Current.State.UrlPattern == States.Map) {
+                    gameController.Pause();
                     stateController.PushState(States.GameMenu);
                 } else if (stateController.Current.State.UrlPattern == States.Loading ||
                            stateController.Current.State.UrlPattern == States.Title) {

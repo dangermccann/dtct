@@ -25,7 +25,7 @@ namespace DCTC.Model {
 
         public string ID { get; set; }
         public string Name { get; set; }
-        public Vector3 Position { get; set; }
+        public SerializableVector3 Position { get; set; }
         public int CurrentIndex { get; set; }
         public string DestinationCustomerID { get; set; }
         public TruckStatus Status { get; set; }
@@ -37,8 +37,8 @@ namespace DCTC.Model {
         public List<string> PendingInstallEquipment { get; set; }
         public float WorkRemaining { get; set; }
         public float Elapsed { get; set; }
-        public Vector3 CurrentStart { get; set; }
-        public Vector3 CurrentDestination { get; set; }
+        public SerializableVector3 CurrentStart { get; set; }
+        public SerializableVector3 CurrentDestination { get; set; }
         public float Salary {
             get {
                 return Mathf.Max(0.2f * TravelSpeed * WorkSpeed, 0.05f);
@@ -171,7 +171,7 @@ namespace DCTC.Model {
                     JobComplete();
             }
             else if(Status == TruckStatus.EnRoute || Status == TruckStatus.GettingEquipment) {
-                if ((Position - CurrentDestination).magnitude < 0.05f) {
+                if (Vector3.Distance(Position, CurrentDestination) < 0.05f) {
                     if (NextTile())
                         DestinationReached();
                 }

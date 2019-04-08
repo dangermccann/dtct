@@ -9,6 +9,33 @@ namespace DCTC.Test {
     public class SaverTest {
 
         [Test]
+        public void TestSaveGame() {
+            NewGameSettings settings = new NewGameSettings() {
+                NeighborhoodCountX = 2,
+                NeighborhoodCountY = 2,
+                NumAIs = 1
+            };
+
+            System.Random random = new System.Random(settings.Seed);
+            NameGenerator nameGenerator = new NameGenerator(random);
+
+            MapGenerator generator = new MapGenerator(random, settings, nameGenerator);
+            MapConfiguration map = generator.Generate();
+            IList<TilePosition> hq = generator.GenerateHeadquarters(map, settings.NumAIs + settings.NumHumans);
+
+            Game game = new Game();
+            game.LoadConfig();
+            game.NewGame(settings, nameGenerator, map, hq);
+            game.PopulateCustomers();
+
+            GameSaver saver = new GameSaver();
+            saver.SaveGame(game, "test");
+            game = saver.LoadGame("test");
+
+            Assert.NotNull(game);
+        }
+
+        [Test]
         public void TestSaveMap() {
             System.Random rand = new System.Random(1);
             NameGenerator nameGenerator = new NameGenerator(rand);
