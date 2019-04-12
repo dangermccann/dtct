@@ -10,6 +10,22 @@ namespace DCTC.Pathfinding
 		int MovementCost { get; }
 	}
 
+    public class PathNode : IPathNode {
+        private TilePosition position;
+        public TilePosition Position {
+            get { return position; }
+        }
+
+        int cost = 1;
+        public int MovementCost {
+            get { return cost; }
+        }
+
+        public PathNode(TilePosition pos) {
+            position = pos;
+        }
+    }
+
 	class AStarElement {
 		public IPathNode Node;
 		public int GCost;			// Cost to get from start to this node

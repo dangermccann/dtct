@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using DCTC.Map;
+using DCTC.Pathfinding;
 
 namespace DCTC.Model {
 
@@ -35,6 +36,18 @@ namespace DCTC.Model {
             ServiceCapacity = new Dictionary<Services, int>();
         }
 
+        public int MaximumCableDistanceFromNode() {
+            switch (CableType) {
+                case CableType.Copper:
+                    return 10;
+                case CableType.Coaxial:
+                    return 15;
+                case CableType.Optical:
+                    return 15;
+            }
+            return 0;
+        }
+
         public bool AttachedToConnectors(HashSet<TilePosition> connectors) {
             return Positions.Intersect(connectors).Count() > 0;
         }
@@ -66,6 +79,56 @@ namespace DCTC.Model {
             }
             return false;
         }
+
+        public int DistanceFromNode(TilePosition position) {
+            int lowest = int.MaxValue;
+
+            foreach(Node node in Nodes) {
+                int val = DistanceTo(position, node.Position);
+                if (val < lowest)
+                    lowest = val;
+            }
+
+            return lowest;
+        }
+
+        public IList<TilePosition> PathTo(TilePosition start, TilePosition end) {
+            Dictionary<TilePosition, IPathNode> pathNodes = new Dictionary<TilePosition, IPathNode>();
+            foreach(Cable cable in Cables) {
+                foreach(TilePosition pos in cable.Positions) {
+                    if(!pathNodes.ContainsKey(pos)) {
+                        pathNodes.Add(pos, new PathNode(pos));
+                    }
+                }
+            }
+
+            if(!pathNodes.ContainsKey(start) || pathNodes.ContainsKey((end))) {
+                // The start and end positions must be in the network
+                return null;
+            }
+
+            AStar pathfinder = new AStar(new List<IPathNode>(pathNodes.Values));
+
+            // Perform search
+            IList<IPathNode> results = pathfinder.Search(pathNodes[start], pathNodes[end]);
+
+            // Convert results into usable list of TilePosition objects
+            List<TilePosition> positions = new List<TilePosition>();
+
+            foreach (IPathNode result in results) {
+                positions.Add(result.Position);
+            }
+
+            return positions;
+        }
+
+        public int DistanceTo(TilePosition start, TilePosition end) {
+            IList<TilePosition> path = PathTo(start, end);
+            if (path == null)
+                return int.MaxValue;
+            else return path.Count;
+        }
+
 
     }
 

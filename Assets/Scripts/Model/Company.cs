@@ -455,9 +455,11 @@ namespace DCTC.Model {
 
                 foreach (Cable cable in network.Cables) {
                     foreach (TilePosition pos in cable.Positions) {
-                        IEnumerable<TilePosition> positions = Game.Map.Area(pos, cable.ServiceRange);
-                        network.ServiceArea.AddManySafely(positions);
-                        serviceArea.AddManySafely(positions);
+                        if (network.DistanceFromNode(pos) <= network.MaximumCableDistanceFromNode()) {
+                            IEnumerable<TilePosition> positions = Game.Map.Area(pos, cable.ServiceRange);
+                            network.ServiceArea.AddManySafely(positions);
+                            serviceArea.AddManySafely(positions);
+                        }
                     }
                 }
             }

@@ -160,6 +160,73 @@ namespace DCTC.Test {
             Assert.IsTrue(company.Networks[0].AvailableServices.Contains(Services.Phone));
 
         }
+
+        [Test]
+        public void TestServiceArea() {
+            /**
+             *   +----------+
+             *   |    *     |
+             *   |    ^     |
+             *   |    ^     |
+             *   |    ^^^^^ |
+             *   |        ^ |
+             *   |        ^ |
+             *   |   %^^^^^ |
+             *   +----------+
+             */
+            Company company = new Company();
+            company.PlaceNode(CableType.Copper, new TilePosition(4, 0));
+
+            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+                new TilePosition(4, 0),
+                new TilePosition(4, 1),
+                new TilePosition(4, 2),
+                new TilePosition(4, 3),
+            });
+
+            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+                new TilePosition(4, 3),
+                new TilePosition(5, 3),
+                new TilePosition(6, 3),
+                new TilePosition(7, 3),
+                new TilePosition(8, 3),
+            });
+
+            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+                new TilePosition(8, 3),
+                new TilePosition(8, 4),
+                new TilePosition(8, 5),
+                new TilePosition(8, 6),
+            });
+
+            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+                new TilePosition(8, 6),
+                new TilePosition(7, 6),
+                new TilePosition(6, 6),
+                new TilePosition(5, 6),
+                new TilePosition(4, 6),
+                new TilePosition(3, 6),
+            });
+
+            Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(4, 0)));
+            Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(3, 0)));
+            Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(5, 1)));
+            Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(7, 6)));
+            Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(2, 0)));
+            Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(6, 6)));
+            Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(0, 0)));
+
+
+            company.PlaceNode(CableType.Copper, new TilePosition(3, 6));
+
+            Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(4, 0)));
+            Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(3, 0)));
+            Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(5, 1)));
+            Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(7, 6)));
+            Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(2, 0)));
+            Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(6, 6)));
+            Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(0, 0)));
+        }
        
     }
 }
