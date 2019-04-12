@@ -1,29 +1,30 @@
 ﻿---
 CableAttributes:
-    Copper:
-        Range: 20
-        Color: '#D9A728'
+    CAT-3:
+        Color: '#DD8222'
         ShortDescription: Copper Cable
         Description: 'TODO'
         Cost: 5
         Technology: 
-    Coaxial:
-        Range: 35
-        Color: '#28E5C2'
+        Wiring: Copper
+    RG-6:
+        Color: '#984991'
         ShortDescription: Coaxial Cable
         Description: 'TODO'
         Cost: 7
         Technology: Analog Transmissions
-    Optical:
-        Range: 40
-        Color: '#DE2354'
+        Wiring: Coaxial
+    OM-2:
+        Color: '#FF3E4E'
         ShortDescription: Fiber Optic Cable
         Description: 'TODO'
         Cost: 17
         Technology: Fiber Optics
+        Wiring: Optical
 
 NodeAttributes:
     DR-100:
+        Range: 10
         Wiring: Copper
         ShortDescription: DSL Repeater
         Description: 'TODO'
@@ -31,6 +32,7 @@ NodeAttributes:
         Cost: 50
         Technology: Digital Subscriber Lines
     CR-100:
+        Range: 15
         Wiring: Coaxial
         ShortDescription: Coaxial Repeater
         Description: 'TODO'
@@ -38,6 +40,7 @@ NodeAttributes:
         Cost: 50
         Technology: Advanced Cable Internet
     OR-105:
+        Range: 15
         Wiring: Optical
         ShortDescription: Fiber Optic Repeater
         Description: 'TODO'

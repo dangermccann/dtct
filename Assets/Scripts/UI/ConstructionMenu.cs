@@ -68,27 +68,18 @@ namespace DCTC.UI {
                         SelectionController.SetSelection(SelectionController.SelectionModes.Destroy);
                         break;
 
-                    case "Copper":
-                    case "Fiber":
-                        if (toggle.name == "Copper")
-                            SelectionController.CableType = CableType.Copper;
-                        else  if (toggle.name == "Fiber")
-                            SelectionController.CableType = CableType.Optical;
-
+                    case Cable.CAT3:
+                    case Cable.RG6:
+                    case Cable.OM2:
+                        SelectionController.CableId = toggle.name;
                         SelectionController.SetSelection(SelectionController.SelectionModes.Cable);
                         GetTriState("Cables").IsSecondary = true;
                         break;
 
-                    case "NodeCopper":
-                    case "NodeCoaxial":
-                    case "NodeOptical":
-                        if (toggle.name == "NodeCopper")
-                            SelectionController.NodeType = CableType.Copper;
-                        else if(toggle.name == "NodeCoaxial")
-                            SelectionController.NodeType = CableType.Coaxial;
-                        else if (toggle.name == "NodeOptical")
-                            SelectionController.NodeType = CableType.Optical;
-
+                    case Node.DR100:
+                    case Node.CR100:
+                    case Node.OR105:
+                        SelectionController.NodeId = toggle.name;
                         SelectionController.SetSelection(SelectionController.SelectionModes.Node);
                         GetTriState("Nodes").IsSecondary = true;
                         break;

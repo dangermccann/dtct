@@ -235,16 +235,15 @@ namespace DCTC.Model {
             return Customers.FirstOrDefault(c => c.ID == id);
         }
 
-        public Cable PlaceCable(CableType type, List<TilePosition> positions) {
+        public Cable PlaceCable(string id, List<TilePosition> positions) {
 
             string posStr = positions.Aggregate("", (current, next) => current + " " + next);
             Debug.Log("Place: " + posStr);
 
-            Cable cable = new Cable();
-            cable.Type = type;
+            Cable cable = new Cable(id, Game.Items.CableAttributes[id]);
             cable.Positions.AddRange(positions);
             Cables.Add(cable);
-            Money -= cable.Cost * positions.Count * Attributes.InfrastructureCost;
+            Money -= cable.Cost * (positions.Count - 1) * Attributes.InfrastructureCost;
             InvalidateNetworks();
             TriggerItemAdded(cable);
             return cable;
@@ -304,15 +303,13 @@ namespace DCTC.Model {
                         TriggerItemRemoved(cable);
 
                         int index = cable.Positions.IndexOf(pos);
-                        Cable c1 = new Cable();
-                        c1.Type = cable.Type;
+                        Cable c1 = new Cable(cable.ID, cable.Attributes);
                         c1.Positions = cable.Positions.GetRange(0, index);
                         Cables.Add(c1);
                         InvalidateNetworks();
                         TriggerItemAdded(c1);
 
-                        Cable c2 = new Cable();
-                        c2.Type = cable.Type;
+                        Cable c2 = new Cable(cable.ID, cable.Attributes);
                         c2.Positions = cable.Positions.GetRange(index + 1, cable.Positions.Count - index - 1);
                         Cables.Add(c2);
                         InvalidateNetworks();
@@ -333,9 +330,8 @@ namespace DCTC.Model {
             }
         }
 
-        public void PlaceNode(CableType type, TilePosition position) {
-            Node node = new Node();
-            node.Type = type;
+        public void PlaceNode(string id, TilePosition position) {
+            Node node = new Node(id, Game.Items.NodeAttributes[id]);
             node.Position = position;
             Nodes.Add(node);
             Money -= node.Cost * Attributes.InfrastructureCost;

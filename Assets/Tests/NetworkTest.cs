@@ -22,20 +22,22 @@ namespace DCTC.Test {
             List<Network> networks;
 
             Company company = new Company();
-            company.PlaceNode(CableType.Copper, new TilePosition(4, 0));
-            company.PlaceNode(CableType.Copper, new TilePosition(3, 6));
+            company.Game = new Game();
+            company.Game.LoadConfig();
+            company.PlaceNode(Node.DR100, new TilePosition(4, 0));
+            company.PlaceNode(Node.DR100, new TilePosition(3, 6));
 
             networks = company.Networks;
             Assert.AreEqual(0, networks.Count);
 
-            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+            company.PlaceCable(Cable.CAT3, new List<TilePosition>() {
                 new TilePosition(4, 0),
                 new TilePosition(4, 1),
                 new TilePosition(4, 2),
                 new TilePosition(4, 3),
             });
 
-            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+            company.PlaceCable(Cable.CAT3, new List<TilePosition>() {
                 new TilePosition(4, 3),
                 new TilePosition(5, 3),
                 new TilePosition(6, 3),
@@ -47,14 +49,14 @@ namespace DCTC.Test {
             Assert.AreEqual(1, networks.Count);
             Assert.AreEqual(2, networks[0].Cables.Count);
 
-            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+            company.PlaceCable(Cable.CAT3, new List<TilePosition>() {
                 new TilePosition(8, 3),
                 new TilePosition(8, 4),
                 new TilePosition(8, 5),
                 new TilePosition(8, 6),
             });
 
-            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+            company.PlaceCable(Cable.CAT3, new List<TilePosition>() {
                 new TilePosition(8, 6),
                 new TilePosition(7, 6),
                 new TilePosition(6, 6),
@@ -109,9 +111,9 @@ namespace DCTC.Test {
             };
             company.AppendRack();
 
-            company.PlaceNode(CableType.Copper, new TilePosition(2, 5));
+            company.PlaceNode(Node.DR100, new TilePosition(2, 5));
 
-            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+            company.PlaceCable(Cable.CAT3, new List<TilePosition>() {
                 new TilePosition(2, 2),
                 new TilePosition(2, 3),
                 new TilePosition(2, 4),
@@ -143,14 +145,14 @@ namespace DCTC.Test {
             Assert.IsFalse(company.Networks[0].AvailableServices.Contains(Services.TV));
 
 
-            company.PlaceCable(CableType.Coaxial, new List<TilePosition>() {
+            company.PlaceCable(Cable.RG6, new List<TilePosition>() {
                 new TilePosition(1, 1),
                 new TilePosition(1, 0),
                 new TilePosition(2, 0),
                 new TilePosition(3, 0),
             });
 
-            company.PlaceNode(CableType.Coaxial, new TilePosition(3, 0));
+            company.PlaceNode(Node.CR100, new TilePosition(3, 0));
 
             Assert.AreEqual(2, company.Networks.Count);
 
@@ -200,9 +202,9 @@ namespace DCTC.Test {
             };
             company.HeadquartersLocation = hq;
 
-            company.PlaceNode(CableType.Copper, new TilePosition(4, 0));
+            company.PlaceNode(Node.DR100, new TilePosition(4, 0));
 
-            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+            company.PlaceCable(Cable.CAT3, new List<TilePosition>() {
                 new TilePosition(3, 0),
                 new TilePosition(4, 0),
                 new TilePosition(4, 1),
@@ -210,7 +212,7 @@ namespace DCTC.Test {
                 new TilePosition(4, 3),
             });
 
-            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+            company.PlaceCable(Cable.CAT3, new List<TilePosition>() {
                 new TilePosition(4, 3),
                 new TilePosition(5, 3),
                 new TilePosition(6, 3),
@@ -218,14 +220,14 @@ namespace DCTC.Test {
                 new TilePosition(8, 3),
             });
 
-            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+            company.PlaceCable(Cable.CAT3, new List<TilePosition>() {
                 new TilePosition(8, 3),
                 new TilePosition(8, 4),
                 new TilePosition(8, 5),
                 new TilePosition(8, 6),
             });
 
-            company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+            company.PlaceCable(Cable.CAT3, new List<TilePosition>() {
                 new TilePosition(8, 6),
                 new TilePosition(7, 6),
                 new TilePosition(6, 6),
@@ -243,7 +245,7 @@ namespace DCTC.Test {
             Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(0, 0)));
 
 
-            company.PlaceNode(CableType.Copper, new TilePosition(3, 6));
+            company.PlaceNode(Node.DR100, new TilePosition(3, 6));
 
             Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(4, 0)));
             Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(3, 0)));

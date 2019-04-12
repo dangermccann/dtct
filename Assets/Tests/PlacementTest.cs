@@ -10,6 +10,8 @@ namespace DCTC.Test {
         [Test]
         public void TestCablePlacement() {
             Company company = new Company();
+            company.Game = new Game();
+            company.Game.LoadConfig();
 
             int addedCount = 0;
             company.ItemAdded += (object item) => {
@@ -23,7 +25,8 @@ namespace DCTC.Test {
                 removed.Add(item as Cable);
             };
 
-            Cable c1 = company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+            company.Money = 100;
+            Cable c1 = company.PlaceCable(Cable.CAT3, new List<TilePosition>() {
                 new TilePosition(3, 0),
                 new TilePosition(3, 1),
                 new TilePosition(3, 2),
@@ -31,8 +34,9 @@ namespace DCTC.Test {
                 new TilePosition(3, 4),
                 new TilePosition(3, 5),
             });
+            Assert.AreEqual(75, company.Money);
 
-            Cable c2 = company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+            Cable c2 = company.PlaceCable(Cable.CAT3, new List<TilePosition>() {
                 new TilePosition(0, 3),
                 new TilePosition(1, 3),
                 new TilePosition(2, 3),

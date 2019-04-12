@@ -32,10 +32,10 @@ namespace DCTC.Controllers {
         public SelectionModes Mode = SelectionModes.None;
 
         [HideInInspector]
-        public CableType NodeType;
+        public string NodeId;
 
         [HideInInspector]
-        public CableType CableType;
+        public string CableId;
 
         private GameObject cursorObject = null;
         private GameController gameController;
@@ -84,17 +84,18 @@ namespace DCTC.Controllers {
             if (Mode == SelectionModes.Cable) {
                 cursorObject = Instantiate(CableCursorPrefab);
                 cableCursor = cursorObject.GetComponent<CableGraphics>();
-                cableCursor.CableType = CableType;
+                cableCursor.CableId = CableId;
+                cableCursor.Cable = new Cable(CableId, gameController.Game.Items.CableAttributes[CableId]);
             }
             else if (Mode == SelectionModes.Node) {
-                switch(NodeType) {
-                    case CableType.Copper:
+                switch(NodeId) {
+                    case Node.CR100:
                         cursorObject = Instantiate(NodeCursorPrefabCopper);
                         break;
-                    case CableType.Coaxial:
+                    case Node.DR100:
                         cursorObject = Instantiate(NodeCursorPrefabCoaxial);
                         break;
-                    case CableType.Optical:
+                    case Node.OR105:
                         cursorObject = Instantiate(NodeCursorPrefabOptical);
                         break;
                 }
@@ -262,7 +263,7 @@ namespace DCTC.Controllers {
                     return;
                 }
 
-                gameController.Game.Player.PlaceNode(NodeType, position);
+                gameController.Game.Player.PlaceNode(NodeId, position);
 
                 Destroy(cursorObject);
                 CreateCursor();
@@ -283,7 +284,7 @@ namespace DCTC.Controllers {
                     // Second click
                     // Finalize cable placement and create new graphic
                     if (cableCursor.Points.Count > 1) {
-                        gameController.Game.Player.PlaceCable(CableType, cableCursor.Points);
+                        gameController.Game.Player.PlaceCable(CableId, cableCursor.Points);
                     }
 
                     Destroy(cursorObject);
@@ -312,7 +313,7 @@ namespace DCTC.Controllers {
                    (tile.Type == TileType.Connector && gameController.Game.Player.Headquarters.Contains(position))) {
 
                     if (dragCable == null) {
-                        dragCable = gameController.Game.Player.PlaceCable(CableType,
+                        dragCable = gameController.Game.Player.PlaceCable(CableId,
                             new List<TilePosition>() { position });
                     } else {
                         if (!dragCable.Positions.Contains(position)) {

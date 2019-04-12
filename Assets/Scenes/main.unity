@@ -13893,8 +13893,8 @@ MonoBehaviour:
   LotSelection: {fileID: 746536198}
   LocationDetails: {fileID: 1992217077}
   Mode: 0
-  NodeType: 0
-  CableType: 0
+  NodeId: 
+  CableId: 
 --- !u!114 &901094878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14105,7 +14105,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1834803472767414, guid: 712a96a74312b7849b4da0d2a20986fe, type: 3}
       propertyPath: m_Name
-      value: Copper
+      value: CAT-3
       objectReference: {fileID: 0}
     - target: {fileID: 224646706104198534, guid: 712a96a74312b7849b4da0d2a20986fe,
         type: 3}
@@ -14969,7 +14969,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1834803472767414, guid: 712a96a74312b7849b4da0d2a20986fe, type: 3}
       propertyPath: m_Name
-      value: NodeCopper
+      value: DR-100
       objectReference: {fileID: 0}
     - target: {fileID: 224646706104198534, guid: 712a96a74312b7849b4da0d2a20986fe,
         type: 3}
@@ -15520,7 +15520,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1834803472767414, guid: 712a96a74312b7849b4da0d2a20986fe, type: 3}
       propertyPath: m_Name
-      value: Coaxial
+      value: RG-6
       objectReference: {fileID: 0}
     - target: {fileID: 224646706104198534, guid: 712a96a74312b7849b4da0d2a20986fe,
         type: 3}
@@ -19862,7 +19862,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1834803472767414, guid: 712a96a74312b7849b4da0d2a20986fe, type: 3}
       propertyPath: m_Name
-      value: NodeCoaxial
+      value: CR-100
       objectReference: {fileID: 0}
     - target: {fileID: 224646706104198534, guid: 712a96a74312b7849b4da0d2a20986fe,
         type: 3}
@@ -27918,7 +27918,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1834803472767414, guid: 712a96a74312b7849b4da0d2a20986fe, type: 3}
       propertyPath: m_Name
-      value: NodeOptical
+      value: OR-105
       objectReference: {fileID: 0}
     - target: {fileID: 224646706104198534, guid: 712a96a74312b7849b4da0d2a20986fe,
         type: 3}
@@ -28473,7 +28473,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1834803472767414, guid: 712a96a74312b7849b4da0d2a20986fe, type: 3}
       propertyPath: m_Name
-      value: Fiber
+      value: OM-2
       objectReference: {fileID: 0}
     - target: {fileID: 224646706104198534, guid: 712a96a74312b7849b4da0d2a20986fe,
         type: 3}

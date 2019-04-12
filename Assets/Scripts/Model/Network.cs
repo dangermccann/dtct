@@ -37,14 +37,9 @@ namespace DCTC.Model {
         }
 
         public int MaximumCableDistanceFromNode() {
-            switch (CableType) {
-                case CableType.Copper:
-                    return 10;
-                case CableType.Coaxial:
-                    return 15;
-                case CableType.Optical:
-                    return 15;
-            }
+            if (Nodes.Count > 0)
+                return Nodes[0].Attributes.Range;
+
             return 0;
         }
 
@@ -140,9 +135,15 @@ namespace DCTC.Model {
 
     [Serializable]
     public class Cable {
+        public const string CAT3 = "CAT-3";
+        public const string RG6 = "RG-6";
+        public const string OM2 = "OM-2";
+
         public string ID { get; set; }
         public CableType Type { get; set; }
         public List<TilePosition> Positions { get; set; }
+        public CableAttributes Attributes { get; set; }
+        public string Guid { get; set; }
 
         private NetworkStatus status;
         public NetworkStatus Status {
@@ -157,8 +158,11 @@ namespace DCTC.Model {
         [field: NonSerialized]
         public event ChangeDelegate StatusChanged;
 
-        public Cable() {
-            ID = Guid.NewGuid().ToString();
+        public Cable(string id, CableAttributes attributes) {
+            ID = id;
+            Guid = System.Guid.NewGuid().ToString();
+            Type = Utilities.ParseEnum<CableType>(attributes.Wiring);
+            Attributes = attributes;
             Positions = new List<TilePosition>();
             Status = NetworkStatus.Disconnected;
         }
@@ -178,17 +182,7 @@ namespace DCTC.Model {
         }
 
         public float Cost {
-            get {
-                switch(Type) {
-                    case CableType.Copper:
-                        return 1;
-                    case CableType.Coaxial:
-                        return 1;
-                    case CableType.Optical:
-                        return 2;
-                }
-                return 0;
-            }
+            get { return Attributes.Cost; }
         }
     }
 
@@ -200,9 +194,15 @@ namespace DCTC.Model {
 
     [Serializable]
     public class Node {
+        public const string DR100 = "DR-100";
+        public const string CR100 = "CR-100";
+        public const string OR105 = "OR-105";
+
         public string ID { get; set; }
+        public string Guid { get; set; }
         public CableType Type { get; set; }
         public TilePosition Position { get; set; }
+        public NodeAttributes Attributes { get; set; }
 
         private NetworkStatus status;
         public NetworkStatus Status {
@@ -217,23 +217,16 @@ namespace DCTC.Model {
         [field: NonSerialized]
         public event ChangeDelegate StatusChanged;
 
-        public Node() {
-            ID = Guid.NewGuid().ToString();
+        public Node(string id, NodeAttributes attributes) {
+            ID = id;
+            Attributes = attributes;
+            Guid = System.Guid.NewGuid().ToString();
             Status = NetworkStatus.Disconnected;
+            Type = Utilities.ParseEnum<CableType>(attributes.Wiring);
         }
 
         public float Cost {
-            get {
-                switch (Type) {
-                    case CableType.Copper:
-                        return 4;
-                    case CableType.Coaxial:
-                        return 6;
-                    case CableType.Optical:
-                        return 8;
-                }
-                return 0;
-            }
+            get { return Attributes.Cost; }
         }
     }
 

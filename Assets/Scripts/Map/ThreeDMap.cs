@@ -610,17 +610,17 @@ namespace DCTC.Map {
         private void PlaceItem(object item) {
             if(item is Cable) {
                 Cable cable = item as Cable;
-                GameObject go = InstantiateObject("Cable", cable.ID, TilePosition.Origin);
+                GameObject go = InstantiateObject("Cable", cable.Guid, TilePosition.Origin);
 
                 CableGraphics graphics = go.GetComponent<CableGraphics>();
                 graphics.Cable = cable;
-                graphics.CableType = cable.Type;
+                graphics.CableId = cable.ID;
                 graphics.Mode = CableGraphics.GraphicsMode.Placed;
                 graphics.Points = cable.Positions;
             }
             else if(item is Node) {
                 Node node = item as Node;
-                InstantiateObject("Node" + node.Type.ToString(), node.ID, node.Position);
+                InstantiateObject("Node" + node.Type.ToString(), node.Guid, node.Position);
             }
             else if(item is Truck) {
                 Truck truck = item as Truck;
@@ -632,11 +632,11 @@ namespace DCTC.Map {
         private void RemoveItem(object item) {
             if(item is Cable) {
                 Cable cable = item as Cable;
-                RemoveObject("Cable", cable.ID);
+                RemoveObject("Cable", cable.Guid);
             }
             else if (item is Node) {
                 Node node = item as Node;
-                RemoveObject("Node", node.ID);
+                RemoveObject("Node" + node.Type.ToString(), node.Guid);
             } else if (item is Truck) {
                 Truck truck = item as Truck;
                 RemoveObject("Van", truck.ID);

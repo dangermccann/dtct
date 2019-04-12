@@ -159,12 +159,13 @@ namespace DCTC.Model {
 
     [Serializable]
     public class CableAttributes : Item {
-        public int Range { get; set; }
         public string Color { get; set; }
+        public string Wiring { get; set; }
     }
 
     [Serializable]
     public class NodeAttributes : Item {
+        public int Range { get; set; }
         public string Wiring { get; set; }
     }
 

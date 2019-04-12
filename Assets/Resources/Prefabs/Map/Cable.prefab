@@ -46,8 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CopperColor: {r: 0.8666667, g: 0.5100698, b: 0.13333333, a: 1}
-  FiberColor: {r: 0.097232126, g: 0.8962264, b: 0.5262013, a: 1}
-  InvalidColor: {r: 1, g: 0.19339621, b: 0.24122547, a: 1}
+  FiberColor: {r: 0.55290234, g: 0.28235295, b: 0.59607846, a: 1}
+  InvalidColor: {r: 0.5188679, g: 0.51152545, b: 0.5121176, a: 1}
   CableType: 0
 --- !u!1 &1390724522763794
 GameObject:

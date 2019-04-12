@@ -19,7 +19,7 @@ namespace DCTC.Map {
         public Color InvalidColor = Color.red;
 
         [HideInInspector]
-        public CableType CableType = CableType.Copper;
+        public string CableId;
 
         private void Awake() {
             vertical = transform.Find("Vertical").gameObject;
@@ -69,6 +69,9 @@ namespace DCTC.Map {
                 return cable;
             }
             set {
+                if (cable != null)
+                    cable.StatusChanged -= RedrawLineColor;
+
                 cable = value;
                 cable.StatusChanged += RedrawLineColor;
             }
@@ -147,8 +150,8 @@ namespace DCTC.Map {
         }
 
         private void RedrawLineColor() {
-            if (Mode == GraphicsMode.Placed && Cable != null)
-                valid = (Cable.Status == NetworkStatus.Active);
+            //if (Mode == GraphicsMode.Placed && Cable != null)
+            //    valid = (Cable.Status == NetworkStatus.Active);
 
             if (valid) {
                 SetLineColor(vertical, ValidColor());
@@ -160,8 +163,11 @@ namespace DCTC.Map {
         }
 
         private Color ValidColor() {
-            return CableType == CableType.Copper ? CopperColor : FiberColor;
+            Color c;
+            ColorUtility.TryParseHtmlString(Cable.Attributes.Color, out c);
+            return c;
         }
+
         private void SetLineColor(GameObject go, Color color) {
             LineRenderer lr = go.GetComponent<LineRenderer>();
             lr.startColor = color;
