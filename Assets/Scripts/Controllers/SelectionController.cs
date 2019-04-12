@@ -72,7 +72,10 @@ namespace DCTC.Controllers {
             if(Mode != SelectionModes.None)
                 CreateCursor();
 
-            mapComponent.HighlightRadius = 0;
+            if(Mode == SelectionModes.Node || Mode == SelectionModes.Cable)
+                mapComponent.OverlayMode = OverlayMode.ServiceArea;
+            else
+                mapComponent.OverlayMode = OverlayMode.Customers;
 
             Debug.Log("Selection mode is " + Mode.ToString());
         }
@@ -239,11 +242,9 @@ namespace DCTC.Controllers {
                     if (tile.Type == TileType.Road) {
                         cursorObject.SetActive(true);
                         cursorObject.transform.position = world;
-                        mapComponent.HighlightRadius = 1;
                     }
                     else {
                         cursorObject.SetActive(false);
-                        mapComponent.HighlightRadius = 0;
                     }
                 } else if (Mode == SelectionModes.Destroy) {
                     cursorObject.transform.position = world;
