@@ -165,8 +165,8 @@ namespace DCTC.Test {
         public void TestServiceArea() {
             /**
              *   +----------+
-             *   |    *     |
-             *   |    ^     |
+             *   |  HH*     |
+             *   |  HH^     |
              *   |    ^     |
              *   |    ^^^^^ |
              *   |        ^ |
@@ -174,10 +174,36 @@ namespace DCTC.Test {
              *   |   %^^^^^ |
              *   +----------+
              */
+
+            Game game = new Game();
+            game.Customers = new List<Customer>();
+            game.Companies = new List<Company>();
+            game.LoadConfig();
+
             Company company = new Company();
+            company.Game = game;
+            game.Companies.Add(company);
+
+            MapConfiguration map = new MapConfiguration(10, 10);
+            map.CreateTiles();
+            game.Map = map;
+            TilePosition hq = new TilePosition(2, 0);
+            map.Tiles[hq].Lot = new Lot() {
+                Tiles = new HashSet<TilePosition>() {
+                    new TilePosition(2, 0),
+                    new TilePosition(3, 0),
+                    new TilePosition(2, 1),
+                    new TilePosition(3, 1)
+                },
+                Anchor = hq,
+                Building = new Building(map.Tiles[hq], BuildingType.Headquarters)
+            };
+            company.HeadquartersLocation = hq;
+
             company.PlaceNode(CableType.Copper, new TilePosition(4, 0));
 
             company.PlaceCable(CableType.Copper, new List<TilePosition>() {
+                new TilePosition(3, 0),
                 new TilePosition(4, 0),
                 new TilePosition(4, 1),
                 new TilePosition(4, 2),
@@ -212,8 +238,8 @@ namespace DCTC.Test {
             Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(3, 0)));
             Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(5, 1)));
             Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(7, 6)));
-            Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(2, 0)));
-            Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(6, 6)));
+            Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(7, 0)));
+            Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(5, 6)));
             Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(0, 0)));
 
 
@@ -223,8 +249,8 @@ namespace DCTC.Test {
             Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(3, 0)));
             Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(5, 1)));
             Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(7, 6)));
-            Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(2, 0)));
-            Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(6, 6)));
+            Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(7, 0)));
+            Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(5, 6)));
             Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(0, 0)));
         }
        

@@ -102,7 +102,7 @@ namespace DCTC.Model {
                 }
             }
 
-            if(!pathNodes.ContainsKey(start) || pathNodes.ContainsKey((end))) {
+            if(!pathNodes.ContainsKey(start) || !pathNodes.ContainsKey((end))) {
                 // The start and end positions must be in the network
                 return null;
             }
