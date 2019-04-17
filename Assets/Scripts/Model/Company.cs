@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCTC.Map;
+using DCTC.AI;
 using UnityEngine;
 
 
@@ -38,6 +39,7 @@ namespace DCTC.Model {
         public CallCenter CallCenter { get; set; }
         public Inventory Inventory { get; set; }
         public List<Rack> Racks { get; set; }
+        public Executor AIExecutor { get; set; }
 
         public int RackLimit = 3;
         public int InventoryLimit = 750;
@@ -235,7 +237,12 @@ namespace DCTC.Model {
             return Customers.FirstOrDefault(c => c.ID == id);
         }
 
-        public Cable PlaceCable(string id, List<TilePosition> positions) {
+        public float CableCost(string id, int positionCount) {
+            CableAttributes attributes = Game.Items.CableAttributes[id];
+            return attributes.Cost * (positionCount - 1) * Attributes.InfrastructureCost;
+        }
+
+        public Cable PlaceCable(string id, IList<TilePosition> positions) {
 
             string posStr = positions.Aggregate("", (current, next) => current + " " + next);
             Debug.Log("Place: " + posStr);
@@ -243,7 +250,7 @@ namespace DCTC.Model {
             Cable cable = new Cable(id, Game.Items.CableAttributes[id]);
             cable.Positions.AddRange(positions);
             Cables.Add(cable);
-            Money -= cable.Cost * (positions.Count - 1) * Attributes.InfrastructureCost;
+            Money -= CableCost(id, positions.Count);
             InvalidateNetworks();
             TriggerItemAdded(cable);
             return cable;
@@ -604,6 +611,9 @@ namespace DCTC.Model {
                     Money += ServicePrices[service] * deltaTime;
                 }
             }
+
+            if(AIExecutor != null) // Will be null for Human player
+                AIExecutor.Update(deltaTime);
         }
 
         private void InsertNetworkNode(Network network, Node node) {

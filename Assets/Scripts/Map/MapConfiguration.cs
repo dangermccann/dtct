@@ -418,6 +418,35 @@ namespace DCTC.Map {
             return area;
         }
 
+        public TilePosition Clamp(TilePosition pos) {
+            return new TilePosition(Math.Min(Width - 1, Math.Max(0, pos.x)), Math.Min(Height - 1, Math.Max(0, pos.y)));
+        }
+
+        public TileRectangle Clamp(TileRectangle rect) {
+            return new TileRectangle(Clamp(rect.BottomLeft), Clamp(rect.TopRight));
+        }
+
+        public TileRectangle Area(TilePosition start, Direction direction, int distance) {
+            TileRectangle rect;
+            switch (direction) {
+                case Direction.North:
+                    rect = new TileRectangle(start.x - distance / 2, start.y, start.x + distance / 2, start.y + distance);
+                    break;
+                case Direction.South:
+                    rect = new TileRectangle(start.x - distance / 2, start.y - distance, start.x + distance / 2, start.y);
+                    break;
+                case Direction.East:
+                    rect = new TileRectangle(start.x, start.y - distance / 2, start.x + distance, start.y + distance / 2);
+                    break;
+                case Direction.West:
+                default:
+                    rect = new TileRectangle(start.x - distance, start.y - distance / 2, start.x, start.y + distance / 2);
+                    break;
+            }
+
+            return Clamp(rect);
+        }
+
         public static bool HasRoad(Tile tile) {
 			return tile != null && tile.Type == TileType.Road;
 		}

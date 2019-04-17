@@ -35,6 +35,14 @@ namespace DCTC.Map {
 			}
 		}
 
+        public Orientation RoadOrientation {
+            get {
+                if (RoadType == RoadType.Vertical)
+                    return Orientation.Vertical;
+                else return Orientation.Horizontal;
+            }
+        }
+
 		protected Building building = null;
 		public Building Building {
 			get {

@@ -51,12 +51,14 @@ namespace DCTC.Map
         const int NeighborhoodHeight = 60;
         private int neighborhoodCountX;
         private int neighborhoodCountY;
+        private NewGameSettings settings;
 
         public MapGenerator(System.Random rand, NewGameSettings settings, NameGenerator nameGenerator) {
             this.random = rand;
             this.nameGenerator = nameGenerator;
             this.neighborhoodCountX = settings.NeighborhoodCountX;
             this.neighborhoodCountY = settings.NeighborhoodCountY;
+            this.settings = settings;
         }
 
         public MapConfiguration Generate() {
@@ -66,7 +68,7 @@ namespace DCTC.Map
                 NeighborhoodHeight * neighborhoodCountY + 1);
             map.CreateTiles();
 
-            int startIdx = random.Next(5);
+            int startIdx = settings.Seed == -1 ? 2 : random.Next(5);
             int nTemplateCount = template.Neighborhoods.Count;
             for(int x = 0; x < neighborhoodCountX; x++) {
                 for(int y = 0; y < neighborhoodCountY; y++) {
@@ -110,7 +112,12 @@ namespace DCTC.Map
 
             List<TilePosition> replacements = new List<TilePosition>();
             while(count > 0) {
-                TilePosition candidate = RandomUtils.RandomThing(candidates, random);
+                TilePosition candidate;
+                if (settings.Seed != -1)
+                    candidate = RandomUtils.RandomThing(candidates, random);
+                else 
+                    candidate = candidates[0];
+
                 replacements.Add(candidate);
                 candidates.Remove(candidate);
                 count--;

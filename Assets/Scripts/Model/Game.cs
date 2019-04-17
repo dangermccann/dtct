@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Linq;
 using DCTC.Map;
-using UnityEngine;
+using DCTC.AI;
 
 namespace DCTC.Model {
 
@@ -64,6 +64,12 @@ namespace DCTC.Model {
                     t.Game = this;
                     t.Company = c;
                 }
+
+                if (c.AIExecutor != null) { // Will be null for Human player
+                    foreach (IAgent agent in c.AIExecutor.Agents) {
+                        agent.Company = c;
+                    }
+                }
             }
             foreach(Customer c in Customers) {
                 c.Game = this;
@@ -88,7 +94,8 @@ namespace DCTC.Model {
             Companies = new List<Company>();
             for (int i = 0; i < settings.NumAIs; i++) {
                 Company company = GenerateCompany(CompanyOwnerType.AI, headquarters[i]);
-                // TODO: give opponants "personalities"
+                // TODO: give opponants "personalities" and support difficulty levels
+                company.Money = settings.StartingMoney;
                 company.Attributes = new CompanyAttributes();
                 company.Inventory["HR-15"] = 1;
                 company.AppendRack();
@@ -130,16 +137,7 @@ namespace DCTC.Model {
         }
 
         public void PostLoad() {
-            // Redispatch trucks so they restore their previous jobs
-            /*
-            foreach(Company c in Companies) {
-                foreach(Truck t in c.Trucks) {
-                    if(t.Status != TruckStatus.Idle) {
-                        t.Dispatch(t.DestinationCustomerID, t.Path);
-                    }
-                }
-            }
-            */
+
         }
 
         public Company GetCompany(string id) {
@@ -187,6 +185,12 @@ namespace DCTC.Model {
 
             for (int i = 0; i < 10; i++) {
                 company.CallCenter.UnhiredAgents.Add(GenerateAgent(company));
+            }
+
+            if(type == CompanyOwnerType.AI) {
+                company.AIExecutor = new Executor(new List<IAgent>() {
+                    new CablePlacementAgent(company)
+                });
             }
 
             return company;

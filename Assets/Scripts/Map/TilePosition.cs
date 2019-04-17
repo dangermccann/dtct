@@ -103,6 +103,20 @@ namespace DCTC.Map {
             return result;
         }
 
+        public static TilePosition Closest(IEnumerable<TilePosition> positions, TilePosition to) {
+            TilePosition closest = TilePosition.Origin;
+            int smallestDistance = int.MaxValue;
+
+            foreach(TilePosition pos in positions) {
+                int d = TilePosition.Distance(pos, to);
+                if (d < smallestDistance) {
+                    smallestDistance = d;
+                    closest = pos;
+                }
+            }
+            return closest;
+        }
+
         /// <summary>
         /// Returns a range of TilePositions repsenting a user selection or rectangle of tiles relative to
         /// a fixed starting point.  
@@ -140,8 +154,8 @@ namespace DCTC.Map {
 
     [Serializable]
     public class TileRectangle {
-        TilePosition BottomLeft;
-        TilePosition TopRight;
+        public TilePosition BottomLeft;
+        public TilePosition TopRight;
 
         public TileRectangle(int left, int bottom, int right, int top) :
             this(new TilePosition(left, bottom), new TilePosition(right, top)) { }
@@ -158,5 +172,17 @@ namespace DCTC.Map {
         public int Right { get { return TopRight.x; } }
         public int Bottom { get { return BottomLeft.y; } }
         public int Top { get { return TopRight.y; } }
+
+        public List<TilePosition> Positions {
+            get {
+                var positions = new List<TilePosition>();
+                for(int x = Left; x <= Right; x++) {
+                    for(int y = Bottom; y <= Top; y++) {
+                        positions.Add(new TilePosition(x, y));
+                    }
+                }
+                return positions;
+            }
+        }
     }
 }

@@ -116,5 +116,35 @@ namespace DCTC.Test {
             Assert.AreEqual(10, tr.Right);
             Assert.AreEqual(10, tr.Top);
         }
+
+        [Test]
+        public void TestArea() {
+            MapConfiguration map = new MapConfiguration(100, 100);
+            TileRectangle rect;
+
+            rect = map.Area(new TilePosition(10, 10), Direction.North, 10);
+            Assert.AreEqual(20, rect.Top);
+            Assert.AreEqual(10, rect.Bottom);
+            Assert.AreEqual(5, rect.Left);
+            Assert.AreEqual(15, rect.Right);
+
+            rect = map.Area(new TilePosition(10, 10), Direction.South, 10);
+            Assert.AreEqual(10, rect.Top);
+            Assert.AreEqual(0, rect.Bottom);
+            Assert.AreEqual(5, rect.Left);
+            Assert.AreEqual(15, rect.Right);
+
+            rect = map.Area(new TilePosition(10, 10), Direction.East, 10);
+            Assert.AreEqual(15, rect.Top);
+            Assert.AreEqual(5, rect.Bottom);
+            Assert.AreEqual(10, rect.Left);
+            Assert.AreEqual(20, rect.Right);
+
+            rect = map.Area(new TilePosition(5, 5), Direction.West, 10);
+            Assert.AreEqual(10, rect.Top);
+            Assert.AreEqual(0, rect.Bottom);
+            Assert.AreEqual(0, rect.Left);
+            Assert.AreEqual(5, rect.Right);
+        }
     }
 }

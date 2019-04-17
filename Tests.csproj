@@ -60,6 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Tests\CablePlacementAgentTest.cs" />
     <Compile Include="Assets\Tests\ItemsTest.cs" />
     <Compile Include="Assets\Tests\LotOutlineTest.cs" />
     <Compile Include="Assets\Tests\NetworkTest.cs" />

@@ -1,12 +1,57 @@
-﻿using UnityEngine;
-using UnityEngine.TestTools;
+﻿using DCTC.Map;
+using DCTC.Model;
 using NUnit.Framework;
 using System.Collections.Generic;
-using DCTC.Map;
-using DCTC.Model;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System;
 
 namespace DCTC.Test {
     public class SaverTest {
+        [Serializable]
+        public class TestSerialize {
+            public int pubInt;
+            private int privInt;
+
+            public int PubField { get; set; }
+
+            public TestSerialize() {
+                privInt = 2;
+            }
+
+            public void Update() {
+                privInt = 4;
+            }
+            public int GetPrivInt() {
+                return privInt;
+            }
+        }
+
+        [Test]
+        public void TestSerialization() {
+
+            BinaryFormatter formatter = new BinaryFormatter();
+            string path = "test.save";
+            TestSerialize saved = new TestSerialize();
+
+            saved.pubInt = 3;
+            saved.Update();
+            saved.PubField = 5;
+
+            using (FileStream stream = new FileStream(path, FileMode.Create)) {
+                formatter.Serialize(stream, saved);
+            }
+
+            saved = null;
+
+            using (FileStream stream = new FileStream(path, FileMode.Open)) {
+                saved = formatter.Deserialize(stream) as TestSerialize;
+            }
+
+            Assert.AreEqual(3, saved.pubInt);
+            Assert.AreEqual(4, saved.GetPrivInt());
+            Assert.AreEqual(5, saved.PubField);
+        }
 
         [Test]
         public void TestSaveGame() {

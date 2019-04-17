@@ -342,6 +342,12 @@ public static class Utilities {
         return (T)Enum.Parse(typeof(T), value);
     }
 
+    public static float StandardDeviation(IEnumerable<float> values) {
+        float mean = values.Average();
+        float squares = values.Sum(v => Mathf.Pow(v - mean, 2));
+        return Mathf.Sqrt(squares / values.Count());
+    }
+
 }
 
 [System.Serializable]
