@@ -242,7 +242,9 @@ namespace DCTC.Test {
             Assert.IsTrue(company.ServiceArea.Contains(new TilePosition(7, 6)));
             Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(7, 0)));
             Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(5, 6)));
+            Assert.IsTrue(company.PotentialServiceArea[CableType.Copper].Contains(new TilePosition(5, 7)));
             Assert.IsFalse(company.ServiceArea.Contains(new TilePosition(0, 0)));
+            Assert.IsFalse(company.PotentialServiceArea[CableType.Copper].Contains(new TilePosition(0, 0)));
 
 
             company.PlaceNode(Node.DR100, new TilePosition(3, 6));

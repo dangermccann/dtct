@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,15 +37,25 @@ namespace DCTC.Controllers {
             return GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
         }
 
-        private static string SaveName = "dctc";
+        private const int householdBatchSize = 100;
+        private const string SaveName = "dctc";
+
         private Thread saveMapThread;
         private GameSaver saver;
         private NameGenerator nameGenerator;
-        private Coroutine loopCoroutine;
-        private int gameCounter = 0;
-        private float lastUpdateTime;
+        private float lastUpdateTime = -1;
         private IList<TilePosition> headquarters;
         private System.Random random;
+        private float cycleDuration = 0;
+        private bool quitting = false;
+        private bool applicationPaused = false;
+        private object monitor = new object();
+        private DateTime startTime;
+        private Thread gameLoopThread;
+        private DateTime gameStart = DateTime.Now;
+        private int householdCycle = 0;
+        private int companyCycle = 0;
+        private GameSpeed previousGameSpeed = GameSpeed.Normal;
 
         private int GameLoopBatchSize {
             get {
@@ -52,9 +63,9 @@ namespace DCTC.Controllers {
                     case GameSpeed.Pause:
                         return 1;
                     case GameSpeed.Normal:
-                        return 10;
+                        return 2;
                     case GameSpeed.Fast:
-                        return 75;
+                        return 5;
                 }
                 return 1;
             }
@@ -69,24 +80,54 @@ namespace DCTC.Controllers {
             StateController.Get().PushState(States.Title);
         }
 
-        public void Unpause() {
-            GameSpeed = GameSpeed.Normal;
+        void OnApplicationPause(bool pauseStatus) {
+            applicationPaused = pauseStatus;
+        }
 
-            if(loopCoroutine == null)
-                loopCoroutine = StartCoroutine(GameLoop());
+        void OnApplicationQuit() {
+            GameSpeed = GameSpeed.Pause;
+            ExitGameLoop();
+
+            Debug.Log("Quitting...");
+        }
+
+        public void Unpause() {
+            GameSpeed = previousGameSpeed;
         }
 
         public void Pause() {
+            previousGameSpeed = GameSpeed;
             GameSpeed = GameSpeed.Pause;
-
-            if(loopCoroutine != null) {
-                StopCoroutine(loopCoroutine);
-                loopCoroutine = null;
-            }
         }
 
         public void QuitToTitle() {
 
+        }
+
+        void StartGameLoop() {
+            if (gameLoopThread != null) {
+                Debug.LogError("Game loop already running!");
+                return;
+            }
+
+            quitting = false;
+
+            gameLoopThread = new Thread(new ThreadStart(GameLoop));
+            gameLoopThread.Start();
+            
+        }
+
+        void ExitGameLoop() {
+            quitting = true;
+
+            lock (monitor) {
+                Monitor.Pulse(monitor);
+            }
+
+            if (gameLoopThread != null) {
+                gameLoopThread.Join();
+                gameLoopThread = null;
+            }
         }
 
         void GenerateMap(NewGameSettings settings) {
@@ -102,8 +143,12 @@ namespace DCTC.Controllers {
         }
 
         public void Save() {
-            Game.RandomState = Random.state;
+            ExitGameLoop();
+
+            Game.RandomState = UnityEngine.Random.state;
             saver.SaveGame(Game, SaveName);
+
+            StartGameLoop();
         }
 
         public void Load() {
@@ -129,6 +174,7 @@ namespace DCTC.Controllers {
             Game.Player = Game.Companies.First(c => c.OwnerType == CompanyOwnerType.Human);
             Map = saver.LoadMap(SaveName);
             Game.Map = Map;
+            Game.PostLoad();
 
             stopwatch.Stop();
             Debug.Log("Game load time: " + stopwatch.ElapsedMilliseconds + "ms");
@@ -176,12 +222,12 @@ namespace DCTC.Controllers {
         }
 
         public void OnMapDrawComplete() {
-            Game.PostLoad();
             Unpause();
+            StartGameLoop();
         }
 
         private void SaveMap() {
-            Thread.Sleep(3000);
+            Thread.Sleep(5000);
             saver.SaveMap(Map, SaveName);
         }
 
@@ -189,29 +235,65 @@ namespace DCTC.Controllers {
             StateController.Get().ExitAndPushState(States.Map);
         }
 
-        private IEnumerator GameLoop() {
-            lastUpdateTime = Time.time;
+        // Invoke LightUpdate on main thread for all Companies
+        // This should just be used to Lerp, move trucks, etc
+        private void Update() {
+            if (GameSpeed != GameSpeed.Pause) {
+                float dt = Time.deltaTime;
 
+                if (GameSpeed == GameSpeed.Fast)
+                    dt *= 10f;
+
+                foreach (Company company in Game.Companies) {
+                    company.LightUpdate(dt);
+                }
+            }
+        }
+
+        // Main game loop runs on separate thread 
+        private void GameLoop() {
             while (true) {
-                if (GameSpeed == GameSpeed.Pause) {
-                    lastUpdateTime = Time.time;
-                    yield return null;
-                } else {
+                if (quitting)
+                    break;
 
-                    int householdIndex = gameCounter % Game.Customers.Count;
-                    Game.Customers[householdIndex].Update(Time.time);
+                if (!applicationPaused && GameSpeed != GameSpeed.Pause) {
+                    startTime = DateTime.Now;
+                    float time = (float) (startTime - gameStart).TotalMilliseconds;
+                    time *= 0.001f;  // convert to seconds
 
-                    foreach (Company company in Game.Companies) {
-                        company.Update(Time.time - lastUpdateTime);
+                    // prevent deltaTime from being large on first cycle
+                    if (lastUpdateTime == -1)
+                        lastUpdateTime = time;
+
+                    float deltaTime = time - lastUpdateTime;
+                    
+                    for(int i = 0; i < householdBatchSize; i++) {
+                        int householdIndex = householdCycle % Game.Customers.Count;
+                        Game.Customers[householdIndex].Update(time);
+                        householdCycle++;
+                    }
+                    
+                    int companyIndex = companyCycle % Game.Companies.Count;
+                    Game.Companies[companyIndex].Update(deltaTime);
+                    companyCycle++;
+
+                    lastUpdateTime = time;
+
+                    int sleepAmt = GameSpeed == GameSpeed.Normal ? 10 : 1;
+
+                    lock (monitor) {
+                        Monitor.Wait(monitor, TimeSpan.FromMilliseconds(sleepAmt));
                     }
 
-                    lastUpdateTime = Time.time;
+                    cycleDuration = (float)(DateTime.Now - startTime).TotalMilliseconds;
 
-                    if (++gameCounter % GameLoopBatchSize == 0) {
-                        yield return null;
+                } else {
+                    cycleDuration = 0;
+
+                    lock (monitor) {
+                        Monitor.Wait(monitor, TimeSpan.FromMilliseconds(100));
                     }
                 }
-                
             }
         }
     }

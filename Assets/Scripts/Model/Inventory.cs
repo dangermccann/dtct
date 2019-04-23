@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -20,6 +21,10 @@ namespace DCTC.Model {
             if(inventory[key] <= 0) {
                 inventory.Remove(key);
             }
+        }
+
+        public int Total() {
+            return inventory.Values.Sum();
         }
     }
 

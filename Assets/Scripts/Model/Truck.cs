@@ -17,8 +17,8 @@ namespace DCTC.Model {
     [Serializable]
     public class Truck {
         public const float BaseCost = 2f;
-        private const float BaseTravelSpeed = 15;
-        private const float BaseWorkSpeed = 1.5f;
+        private const float BaseTravelSpeed = 10f;
+        private const float BaseWorkSpeed = 5f;
         private const float BaseWork = 1;
 
 
@@ -163,10 +163,17 @@ namespace DCTC.Model {
             return true;
         }
 
-        public void Update(float deltaTime) {
+        public void LightUpdate(float deltaTime) {
             if (Status == TruckStatus.Working) {
                 WorkRemaining -= deltaTime * BaseWorkSpeed * WorkSpeed * Company.Attributes.TruckWorkSpeed;
+            } else if (Status == TruckStatus.EnRoute || Status == TruckStatus.GettingEquipment) {
+                Elapsed += deltaTime * BaseTravelSpeed * TravelSpeed * Company.Attributes.TruckTravelSpeed;
+                Position = Vector3.Lerp(CurrentStart, CurrentDestination, Elapsed);
+            }
+        }
 
+        public void Update(float deltaTime) {
+            if (Status == TruckStatus.Working) {
                 if (WorkRemaining <= 0)
                     JobComplete();
             }
@@ -175,9 +182,6 @@ namespace DCTC.Model {
                     if (NextTile())
                         DestinationReached();
                 }
-
-                Elapsed += deltaTime * BaseTravelSpeed * TravelSpeed * Company.Attributes.TruckTravelSpeed;
-                Position = Vector3.Lerp(CurrentStart, CurrentDestination, Elapsed);
             }
         }
 
@@ -218,6 +222,20 @@ namespace DCTC.Model {
                 // Get equipment
                 foreach(string id in PendingEquipmentFromHQ) {
                     int amount = Mathf.CeilToInt((float)Company.Inventory[id] / Company.Trucks.Count);
+
+                    if(amount == 0) {
+                        // When we arrived there was no available equipment
+                        // Re-queue job 
+                        Company.TruckRollQueue.Add(DestinationCustomerID);
+
+                        DestinationCustomerID = null;
+                        Status = TruckStatus.Idle;
+                        Path = new List<TilePosition>();
+                        CurrentIndex = 0;
+                        
+                        return;
+                    }
+
                     Company.Inventory.Subtract(id, amount);
                     Inventory.Add(id, amount);
                 }

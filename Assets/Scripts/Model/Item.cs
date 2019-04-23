@@ -115,6 +115,8 @@ namespace DCTC.Model {
 
     [Serializable]
     public class Rack : Item {
+        public const string HR15 = "HR-15";
+
         public int Slots { get; set; }
         public List<string> Contents { get; set; }
         public Rack() {

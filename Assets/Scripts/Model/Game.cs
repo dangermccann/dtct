@@ -65,10 +65,9 @@ namespace DCTC.Model {
                     t.Company = c;
                 }
 
-                if (c.AIExecutor != null) { // Will be null for Human player
-                    foreach (IAgent agent in c.AIExecutor.Agents) {
-                        agent.Company = c;
-                    }
+                foreach (Truck t in c.UnhiredTrucks) {
+                    t.Game = this;
+                    t.Company = c;
                 }
             }
             foreach(Customer c in Customers) {
@@ -97,7 +96,7 @@ namespace DCTC.Model {
                 // TODO: give opponants "personalities" and support difficulty levels
                 company.Money = settings.StartingMoney;
                 company.Attributes = new CompanyAttributes();
-                company.Inventory["HR-15"] = 1;
+                company.Inventory[Rack.HR15] = 1;
                 company.AppendRack();
                 Companies.Add(company);
             }
@@ -106,7 +105,7 @@ namespace DCTC.Model {
                 Player = GenerateCompany(CompanyOwnerType.Human, headquarters[settings.NumAIs]);
                 Player.Name = settings.PlayerName;
                 Player.Attributes = settings.PlayerAttributes;
-                Player.Inventory["HR-15"] = 1;
+                Player.Inventory[Rack.HR15] = 1;
                 Player.AppendRack();
                 Player.Money = settings.StartingMoney;
                 Companies.Add(Player);
@@ -137,7 +136,13 @@ namespace DCTC.Model {
         }
 
         public void PostLoad() {
-
+            foreach (Company c in Companies) {
+                if (c.AIExecutor != null) { // Will be null for Human player
+                    foreach (IAgent agent in c.AIExecutor.Agents) {
+                        agent.Company = c;
+                    }
+                }
+            }
         }
 
         public Company GetCompany(string id) {
@@ -188,8 +193,12 @@ namespace DCTC.Model {
             }
 
             if(type == CompanyOwnerType.AI) {
+                // Add all AI agent classes 
                 company.AIExecutor = new Executor(new List<IAgent>() {
-                    new CablePlacementAgent(company)
+                    new CablePlacementAgent(company),
+                    new NodePlacementAgent(company),
+                    new EquipmentAgent(company),
+                    new CPEAgent(company)
                 });
             }
 

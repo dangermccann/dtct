@@ -22,6 +22,7 @@ namespace DCTC.UI {
         private Lot lot = null;
         private Customer customer = null;
         private Tile tile = null;
+        private bool redraw = false;
 
         private TilePosition location = TilePosition.Origin;
         public TilePosition Location {
@@ -66,11 +67,15 @@ namespace DCTC.UI {
                 coolDown = 0;
                 Redraw();
             }
+            else if(redraw) {
+                Redraw();
+                redraw = false;
+            }
         }
 
         private void Game_CustomerChanged(Customer customer, Company company) {
             if(this.customer != null && customer.ID == this.customer.ID) {
-                Redraw();
+                redraw = true;
             }
         }
 
@@ -139,6 +144,7 @@ namespace DCTC.UI {
                     SetText("Name", company.Name + " Headquarters");
                     Append(company.ActiveCustomers.Count() + " Customers");
                     Append(Formatter.FormatPercent(company.Satisfaction) + " Satisfaction");
+                    Append(Formatter.FormatCurrency(company.Money));
                 }
             }
         }

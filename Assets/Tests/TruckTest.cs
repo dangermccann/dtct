@@ -157,12 +157,16 @@ namespace DCTC.Test {
             company.RollTruck(customer1);
             Assert.AreEqual(1, company.TruckRollQueue.Count);
 
+            // Advance so truck starts route
+            company.LightUpdate(1);
             company.Update(1);
 
             Assert.AreEqual(TruckStatus.EnRoute, truck.Status);
             Assert.AreEqual(0, company.TruckRollQueue.Count);
 
-            for (int i = 0; i < 15; i++) {
+            // Advance so truck completes job
+            for (int i = 0; i < 10; i++) {
+                company.LightUpdate(1);
                 company.Update(1);
             }
 
@@ -186,6 +190,7 @@ namespace DCTC.Test {
             Assert.AreEqual(TruckStatus.GettingEquipment, truck.Status);
 
             for (int i = 0; i < 5; i++) {
+                company.LightUpdate(1);
                 company.Update(1);
             }
 
@@ -194,6 +199,7 @@ namespace DCTC.Test {
             Assert.IsFalse(company.Inventory.Contains("STB-5"));
 
             for (int i = 0; i < 15; i++) {
+                company.LightUpdate(1);
                 company.Update(1);
             }
 

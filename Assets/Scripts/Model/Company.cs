@@ -84,6 +84,16 @@ namespace DCTC.Model {
             }
         }
 
+        [NonSerialized]
+        private Dictionary<CableType, HashSet<TilePosition>> potentialServiceArea = null;
+        public Dictionary<CableType, HashSet<TilePosition>> PotentialServiceArea {
+            get {
+                if (potentialServiceArea == null)
+                    CalculateServiceArea();
+                return potentialServiceArea;
+            }
+        }
+
         public HashSet<TilePosition> HeadquartersConnectors {
             get {
                 if (HeadquartersLocation.Equals(TilePosition.Origin))
@@ -150,6 +160,14 @@ namespace DCTC.Model {
             return total;
         }
 
+        public bool HasTechnology(string tech) {
+            return true;
+        }
+
+        public int CanPurchase(string id, int qty) {
+            return CanPurchaseInternal(Game.Items[id], qty, -1);
+        }
+
         public int CanPurchase(Item item, int qty) {
             return CanPurchaseInternal(item, qty, -1);
         }
@@ -183,6 +201,10 @@ namespace DCTC.Model {
              return Errors.OK;
         }
 
+        public void Purchase(string id, int qty) {
+            PurchaseInternal(Game.Items[id], qty, -1);
+        }
+
         public void Purchase(Item item, int qty) {
             PurchaseInternal(item, qty, -1);
         }
@@ -196,7 +218,7 @@ namespace DCTC.Model {
                 throw new Exception(String.Format("Purchase error: {0:X}", err));
             }
 
-            if (item.ID == "HR-15") {
+            if (item.ID == Rack.HR15) {
                 AppendRack();
             }
             else if(item is RackedItem) {
@@ -211,13 +233,13 @@ namespace DCTC.Model {
             Inventory[item.ID] += qty;
             Money -= item.Cost * qty;
 
-            Debug.Log("Bought " + qty.ToString() + " " + item.ID);
+            Debug.Log(Name + " bought " + qty.ToString() + " " + item.ID);
 
             InvalidateNetworks();
         }
 
         public void AppendRack() {
-            Rack rack = new Rack(Game.Items["HR-15"] as Rack);
+            Rack rack = new Rack(Game.Items[Rack.HR15] as Rack);
             Racks.Add(rack);
         }
 
@@ -244,8 +266,8 @@ namespace DCTC.Model {
 
         public Cable PlaceCable(string id, IList<TilePosition> positions) {
 
-            string posStr = positions.Aggregate("", (current, next) => current + " " + next);
-            Debug.Log("Place: " + posStr);
+            //string posStr = positions.Aggregate("", (current, next) => current + " " + next);
+            //Debug.Log("Place: " + posStr);
 
             Cable cable = new Cable(id, Game.Items.CableAttributes[id]);
             cable.Positions.AddRange(positions);
@@ -391,8 +413,9 @@ namespace DCTC.Model {
         public List<CPE> InventoryCpe {
             get {
                 List<CPE> cpe = new List<CPE>();
+                Inventory inv = InventoryWithTrucks;
 
-                foreach (string id in Inventory) {
+                foreach (string id in inv) {
                     Item item = Game.Items[id];
                     if (item is CPE) {
                         cpe.Add(item as CPE);
@@ -402,14 +425,29 @@ namespace DCTC.Model {
             }
         }
 
-        public Dictionary<string, int> InventoryCpeByService(Services service) {
-            Dictionary<string, int> inv = new Dictionary<string, int>();
-            foreach(CPE cpe in InventoryCpe) {
+        public Inventory InventoryWithTrucks {
+            get {
+                Inventory total = new Inventory();
+                total.Add(Inventory);
+
+                foreach (Truck truck in Trucks) {
+                    total.Add(truck.Inventory);
+                }
+                return total;
+            }
+        }
+
+        public Inventory InventoryCpeByService(Services service) {
+            List<CPE> allCpe = InventoryCpe;
+            Inventory allInventory = InventoryWithTrucks;
+            Inventory result = new Inventory();
+
+            foreach (CPE cpe in allCpe) {
                 if(cpe.Services.Contains(service.ToString())) {
-                    inv.Add(cpe.ID, Inventory[cpe.ID]);
+                    result.Add(cpe.ID, allInventory[cpe.ID]);
                 }
             }
-            return inv;
+            return result;
         }
 
         public Dictionary<Services, float> FindServicesForLocation(TilePosition position) {
@@ -431,16 +469,17 @@ namespace DCTC.Model {
             if (TruckRollQueue.Contains(customer.ID))
                 TruckRollQueue.Remove(customer.ID);
 
+            if (CallCenter.CallQueue.Contains(customer.ID))
+                CallCenter.CallQueue.Remove(customer.ID);
+
             if (company != null && company.ID == ID) {
                 if (!customers.Contains(customer))
                     customers.Add(customer);
 
                 if (customer.Status == CustomerStatus.Pending)
                     CallCenter.Enqueue(customer.ID);
-
-                if (customer.Status == CustomerStatus.Outage)
+                else if (customer.Status == CustomerStatus.Outage)
                     CallCenter.Enqueue(customer.ID);
-
 
             } else if (customers.Contains(customer)) {
                 customers.Remove(customer);
@@ -450,18 +489,26 @@ namespace DCTC.Model {
 
         private void CalculateServiceArea() {
             HashSet<TilePosition> serviceArea = new HashSet<TilePosition>();
+
+            potentialServiceArea = new Dictionary<CableType, HashSet<TilePosition>>();
+            potentialServiceArea.Add(CableType.Copper, new HashSet<TilePosition>());
+            potentialServiceArea.Add(CableType.Coaxial, new HashSet<TilePosition>());
+            potentialServiceArea.Add(CableType.Optical, new HashSet<TilePosition>());
+
             foreach (Network network in Networks) {
                 network.ServiceArea.Clear();
 
-                if (!network.Active)
-                    continue;
-
                 foreach (Cable cable in network.Cables) {
                     foreach (TilePosition pos in cable.Positions) {
-                        if (network.DistanceFromNode(pos) <= network.MaximumCableDistanceFromNode()) {
-                            IEnumerable<TilePosition> positions = Game.Map.Area(pos, cable.ServiceRange);
-                            network.ServiceArea.AddManySafely(positions);
-                            serviceArea.AddManySafely(positions);
+                        IEnumerable<TilePosition> positions = Game.Map.Area(pos, cable.ServiceRange);
+
+                        potentialServiceArea[network.CableType].AddManySafely(positions);
+
+                        if (network.Active) {
+                            if (network.DistanceFromNode(pos) <= network.MaximumCableDistanceFromNode()) {
+                                network.ServiceArea.AddManySafely(positions);
+                                serviceArea.AddManySafely(positions);
+                            }
                         }
                     }
                 }
@@ -469,14 +516,14 @@ namespace DCTC.Model {
             this.serviceArea = serviceArea;
         }
 
-        
+
 
         private void CalculateNetworks() {
             List<Network> networks = new List<Network>();
 
             // Build network from each of the individual cables
             HashSet<Cable> usedCables = new HashSet<Cable>();
-            foreach(Cable cable in Cables) {
+            foreach (Cable cable in Cables) {
                 if (!usedCables.Contains(cable)) {
                     usedCables.Add(cable);
 
@@ -500,8 +547,8 @@ namespace DCTC.Model {
                     }
                     while (found);
 
-                    foreach(Node node in Nodes) {
-                        if(node.Type == network.CableType && network.ContainsPosition(node.Position)) {
+                    foreach (Node node in Nodes) {
+                        if (node.Type == network.CableType && network.ContainsPosition(node.Position)) {
                             network.Nodes.Add(node);
                         }
                     }
@@ -582,6 +629,12 @@ namespace DCTC.Model {
             }
         }
 
+        public void LightUpdate(float deltaTime) {
+            foreach (Truck truck in Trucks) {
+                truck.LightUpdate(deltaTime);
+            }
+        }
+
         public void Update(float deltaTime) {
             CallCenter.Update(deltaTime);
 
@@ -597,9 +650,7 @@ namespace DCTC.Model {
                         }
                     }
                 }
-                else {
-                    truck.Update(deltaTime);
-                }
+                truck.Update(deltaTime);
 
                 Money -= truck.Salary * deltaTime;
             }
@@ -672,6 +723,7 @@ namespace DCTC.Model {
         private void InvalidateNetworks() {
             CalculateNetworks();
             serviceArea = null;
+            potentialServiceArea = null;
 
             if (ServiceAreaChanged != null)
                 ServiceAreaChanged();

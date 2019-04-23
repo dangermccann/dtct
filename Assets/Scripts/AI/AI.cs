@@ -15,6 +15,8 @@ namespace DCTC.AI {
     
     [Serializable]
     public class Executor {
+        public const int StandardCooldown = 500;
+
         private float lastExecutionTime = 0;
         private int currentIndex = -1;
 
@@ -42,9 +44,15 @@ namespace DCTC.AI {
                     IAgent agent = Agents[i];
                     float s = agent.Score(lastExecutionTime + deltaTime);
                     if(s > score) {
-                        s = score;
+                        score = s;
                         currentIndex = i;
                     }
+                }
+
+                // 
+                if(score > 0  && currentIndex != -1) {
+                    IAgent agent = Agents[currentIndex];
+                    UnityEngine.Debug.Log("AI selection: " + agent.Company.Name + " - " + agent.GetType().FullName + " score: " + score);
                 }
 
                 lastExecutionTime = 0;

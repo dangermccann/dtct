@@ -91,6 +91,10 @@ public class Easing {
 }
 
 public static class RandomUtils {
+    public static T RandomThing<T>(HashSet<T> things, System.Random random) {
+        return RandomThing<T>(new List<T>(things), random);
+    }
+
     public static T RandomThing<T>(IList<T> things, System.Random random) {
         return things[random.Next(0, things.Count)];
     }

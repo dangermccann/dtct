@@ -71,6 +71,9 @@ namespace DCTC.Model {
         }
 
         public void Update(float time) {
+            if (lastUpdateTime == 0)
+                lastUpdateTime = time;
+
             float deltaTime = time - lastUpdateTime;
 
             UpdateDissatisfaction(deltaTime);
@@ -79,7 +82,7 @@ namespace DCTC.Model {
 
             if (Status == CustomerStatus.NoProvider) {
                 if(turnoverCooldown > 0 && turnoverCooldown - deltaTime <= 0) {
-                    Debug.Log(Name + " reached end of cooldown period");
+                    //Debug.Log(Name + " reached end of cooldown period");
                 }
 
                 turnoverCooldown -= deltaTime;
@@ -177,7 +180,7 @@ namespace DCTC.Model {
                     if (turnoverCooldown > 0)
                         timeChance = 0;
                     else
-                        timeChance = RandomUtils.LinearLikelihood(0, 150, invocationsSinceProviderChange);
+                        timeChance = RandomUtils.LinearLikelihood(0, 50, invocationsSinceProviderChange);
                     break;
 
                 case CustomerStatus.Subscribed:
@@ -192,7 +195,7 @@ namespace DCTC.Model {
 
                 case CustomerStatus.Pending:
                     churnChance = Mathf.Max(0.1f, Dissatisfaction) * Patience;
-                    timeChance = RandomUtils.LinearLikelihood(0, 1000, invocationsSinceProviderChange);
+                    timeChance = RandomUtils.LinearLikelihood(0, 150, invocationsSinceProviderChange);
                     break;
             }
 
@@ -259,7 +262,7 @@ namespace DCTC.Model {
                 Status = CustomerStatus.NoProvider;
                 turnoverCooldown = baseTurnoverCooldown * RandomUtils.RandomFloat(0.25f, 1.0f, Game.Random);
 
-                Debug.Log(Name + " turned over (" + UI.Formatter.FormatDissatisfaction(Dissatisfaction) + ")");
+                //Debug.Log(Name + " turned over (" + UI.Formatter.FormatDissatisfaction(Dissatisfaction) + ")");
             }
 
             invocationsSinceProviderChange = 0;

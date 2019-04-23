@@ -12,6 +12,7 @@ namespace DCTC.Map {
         }
 
         private GameObject vertical, horizontal;
+        private bool needsRedraw = false;
         private readonly float y = 0.1f;
 
         public Color CopperColor = Color.green;
@@ -70,10 +71,10 @@ namespace DCTC.Map {
             }
             set {
                 if (cable != null)
-                    cable.StatusChanged -= RedrawLineColor;
+                    cable.StatusChanged -= Invalidate;
 
                 cable = value;
-                cable.StatusChanged += RedrawLineColor;
+                cable.StatusChanged += Invalidate;
             }
         } 
 
@@ -89,7 +90,7 @@ namespace DCTC.Map {
 
         void OnDestroy() {
             if (cable != null)
-                cable.StatusChanged -= RedrawLineColor;
+                cable.StatusChanged -= Invalidate;
         }
 
         private void Redraw() {
@@ -147,6 +148,17 @@ namespace DCTC.Map {
             lr.SetPositions(positions.ToArray());
 
             
+        }
+
+        private void Invalidate() {
+            needsRedraw = true;
+        }
+
+        private void Update() {
+            if(needsRedraw) {
+                RedrawLineColor();
+                needsRedraw = false;
+            }
         }
 
         private void RedrawLineColor() {

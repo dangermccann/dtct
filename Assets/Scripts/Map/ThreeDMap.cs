@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using DCTC.Model;
 using DCTC.Controllers;
@@ -153,6 +154,12 @@ namespace DCTC.Map {
             cameraController.MoveCamera(PositionToWorld(position));
         }
 
+        // TODO: move this
+        private bool serviceAreadChanged = false;
+        private ConcurrentQueue<object> placedItems = new ConcurrentQueue<object>();
+        private ConcurrentQueue<object> removedItems = new ConcurrentQueue<object>();
+        private ConcurrentQueue<Customer> changedCustomers = new ConcurrentQueue<Customer>();
+
         IEnumerator Redraw() {
             batchCount = 0;
 
@@ -164,13 +171,13 @@ namespace DCTC.Map {
             RedrawOverlay();
 
             foreach (Company company in gameController.Game.Companies) {
-                company.ItemAdded += PlaceItem;
-                company.ItemRemoved += RemoveItem;
+                company.ItemAdded += (obj) => placedItems.Enqueue(obj);
+                company.ItemRemoved += (obj) => removedItems.Enqueue(obj);
                 HighlightBuilding(company.HeadquartersLocation, company.Color, 0.50f);
             }
 
-            gameController.Game.Player.ServiceAreaChanged += OnServiceAreaChanged;
-            gameController.Game.CustomerChanged += OnCustomerChanged;
+            gameController.Game.Player.ServiceAreaChanged += () => serviceAreadChanged = true;
+            gameController.Game.CustomerChanged += (customer, company) => changedCustomers.Enqueue(customer);
 
             if (DrawComplete != null)
                 DrawComplete();
@@ -227,6 +234,27 @@ namespace DCTC.Map {
             
 
             colorizedBuildings[SelectionKey].RemoveMany(removals);
+
+            // Queued operations that respond to events
+            if(serviceAreadChanged) {
+                OnServiceAreaChanged();
+                serviceAreadChanged = false;
+            }
+
+            object item;
+            if(placedItems.TryDequeue(out item)) {
+                PlaceItem(item);
+            }
+
+            item = null;
+            if (removedItems.TryDequeue(out item)) {
+                RemoveItem(item);
+            }
+
+            Customer customer;
+            if(changedCustomers.TryDequeue(out customer)) {
+                CustomerChanged(customer);
+            }
         }
 
         private void OnServiceAreaChanged() {
@@ -234,7 +262,7 @@ namespace DCTC.Map {
                 DrawServiceArea();
         }
 
-        private void OnCustomerChanged(Customer customer, Company company) {
+        private void CustomerChanged(Customer customer) {
             if (OverlayMode == OverlayMode.Customers)
                 RedrawBuildingOverlay(customer.HomeLocation);
         }
