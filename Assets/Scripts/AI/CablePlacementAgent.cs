@@ -85,8 +85,15 @@ namespace DCTC.AI {
                 // Calculate cable path
                 IList<TilePosition> path = map.Pathfind(from, target);
                 if (path != null) {
-                    // Create cable
-                    company.PlaceCable(currentEval.cableId, path);
+                    // Prevent cable creation from taking up too much remainnig money
+                    float cost = path.Count * company.Game.Items[currentEval.cableId].Cost;
+                    if (cost / company.Money > 0.5f) {
+                        CompleteExecuation();
+                        return true;
+                    } else {
+                        // Create cable
+                        company.PlaceCable(currentEval.cableId, path);
+                    }
                 }
 
                 currentCableIndex++;
@@ -95,13 +102,16 @@ namespace DCTC.AI {
                 return false;
             } else {
                 // All cables have been built
-                executionCoolDown = executionCoolDownDuration;
-                currentCableIndex = -1;
-                currentEval = null;
-                cableCoolDown = 0;
+                CompleteExecuation();
                 return true;
             }
-            
+        }
+
+        private void CompleteExecuation() {
+            executionCoolDown = executionCoolDownDuration;
+            currentCableIndex = -1;
+            currentEval = null;
+            cableCoolDown = 0;
         }
 
         public float Score(float deltaTime) {

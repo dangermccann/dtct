@@ -265,30 +265,38 @@ namespace DCTC.Model {
         }
 
         public Cable PlaceCable(string id, IList<TilePosition> positions) {
-
-            //string posStr = positions.Aggregate("", (current, next) => current + " " + next);
-            //Debug.Log("Place: " + posStr);
+            float cost = CableCost(id, positions.Count);
+            if (cost > Money)
+                throw new Exception(Name + " has insufficient funds (" + Money + ") to purchase " + id);
 
             Cable cable = new Cable(id, Game.Items.CableAttributes[id]);
             cable.Positions.AddRange(positions);
             Cables.Add(cable);
-            Money -= CableCost(id, positions.Count);
+            Money -= cost;
             InvalidateNetworks();
             TriggerItemAdded(cable);
             return cable;
         }
 
         public void PrependCable(Cable cable, TilePosition position) {
+            float cost = CableCost(cable.ID, 2);
+            if (cost > Money)
+                throw new Exception(Name + " has insufficient funds (" + Money + ") to purchase " + cable.ID);
+
             cable.Positions.Insert(0, position);
-            Money -= cable.Cost * Attributes.InfrastructureCost;
+            Money -= cost;
             InvalidateNetworks();
             TriggerItemRemoved(cable);
             TriggerItemAdded(cable);
         }
 
         public void AppendCable(Cable cable, TilePosition position) {
+            float cost = CableCost(cable.ID, 2);
+            if (cost > Money)
+                throw new Exception(Name + " has insufficient funds (" + Money + ") to purchase " + cable.ID);
+
             cable.Positions.Add(position);
-            Money -= cable.Cost * Attributes.InfrastructureCost;
+            Money -= cost;
             InvalidateNetworks();
             TriggerItemRemoved(cable);
             TriggerItemAdded(cable);
@@ -361,9 +369,15 @@ namespace DCTC.Model {
 
         public void PlaceNode(string id, TilePosition position) {
             Node node = new Node(id, Game.Items.NodeAttributes[id]);
+
+            float cost = node.Cost * Attributes.InfrastructureCost;
+
+            if (cost > Money)
+                throw new Exception(Name + " has insufficient funds (" + Money + ") to purchase " + node.ID);
+
             node.Position = position;
             Nodes.Add(node);
-            Money -= node.Cost * Attributes.InfrastructureCost;
+            Money -= cost;
             InvalidateNetworks();
             TriggerItemAdded(node);
         }

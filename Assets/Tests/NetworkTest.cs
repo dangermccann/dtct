@@ -22,6 +22,7 @@ namespace DCTC.Test {
             List<Network> networks;
 
             Company company = new Company();
+            company.Money = 1000;
             company.Game = new Game();
             company.Game.LoadConfig();
             company.PlaceNode(Node.DR100, new TilePosition(4, 0));
@@ -183,6 +184,7 @@ namespace DCTC.Test {
             game.LoadConfig();
 
             Company company = new Company();
+            company.Money = 1000;
             company.Game = game;
             game.Companies.Add(company);
 

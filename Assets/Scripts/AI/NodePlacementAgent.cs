@@ -31,8 +31,13 @@ namespace DCTC.AI {
             foreach (Network network in company.Networks) {
                 if (network.Nodes.Count == 0 && network.Positions.Count > 5) {
                     TilePosition pos = RandomUtils.RandomThing(network.Positions, company.Game.Random);
-                    company.PlaceNode(ChooseNode(network.CableType), pos);
-                    return true;
+                    string nodeId = ChooseNode(network.CableType);
+
+                    if (company.Money >= company.Game.Items[nodeId].Cost) {
+                        company.PlaceNode(nodeId, pos);
+                        return true;
+                    } else
+                        return true;
                 } 
             }
 
@@ -43,8 +48,14 @@ namespace DCTC.AI {
                 Network network = RandomUtils.RandomThing(company.Networks, company.Game.Random);
                 TilePosition pos = RandomUtils.RandomThing(network.Positions, company.Game.Random);
                 if (network.DistanceFromNode(pos) > network.MaximumCableDistanceFromNode()) {
-                    company.PlaceNode(ChooseNode(network.CableType), pos);
-                    break;
+                    string nodeId = ChooseNode(network.CableType);
+                    if (company.Money >= company.Game.Items[nodeId].Cost) {
+                        company.PlaceNode(nodeId, pos);
+                        break;
+                    }
+                    else {
+                        break;
+                    }
                 }
                 tries--;
             }
