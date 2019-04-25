@@ -27,6 +27,7 @@ namespace DCTC.Controllers {
         public GameSpeed GameSpeed {
             get { return gameSpeed; }
             set {
+                previousGameSpeed = gameSpeed;
                 gameSpeed = value;
                 if (SpeedChanged != null)
                     SpeedChanged();
@@ -92,11 +93,17 @@ namespace DCTC.Controllers {
         }
 
         public void Unpause() {
+            Unpause(false);
+        }
+
+        public void Unpause(bool forceStart) {
+            if (forceStart && previousGameSpeed == GameSpeed.Pause)
+                previousGameSpeed = GameSpeed.Normal;
+
             GameSpeed = previousGameSpeed;
         }
 
         public void Pause() {
-            previousGameSpeed = GameSpeed;
             GameSpeed = GameSpeed.Pause;
         }
 

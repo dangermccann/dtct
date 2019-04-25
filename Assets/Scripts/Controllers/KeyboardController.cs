@@ -24,13 +24,21 @@ namespace DCTC.Controllers {
                 } else if (stateController.Current.State.UrlPattern == States.Loading ||
                            stateController.Current.State.UrlPattern == States.Title) {
                     // Ignore
-                }
-                else if(stateController.Current.State.UrlPattern == States.NewGame) {
+                } else if (stateController.Current.State.UrlPattern == States.NewGame) {
                     StateController.Get().ExitAndPushState(States.Title);
-                }
-                else {
+                } else if (stateController.Current.State.UrlPattern == States.GameMenu) {
+                    stateController.Back();
+                    gameController.Unpause();
+                } else {
                     stateController.Back();
                 }
+            }
+
+            if(Input.GetKeyDown(KeyCode.Space)) {
+                if (gameController.GameSpeed == GameSpeed.Pause)
+                    gameController.Unpause(true);
+                else
+                    gameController.Pause();
             }
 
             if (Input.GetKeyDown(KeyCode.F2)) {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,10 +27,16 @@ namespace DCTC.UI {
             return transform.GetChild(index).gameObject.GetComponent<Toggle>();
         }
 
-        private void AddListener(int index) {
+        private void AddListener(int index) { 
             toggles[index].onValueChanged.AddListener((val) => {
-                if(val)
+                if (val) {
                     SetValue(index);
+                }
+                else {
+                    if(toggles.Count(t => t.isOn) == 0) {
+                        toggles[index].isOn = true;
+                    }
+                }
             });
         }
 
