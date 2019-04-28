@@ -15,6 +15,8 @@ namespace DCTC.Model {
         public event ItemEventDelegate ItemRemoved;
         [field: NonSerialized]
         public event ChangeDelegate ServiceAreaChanged;
+        [field: NonSerialized]
+        public event ChangeDelegate TechnologyCompleted;
 
         [NonSerialized]
         private Game game;
@@ -40,6 +42,8 @@ namespace DCTC.Model {
         public Inventory Inventory { get; set; }
         public List<Rack> Racks { get; set; }
         public Executor AIExecutor { get; set; }
+        public Dictionary<string, float> Technologies;
+        public string CurrentlyResearching;
 
         public int RackLimit = 3;
         public int InventoryLimit = 750;
@@ -148,6 +152,7 @@ namespace DCTC.Model {
             HeadquartersLocation = TilePosition.Origin;
             Inventory = new Inventory();
             Racks = new List<Rack>();
+            Technologies = new Dictionary<string, float>();
 
             InitPrices();
         }
@@ -160,8 +165,13 @@ namespace DCTC.Model {
             return total;
         }
 
-        public bool HasTechnology(string tech) {
-            return true;
+        public bool HasTechnology(string id) {
+            if (id == null) return true;
+
+            Technology tech = Game.TechnologyGraph.Find(id);
+            return Technologies[id] >= tech.Cost;
+
+            //return true;
         }
 
         public int CanPurchase(string id, int qty) {
@@ -674,6 +684,16 @@ namespace DCTC.Model {
                 if(customer.Status == CustomerStatus.Subscribed) {
                     foreach(Services service in customer.Services)
                     Money += ServicePrices[service] * deltaTime;
+                }
+            }
+
+            // update technology
+            if(CurrentlyResearching != null) {
+                Technologies[CurrentlyResearching] += deltaTime * 10f;
+                if(HasTechnology(CurrentlyResearching)) {
+                    CurrentlyResearching = null;
+                    if(TechnologyCompleted != null)
+                        TechnologyCompleted();
                 }
             }
 

@@ -2,7 +2,7 @@
 Telephony:
     Image: ''
     Description: ''
-    Cost: 10
+    Cost: 0
     Prerequisite:
 Digital Subscriber Lines:
     Image: ''

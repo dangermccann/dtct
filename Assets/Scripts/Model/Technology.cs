@@ -32,6 +32,40 @@ namespace DCTC.Model {
             return first;
         }
 
+        public Technology Find(string id) {
+            if (ID == id)
+                return this;
+            foreach(Technology tech in DependantTechnologies) {
+                Technology found = tech.Find(id);
+                if (found != null)
+                    return found;
+            }
+            return null;
+        }
+
+        public static List<Technology> AvailableTechnologies(Technology graph, Dictionary<string, float> techs) {
+            List<Technology> results = new List<Technology>();
+
+            if (techs[graph.ID] < graph.Cost)
+                results.Add(graph);
+            else {
+                foreach (Technology tech in graph.DependantTechnologies) {
+                    results.AddRange(AvailableTechnologies(tech, techs));
+                }
+            }
+
+            return results;
+        }
+
+        public static List<Technology> Flatten(Technology graph) {
+            List<Technology> result = new List<Technology>();
+            result.Add(graph);
+            foreach(Technology tech in graph.DependantTechnologies) {
+                result.AddRange(Flatten(tech));
+            }
+            return result;
+        }
+
         private static void AssignDependencies(Technology tech, Dictionary<string, Technology> techs) {
             foreach(Technology candidate in techs.Values) {
                 if(candidate.Prerequisite == tech.ID) {

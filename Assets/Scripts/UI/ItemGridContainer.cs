@@ -109,8 +109,14 @@ namespace DCTC.UI {
             List<string> orderedKeys = new List<string>(categoryItems.Keys);
             orderedKeys.Sort();
 
+            Company player = gameController.Game.Player;
+
             foreach (string id in orderedKeys) {
                 T item = categoryItems[id];
+
+                if (!player.HasTechnology(item.Technology))
+                    continue;
+
                 GameObject tile = Instantiate(ItemTilePrefab, grid.transform);
                 tile.name = "Tile " + item.ID;
 

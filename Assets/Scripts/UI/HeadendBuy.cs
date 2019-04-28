@@ -8,18 +8,18 @@ using DCTC.Controllers;
 namespace DCTC.UI {
     public class HeadendBuy : ItemGridContainer {
         public GameObject headendContent, headendItemDetails;
-        bool didDraw = false;
+        bool redraw = true;
 
         void Start() {
             headendItemDetails.GetComponent<ItemDetails>().ItemBought += OnItemBought;
-            Redraw();
+            
         }
 
         protected override IEnumerator Redraw() {
             yield return null;
 
 
-            if (!didDraw && gameController.Game != null) {
+            if (redraw && gameController.Game != null) {
                 ClearGrids(headendContent.transform);
 
                 headendItemDetails.GetComponent<ItemDetails>().Item = null;
@@ -34,7 +34,7 @@ namespace DCTC.UI {
                 rackItems.AddMany(items.Rack);
                 AddCategory(headendContent.transform, headendItemDetails, "Racks", rackItems);
 
-                didDraw = true;
+                //redraw = false;
             }
         }
 

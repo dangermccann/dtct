@@ -202,6 +202,12 @@ namespace DCTC.Model {
                 });
             }
 
+            // Seed techs
+            List<Technology> techs = Technology.Flatten(TechnologyGraph);
+            foreach (Technology tech in techs) {
+                company.Technologies.Add(tech.ID, 0);
+            }
+
             return company;
         }
 

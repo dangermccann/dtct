@@ -67,6 +67,7 @@
     <Compile Include="Assets\Tests\PlacementTest.cs" />
     <Compile Include="Assets\Tests\SaverTest.cs" />
     <Compile Include="Assets\Tests\StreetTest.cs" />
+    <Compile Include="Assets\Tests\TechnologyTest.cs" />
     <Compile Include="Assets\Tests\TestMap.cs" />
     <Compile Include="Assets\Tests\TilePositionTest.cs" />
     <Compile Include="Assets\Tests\TruckTest.cs" />

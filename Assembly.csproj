@@ -122,6 +122,7 @@
     <Compile Include="Assets\Scripts\UI\NewGameUI.cs" />
     <Compile Include="Assets\Scripts\UI\OverlayToggles.cs" />
     <Compile Include="Assets\Scripts\UI\RackedItemUI.cs" />
+    <Compile Include="Assets\Scripts\UI\TechnologyTree.cs" />
     <Compile Include="Assets\Scripts\UI\TriStateToggle.cs" />
     <Compile Include="Assets\Scripts\UI\TruckCard.cs" />
     <Compile Include="Assets\Scripts\UI\UIContainer.cs" />
