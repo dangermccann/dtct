@@ -47,7 +47,7 @@ namespace DCTC.AI {
             while(tries > 0) {
                 Network network = RandomUtils.RandomThing(company.Networks, company.Game.Random);
                 TilePosition pos = RandomUtils.RandomThing(network.Positions, company.Game.Random);
-                if (network.DistanceFromNode(pos) > network.MaximumCableDistanceFromNode()) {
+                if (!network.IsDistanceWithin(pos, network.MaximumCableDistanceFromNode())) {
                     string nodeId = ChooseNode(network.CableType);
                     if (company.Money >= company.Game.Items[nodeId].Cost) {
                         company.PlaceNode(nodeId, pos);
@@ -80,7 +80,7 @@ namespace DCTC.AI {
             if (cooldown > 0)
                 return 0;
 
-            cooldown = company.Game.Random.Next(10, Executor.StandardCooldown);
+            cooldown = company.Game.Random.Next(Executor.MinimumCooldown, Executor.StandardCooldown);
 
 
             int count = 0;

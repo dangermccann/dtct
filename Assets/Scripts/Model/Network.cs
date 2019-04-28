@@ -75,29 +75,57 @@ namespace DCTC.Model {
             return false;
         }
 
-        public int DistanceFromNode(TilePosition position) {
-            int lowest = int.MaxValue;
+        public bool IsDistanceWithin(TilePosition position, int within) {
+            if (Nodes.Count == 0)
+                return false;
 
-            foreach(Node node in Nodes) {
+            // Sort by closest geographic distance
+            IEnumerable<Node> sorted = Nodes.OrderBy(n => TilePosition.Distance(n.Position, position));
+
+            // If first (closest) node is too far away, they all will be
+            Node first = sorted.First();
+            if (TilePosition.Distance(first.Position, position) > within)
+                return false;
+
+            foreach (Node node in sorted) {
+                // To minimize the possibility of pathfinding, check the absolute distance first
+                // If this one is out of range, the rest should be as well, so we'll give up.
+                if (TilePosition.Distance(first.Position, position) > within)
+                    return false;
+
+                // This perfoms the *expensive* pathfinding check
                 int val = DistanceTo(position, node.Position);
-                if (val < lowest)
-                    lowest = val;
+                if (val <= within)
+                    return true;
             }
 
-            return lowest;
+            return false;
         }
 
-        public IList<TilePosition> PathTo(TilePosition start, TilePosition end) {
-            Dictionary<TilePosition, IPathNode> pathNodes = new Dictionary<TilePosition, IPathNode>();
-            foreach(Cable cable in Cables) {
-                foreach(TilePosition pos in cable.Positions) {
-                    if(!pathNodes.ContainsKey(pos)) {
+        [NonSerialized]
+        private Dictionary<TilePosition, IPathNode> pathNodes;
+
+        void InitPathfinding() {
+            pathNodes = new Dictionary<TilePosition, IPathNode>();
+
+            foreach (Cable cable in Cables) {
+                foreach (TilePosition pos in cable.Positions) {
+                    if (!pathNodes.ContainsKey(pos)) {
                         pathNodes.Add(pos, new PathNode(pos));
                     }
                 }
             }
+        }
 
-            if(!pathNodes.ContainsKey(start) || !pathNodes.ContainsKey((end))) {
+        public void InvalidatePathfinding() {
+            pathNodes = null;
+        }
+
+        public IList<TilePosition> PathTo(TilePosition start, TilePosition end) {
+            if (pathNodes == null)
+                InitPathfinding();
+
+            if (!pathNodes.ContainsKey(start) || !pathNodes.ContainsKey((end))) {
                 // The start and end positions must be in the network
                 return null;
             }
@@ -106,6 +134,10 @@ namespace DCTC.Model {
 
             // Perform search
             IList<IPathNode> results = pathfinder.Search(pathNodes[start], pathNodes[end]);
+            if(results == null) {
+                UnityEngine.Debug.LogWarning("Pathfinding should work");
+                return null;
+            }
 
             // Convert results into usable list of TilePosition objects
             List<TilePosition> positions = new List<TilePosition>();

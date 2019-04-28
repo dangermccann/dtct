@@ -46,7 +46,7 @@ namespace DCTC.AI {
             if (cooldown > 0)
                 return 0;
 
-            cooldown = company.Game.Random.Next(10, Executor.StandardCooldown);
+            cooldown = company.Game.Random.Next(Executor.MinimumCooldown, Executor.StandardCooldown);
 
             // Total up how many devices we have available for each service
             Dictionary<Services, int> cpe = new Dictionary<Services, int>();

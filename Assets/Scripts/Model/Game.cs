@@ -60,6 +60,10 @@ namespace DCTC.Model {
                     a.Company = c;
                 }
 
+                foreach (Agent a in c.CallCenter.UnhiredAgents) {
+                    a.Company = c;
+                }
+
                 foreach (Truck t in c.Trucks) {
                     t.Game = this;
                     t.Company = c;
@@ -198,7 +202,9 @@ namespace DCTC.Model {
                     new CablePlacementAgent(company),
                     new NodePlacementAgent(company),
                     new EquipmentAgent(company),
-                    new CPEAgent(company)
+                    new CPEAgent(company),
+                    new PersonnelAgent(company),
+                    new TechnologyAgent(company)
                 });
             }
 

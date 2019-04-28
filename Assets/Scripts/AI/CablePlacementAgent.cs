@@ -41,8 +41,6 @@ namespace DCTC.AI {
         private Evaluation currentEval;
 
         private const int expansionDistance = 20;
-        private const int executionCoolDownDuration = 300;
-        private const int cableCoolDownDuration = 100;
 
         public CablePlacementAgent() { }
         public CablePlacementAgent(Company c) {
@@ -56,7 +54,7 @@ namespace DCTC.AI {
                 customers = new Dictionary<TilePosition, Customer>();
 
             // Randomize the building times of AIs
-            cableCoolDown = company.Game.Random.Next(1, cableCoolDownDuration / 2);
+            cableCoolDown = company.Game.Random.Next(Executor.MinimumCooldown, Executor.FastCooldown);
         }
 
         public bool Execute(float deltaTime) {
@@ -88,7 +86,7 @@ namespace DCTC.AI {
                     // Prevent cable creation from taking up too much remainnig money
                     float cost = path.Count * company.Game.Items[currentEval.cableId].Cost;
                     if (cost / company.Money > 0.5f) {
-                        CompleteExecuation();
+                        CompleteExecution();
                         return true;
                     } else {
                         // Create cable
@@ -97,18 +95,18 @@ namespace DCTC.AI {
                 }
 
                 currentCableIndex++;
-                cableCoolDown = cableCoolDownDuration;
+                cableCoolDown = company.Game.Random.Next(Executor.MinimumCooldown, Executor.FastCooldown);
 
                 return false;
             } else {
                 // All cables have been built
-                CompleteExecuation();
+                CompleteExecution();
                 return true;
             }
         }
 
-        private void CompleteExecuation() {
-            executionCoolDown = executionCoolDownDuration;
+        private void CompleteExecution() {
+            executionCoolDown = company.Game.Random.Next(Executor.MinimumCooldown, Executor.StandardCooldown); 
             currentCableIndex = -1;
             currentEval = null;
             cableCoolDown = 0;
@@ -135,7 +133,7 @@ namespace DCTC.AI {
 
                 // Weigh the expansion potential metric against the available capital 
                 if (eval.costEstimate > company.Money) {
-                    executionCoolDown = executionCoolDownDuration / 4;
+                    executionCoolDown = company.Game.Random.Next(Executor.MinimumCooldown, Executor.StandardCooldown); ;
                     return 0;
                 }
 
@@ -272,7 +270,7 @@ namespace DCTC.AI {
             Evaluation eval = new Evaluation();
 
             if (company.Networks.Count == 0) {
-                // TODO: determine how to choose optimal cable type
+                // First network will always be Copper
                 targetCableType = CableType.Copper;
 
                 // Start at HQ and choose optimal direction 
@@ -304,6 +302,10 @@ namespace DCTC.AI {
                 targetCableType = bestNetwork.CableType;
                 eval.startPositions = bestNetwork.Positions;
             }
+
+            // TODO: determine whether to start a new network with a new cable type
+            // ...
+
 
             // Expand into target area
             // Identify tiles in target area that match the primary road orientation 

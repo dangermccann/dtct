@@ -66,6 +66,8 @@
     <Compile Include="Assets\Scripts\AI\CPEAgent.cs" />
     <Compile Include="Assets\Scripts\AI\EquipmentAgent.cs" />
     <Compile Include="Assets\Scripts\AI\NodePlacementAgent.cs" />
+    <Compile Include="Assets\Scripts\AI\PersonnelAgent.cs" />
+    <Compile Include="Assets\Scripts\AI\TechnologyAgent.cs" />
     <Compile Include="Assets\Scripts\Controllers\GameController.cs" />
     <Compile Include="Assets\Scripts\Controllers\KeyboardController.cs" />
     <Compile Include="Assets\Scripts\Controllers\MaterialController.cs" />

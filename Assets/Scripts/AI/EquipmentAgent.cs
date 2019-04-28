@@ -68,7 +68,7 @@ namespace DCTC.AI {
             if (cooldown > 0)
                 return 0;
 
-            cooldown = company.Game.Random.Next(10, Executor.StandardCooldown);
+            cooldown = company.Game.Random.Next(Executor.MinimumCooldown, Executor.StandardCooldown);
             
             float backhaulThroughput = 0;
             Dictionary<Services, float> subscriberCapacity = new Dictionary<Services, float>();

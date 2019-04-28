@@ -120,6 +120,7 @@ namespace DCTC.Controllers {
             quitting = false;
 
             gameLoopThread = new Thread(new ThreadStart(GameLoop));
+            //gameLoopThread.Priority = System.Threading.ThreadPriority.BelowNormal;
             gameLoopThread.Start();
             
         }
@@ -244,9 +245,9 @@ namespace DCTC.Controllers {
 
         // Invoke LightUpdate on main thread for all Companies
         // This should just be used to Lerp, move trucks, etc
-        private void Update() {
+        private void FixedUpdate() {
             if (GameSpeed != GameSpeed.Pause) {
-                float dt = Time.deltaTime;
+                float dt = Time.fixedDeltaTime;
 
                 if (GameSpeed == GameSpeed.Fast)
                     dt *= 10f;

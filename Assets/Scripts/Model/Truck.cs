@@ -51,6 +51,8 @@ namespace DCTC.Model {
             }
         }
 
+        private bool destinationReached = false;
+
         [NonSerialized]
         public Game Game;
 
@@ -169,6 +171,11 @@ namespace DCTC.Model {
             } else if (Status == TruckStatus.EnRoute || Status == TruckStatus.GettingEquipment) {
                 Elapsed += deltaTime * BaseTravelSpeed * TravelSpeed * Company.Attributes.TruckTravelSpeed;
                 Position = Vector3.Lerp(CurrentStart, CurrentDestination, Elapsed);
+
+                if (Vector3.Distance(Position, CurrentDestination) < 0.05f) {
+                    if (NextTile())
+                        destinationReached = true;
+                }
             }
         }
 
@@ -178,10 +185,8 @@ namespace DCTC.Model {
                     JobComplete();
             }
             else if(Status == TruckStatus.EnRoute || Status == TruckStatus.GettingEquipment) {
-                if (Vector3.Distance(Position, CurrentDestination) < 0.05f) {
-                    if (NextTile())
-                        DestinationReached();
-                }
+                if (destinationReached)
+                    DestinationReached();
             }
         }
 
@@ -216,6 +221,7 @@ namespace DCTC.Model {
 
 
         private void DestinationReached() {
+            destinationReached = false;
             Customer customer = Game.GetCustomer(DestinationCustomerID);
 
             if (Status == TruckStatus.GettingEquipment) {

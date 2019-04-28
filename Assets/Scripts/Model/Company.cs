@@ -529,7 +529,7 @@ namespace DCTC.Model {
                         potentialServiceArea[network.CableType].AddManySafely(positions);
 
                         if (network.Active) {
-                            if (network.DistanceFromNode(pos) <= network.MaximumCableDistanceFromNode()) {
+                            if (network.IsDistanceWithin(pos, network.MaximumCableDistanceFromNode())) {
                                 network.ServiceArea.AddManySafely(positions);
                                 serviceArea.AddManySafely(positions);
                             }

@@ -15,7 +15,9 @@ namespace DCTC.AI {
     
     [Serializable]
     public class Executor {
-        public const int StandardCooldown = 500;
+        public const int StandardCooldown = 300;
+        public const int FastCooldown = 100;
+        public const int MinimumCooldown = 25;
 
         private float lastExecutionTime = 0;
         private int currentIndex = -1;
