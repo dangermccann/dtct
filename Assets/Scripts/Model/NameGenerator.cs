@@ -24,7 +24,7 @@ namespace DCTC.Model {
             suffixes = Loader.LoadSuffixes();
         }
 
-        public string CompanyName() {
+        public string CompanyName(bool withSuffix = true) {
             int suffixIdx = random.Next(0, suffixes.Count);
             int brandIdx = random.Next(0, brands.Count);
 
@@ -35,7 +35,7 @@ namespace DCTC.Model {
             brands.RemoveAt(brandIdx);
 
             string fullName = name;
-            if (random.Next(0, 2) == 0) {
+            if (withSuffix && random.Next(0, 2) == 0) {
                 string suffix = RandomSuffix(CompaniesSuffix);
                 if (!suffix.StartsWith(","))
                     fullName += " ";

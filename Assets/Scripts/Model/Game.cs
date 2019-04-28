@@ -172,7 +172,7 @@ namespace DCTC.Model {
             TilePosition truckPosition = Map.NearestRoad(headquartersLocation);
             Company company = new Company {
                 ID = Guid.NewGuid().ToString(),
-                Name = NameGenerator.CompanyName(),
+                Name = NameGenerator.CompanyName(false),
                 OwnerType = type,
                 Game = this,
                 Trucks = new List<Truck>(),

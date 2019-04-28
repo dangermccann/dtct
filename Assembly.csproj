@@ -106,7 +106,9 @@
     <Compile Include="Assets\Scripts\Pathfinding\PriorityQueue.cs" />
     <Compile Include="Assets\Scripts\UI\AgentCard.cs" />
     <Compile Include="Assets\Scripts\UI\AttributeTable.cs" />
+    <Compile Include="Assets\Scripts\UI\CompanyAttributes.cs" />
     <Compile Include="Assets\Scripts\UI\CompanyLogo.cs" />
+    <Compile Include="Assets\Scripts\UI\Competition.cs" />
     <Compile Include="Assets\Scripts\UI\ConstructionMenu.cs" />
     <Compile Include="Assets\Scripts\UI\EnumToggleGroup.cs" />
     <Compile Include="Assets\Scripts\UI\Formatter.cs" />

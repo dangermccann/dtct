@@ -16,7 +16,12 @@ namespace DCTC.Model {
     [Serializable]
     public class Customer {
         private const float baseTurnoverCooldown = 75f;
+        private const float ChangeInvocationsInitial = 125;
+        private const float ChangeInvocationsPendingInstall = 350;
+        private const float ChangeChanceOutage = 0.25f;
+        private const float ChangeChanceSubscribed = 0.05f;
 
+        
         public string ID { get; set; }
         public string Name { get; set; }
         public TilePosition HomeLocation { get; set; }
@@ -180,22 +185,22 @@ namespace DCTC.Model {
                     if (turnoverCooldown > 0)
                         timeChance = 0;
                     else
-                        timeChance = RandomUtils.LinearLikelihood(0, 50, invocationsSinceProviderChange);
+                        timeChance = RandomUtils.LinearLikelihood(0, ChangeInvocationsInitial, invocationsSinceProviderChange);
                     break;
 
                 case CustomerStatus.Subscribed:
                     churnChance = Mathf.Max(0.1f, Dissatisfaction) * Patience / Provider.Attributes.CustomerRetention;
-                    timeChance = 0.05f;
+                    timeChance = ChangeChanceSubscribed;
                     break;
 
                 case CustomerStatus.Outage:
                     churnChance = Mathf.Max(0.1f, Dissatisfaction) * Patience;
-                    timeChance = 0.20f;
+                    timeChance = ChangeChanceOutage;
                     break;
 
                 case CustomerStatus.Pending:
                     churnChance = Mathf.Max(0.1f, Dissatisfaction) * Patience;
-                    timeChance = RandomUtils.LinearLikelihood(0, 150, invocationsSinceProviderChange);
+                    timeChance = RandomUtils.LinearLikelihood(0, ChangeInvocationsPendingInstall, invocationsSinceProviderChange);
                     break;
             }
 
