@@ -16,6 +16,7 @@ namespace DCTC.UI {
         }
 
         public GameObject CardPrefab;
+        public GameObject ItemIconPrefab;
 
         Transform container;
         GameController gameController;
@@ -93,6 +94,16 @@ namespace DCTC.UI {
             rt.anchorMax = new Vector2(0, 1); 
 
             go.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = tech.ID;
+
+            // Add icons of unlocked things
+            Transform unlockedTransform = go.transform.Find("Unlocked");
+            Utilities.Clear(unlockedTransform);
+            List<string> unlocked = tech.UnlockedItems(gameController.Game.Items);
+            foreach(string id in unlocked) {
+                GameObject icon = Instantiate(ItemIconPrefab, unlockedTransform);
+                icon.GetComponent<Image>().sprite = SpriteController.Get().GetSprite(id);
+            }
+
 
             Toggle toggle = go.GetComponent<Toggle>();
             toggle.group = toggleGroup;

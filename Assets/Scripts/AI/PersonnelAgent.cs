@@ -60,6 +60,20 @@ namespace DCTC.AI {
 
             cooldown = company.Game.Random.Next(Executor.MinimumCooldown, Executor.FastCooldown);
 
+            // Call Center
+            if (company.CallCenter.CallQueue.Count > 10 && company.Money >= Agent.BaseCost * 2 &&
+                company.CallCenter.UnhiredAgents.Count > 0) {
+                PendingAction = Actions.CallCenterHire;
+                return company.CallCenter.CallQueue.Count * 25;
+            }
+
+            if (company.CallCenter.CallQueue.Count == 0 && company.CallCenter.Agents.Count > 1) {
+                if (RandomUtils.Chance(company.Game.Random, 0.1f * company.CallCenter.Agents.Count)) {
+                    PendingAction = Actions.CallCenterFire;
+                    return 50;
+                }
+            }
+
             // Trucks
             if (company.TruckRollQueue.Count > 5 && company.Money >= Truck.BaseCost * 2 && 
                 company.UnhiredTrucks.Count > 0) {
@@ -74,19 +88,6 @@ namespace DCTC.AI {
                 }
             }
 
-            // Call Center
-            if (company.CallCenter.CallQueue.Count > 10 && company.Money >= Agent.BaseCost * 2 && 
-                company.CallCenter.UnhiredAgents.Count > 0) {
-                PendingAction = Actions.CallCenterHire;
-                return company.CallCenter.CallQueue.Count * 25;
-            }
-
-            if(company.CallCenter.CallQueue.Count == 0 && company.CallCenter.Agents.Count > 1) {
-                if (RandomUtils.Chance(company.Game.Random, 0.1f * company.CallCenter.Agents.Count)) {
-                    PendingAction = Actions.CallCenterFire;
-                    return 50;
-                }
-            }
 
             return 0;
         }

@@ -34,6 +34,8 @@ namespace DCTC.Map {
         private Dictionary<string, HashSet<TilePosition>> colorizedBuildings = new Dictionary<string, HashSet<TilePosition>>();
 
         private int batchCount = 0;
+
+        private const float WorldUnitsPerTile = 2f;
         private const int BatchSize = 100;
         private const string OverlayKey = "Overlay";
         private const string SelectionKey = "Selection";
@@ -139,8 +141,10 @@ namespace DCTC.Map {
         public override void Init(MapConfiguration config) {
             map = config;
 
-            colorizedBuildings.Add(SelectionKey, new HashSet<TilePosition>());
-            colorizedBuildings.Add(OverlayKey, new HashSet<TilePosition>());
+            if (!colorizedBuildings.ContainsKey(SelectionKey)) {
+                colorizedBuildings.Add(SelectionKey, new HashSet<TilePosition>());
+                colorizedBuildings.Add(OverlayKey, new HashSet<TilePosition>());
+            }
 
             StartDraw();
             cameraController.ResetToDefault();
@@ -170,20 +174,22 @@ namespace DCTC.Map {
 
             RedrawOverlay();
 
-            foreach (Company company in gameController.Game.Companies) {
-                company.ItemAdded += (obj) => placedItems.Enqueue(obj);
-                company.ItemRemoved += (obj) => removedItems.Enqueue(obj);
-                HighlightBuilding(company.HeadquartersLocation, company.Color, 0.50f);
+            if (gameController.Game != null) {
+                foreach (Company company in gameController.Game.Companies) {
+                    company.ItemAdded += (obj) => placedItems.Enqueue(obj);
+                    company.ItemRemoved += (obj) => removedItems.Enqueue(obj);
+                    HighlightBuilding(company.HeadquartersLocation, company.Color, 0.50f);
+                }
+
+                gameController.Game.Player.ServiceAreaChanged += () => serviceAreadChanged = true;
+                gameController.Game.CustomerChanged += (customer, company) => changedCustomers.Enqueue(customer);
+
+                if (DrawComplete != null)
+                    DrawComplete();
+                gameController.OnMapDrawComplete();
+
+                NavigateCameraTo(gameController.Game.Player.HeadquartersLocation);
             }
-
-            gameController.Game.Player.ServiceAreaChanged += () => serviceAreadChanged = true;
-            gameController.Game.CustomerChanged += (customer, company) => changedCustomers.Enqueue(customer);
-
-            if (DrawComplete != null)
-                DrawComplete();
-            gameController.OnMapDrawComplete();
-
-            NavigateCameraTo(gameController.Game.Player.HeadquartersLocation);
         }
 
 
@@ -322,11 +328,17 @@ namespace DCTC.Map {
         }
 
         private void DrawServiceArea() {
+            if (gameController.Game == null)
+                return;
+
             Company player = gameController.Game.Player;
             UpdateBuildingOverlays(OverlayKey, player.ServiceArea, player.Color, 0.5f);
         }
 
         private void DrawCustomers() {
+            if (gameController.Game == null)
+                return;
+
             Company player = gameController.Game.Player;
             foreach(TilePosition pos in player.CustomerHouses) {
                 RedrawBuildingOverlay(pos);
@@ -372,7 +384,7 @@ namespace DCTC.Map {
                 }
                 else {
                     if(tile.Type == TileType.Road) {
-                        Debug.Log(TileName(pos) + " " + map.FindStreet(pos).Name);
+                        Debug.Log(TileName(pos) + " " + map.FindStreet(pos)?.Name);
                     }
                     else {
                         Debug.Log(TileName(pos) + " " + tile.Type.ToString());
@@ -487,7 +499,7 @@ namespace DCTC.Map {
                         GameObject tileGo = Instantiate(prefab);
                         tileGo.name = TileName(pos);
                         tileGo.transform.SetParent(this.transform, false);
-                        tileGo.transform.position = new Vector3(x * 2, 0, z * 2);
+                        tileGo.transform.position = PositionToWorld(pos);
                         tileGo.transform.localScale = scale;
                         ground.Add(pos, tileGo);
 
@@ -500,7 +512,8 @@ namespace DCTC.Map {
                         GameObject tileGo = Instantiate(prefab);
                         tileGo.name = TileName(pos);
                         tileGo.transform.SetParent(this.transform, false);
-                        tileGo.transform.position = new Vector3(x * 2, 0.01f, z * 2);
+                        Vector3 world = PositionToWorld(pos);
+                        tileGo.transform.position = new Vector3(world.x, 0.01f, world.z);
                     }
                 }
             }
@@ -612,6 +625,9 @@ namespace DCTC.Map {
         }
 
         IEnumerator PlaceItems() {
+            if (gameController.Game == null)
+                yield break;
+
             foreach(Company company in gameController.Game.Companies) {
                 foreach(Cable cable in company.Cables) {
                     PlaceItem(cable);
@@ -696,11 +712,11 @@ namespace DCTC.Map {
         }
 
         public static Vector3 PositionToWorld(Vector2 pos) {
-            return new Vector3(pos.x * 2, 0, pos.y * 2);
+            return new Vector3(pos.x * WorldUnitsPerTile, 0, pos.y * WorldUnitsPerTile);
         }
 
         public static TilePosition WorldToPosition(Vector3 world) {
-            return new TilePosition(Mathf.FloorToInt(world.x / 2f), Mathf.FloorToInt(world.z / 2f));
+            return new TilePosition(Mathf.FloorToInt(world.x / WorldUnitsPerTile), Mathf.FloorToInt(world.z / WorldUnitsPerTile));
         }
 
         

@@ -94,6 +94,8 @@ namespace DCTC.Model {
             this.NameGenerator = nameGenerator;
             UnityEngine.Random.InitState(Settings.Seed);
 
+            NameGenerator.RemoveBrand(settings.PlayerName);
+
             Companies = new List<Company>();
             for (int i = 0; i < settings.NumAIs; i++) {
                 Company company = GenerateCompany(CompanyOwnerType.AI, headquarters[i]);

@@ -24,6 +24,10 @@ namespace DCTC.Model {
             suffixes = Loader.LoadSuffixes();
         }
 
+        public void RemoveBrand(string brand) {
+            brands.Remove(brand);
+        }
+
         public string CompanyName(bool withSuffix = true) {
             int suffixIdx = random.Next(0, suffixes.Count);
             int brandIdx = random.Next(0, brands.Count);

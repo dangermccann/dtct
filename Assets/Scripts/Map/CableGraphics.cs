@@ -15,8 +15,6 @@ namespace DCTC.Map {
         private bool needsRedraw = false;
         private readonly float y = 0.1f;
 
-        public Color CopperColor = Color.green;
-        public Color FiberColor = Color.green;
         public Color InvalidColor = Color.red;
 
         [HideInInspector]

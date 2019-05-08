@@ -20,19 +20,19 @@ namespace DCTC.Test {
             bool success;
             Truck truck = new Truck();
 
-            success = truck.EquipmentForServices(new List<Services>() { Services.TV }, available, out results);
+            success = Truck.EquipmentForServices(new List<Services>() { Services.TV }, available, out results);
             Assert.IsTrue(success);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(items.CPE["STB-5"], results[0]);
 
 
-            success = truck.EquipmentForServices(new List<Services>() { Services.TV, Services.Broadband }, available, out results);
+            success = Truck.EquipmentForServices(new List<Services>() { Services.TV, Services.Broadband }, available, out results);
             Assert.IsTrue(success);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(items.CPE["M-301"], results[0]);
 
 
-            success = truck.EquipmentForServices(new List<Services>() { Services.TV, Services.Broadband, Services.Phone }, available, out results);
+            success = Truck.EquipmentForServices(new List<Services>() { Services.TV, Services.Broadband, Services.Phone }, available, out results);
             Assert.IsTrue(success);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(items.CPE["M-301"], results[0]);
@@ -44,15 +44,15 @@ namespace DCTC.Test {
                 items.CPE["STB-5"],
             };
 
-            success = truck.EquipmentForServices(new List<Services>() { Services.Broadband }, available, out results);
+            success = Truck.EquipmentForServices(new List<Services>() { Services.Broadband }, available, out results);
             Assert.IsFalse(success);
             Assert.AreEqual(0, results.Count);
 
-            success = truck.EquipmentForServices(new List<Services>() { Services.Broadband, Services.Phone }, available, out results);
+            success = Truck.EquipmentForServices(new List<Services>() { Services.Broadband, Services.Phone }, available, out results);
             Assert.IsFalse(success);
             Assert.AreEqual(1, results.Count);
 
-            success = truck.EquipmentForServices(new List<Services>() { Services.TV, Services.Phone }, available, out results);
+            success = Truck.EquipmentForServices(new List<Services>() { Services.TV, Services.Phone }, available, out results);
             Assert.IsTrue(success);
             Assert.AreEqual(2, results.Count);
             Assert.IsTrue(results.Contains(items.CPE["RJ-11"]));

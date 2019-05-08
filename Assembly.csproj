@@ -74,6 +74,7 @@
     <Compile Include="Assets\Scripts\Controllers\SelectionController.cs" />
     <Compile Include="Assets\Scripts\Controllers\SpriteController.cs" />
     <Compile Include="Assets\Scripts\Controllers\StateController.cs" />
+    <Compile Include="Assets\Scripts\Controllers\TestEnvironmentController.cs" />
     <Compile Include="Assets\Scripts\Controllers\ThreeDCameraController.cs" />
     <Compile Include="Assets\Scripts\Errors.cs" />
     <Compile Include="Assets\Scripts\Map\AbstractMap.cs" />

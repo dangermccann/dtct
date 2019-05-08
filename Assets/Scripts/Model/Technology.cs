@@ -43,6 +43,16 @@ namespace DCTC.Model {
             return null;
         }
 
+        public List<string> UnlockedItems(Items items) {
+            List<string> result = new List<string>();
+            foreach (Item item in items.All()) {
+                if(item.Technology == ID) {
+                    result.Add(item.ID);
+                }
+            }
+            return result;
+        }
+
         public static List<Technology> AvailableTechnologies(Technology graph, Dictionary<string, float> techs) {
             List<Technology> results = new List<Technology>();
 

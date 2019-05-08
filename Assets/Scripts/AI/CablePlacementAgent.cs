@@ -40,7 +40,7 @@ namespace DCTC.AI {
         private int currentCableIndex = -1;
         private Evaluation currentEval;
 
-        private const int expansionDistance = 20;
+        private const int expansionDistance = 18;
 
         public CablePlacementAgent() { }
         public CablePlacementAgent(Company c) {
@@ -120,24 +120,26 @@ namespace DCTC.AI {
 
             if (executionCoolDown <= 0) {
                 // Prevent over-expansion
-                int maxPotential = company.PotentialServiceArea.Values.Max(s => s.Count);
+                if (company.PotentialServiceArea.Count > 0) {
+                    int maxPotential = company.PotentialServiceArea.Values.Max(s => s.Count);
 
-                if (maxPotential > 0 && company.ServiceArea.Count > 0) {
-                    if(company.ServiceArea.Count / maxPotential < 0.65f) {
-                        return 0;
-                    } 
+                    if (maxPotential > 0 && company.ServiceArea.Count > 0) {
+                        if (company.ServiceArea.Count / maxPotential < 0.65f) {
+                            return 0;
+                        }
+                    }
                 }
 
 
                 Evaluation eval = Evaluate();
 
-                // Weigh the expansion potential metric against the available capital 
-                if (eval.costEstimate > company.Money) {
+                // Prevent expansion when it will consume too much available money 
+                float chance = 1 - (eval.costEstimate / company.Money);
+                if (RandomUtils.Chance(company.Game.Random, chance)) {
                     executionCoolDown = company.Game.Random.Next(Executor.MinimumCooldown, Executor.StandardCooldown); ;
                     return 0;
                 }
 
-                // TODO: replace with revenue estimate 
                 return eval.bestScore;
 
             } else {

@@ -17,7 +17,7 @@ namespace DCTC.Controllers {
     }
 
     public class GameController : MonoBehaviour {
-        public MapConfiguration Map { get; private set; }
+        public MapConfiguration Map { get; set; }
         public Game Game { get; private set; }
 
         public event GameEvent GameLoaded;

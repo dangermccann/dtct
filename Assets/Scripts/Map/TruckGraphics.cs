@@ -53,7 +53,7 @@ namespace DCTC.Map {
         Quaternion CalculateRotation(int index) {
             float y = 0;
 
-            if (index < Truck.Path.Count) {
+            if (index > 0 & index < Truck.Path.Count) {
                 Direction direction = MapConfiguration.RelativeDirection(Truck.Path[index - 1], Truck.Path[index]);
                 
                 switch (direction) {

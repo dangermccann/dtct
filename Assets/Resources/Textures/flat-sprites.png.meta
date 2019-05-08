@@ -2,12 +2,12 @@ fileFormatVersion: 2
 guid: 0dfea92a870dfe943b1b50d31edef488
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Fiber
-    21300002: Coaxial
+    21300000: OM-2
+    21300002: RG-6
     21300004: D-150_flat
     21300006: TV-1200_flat
     21300008: R-5500_flat
-    21300010: Copper
+    21300010: CAT-3
     21300012: C-1000_flat
     21300014: Rack
     21300016: C-5000_flat
@@ -27,8 +27,11 @@ TextureImporter:
     21300044: STB-6_flat
     21300046: RJ-11_flat
     21300048: Destroy
+    21300050: OR-105
+    21300052: CR-100
+    21300054: DR-100
   externalObjects: {}
-  serializedVersion: 7
+  serializedVersion: 9
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -109,7 +112,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fiber
+      name: OM-2
       rect:
         serializedVersion: 2
         x: 0
@@ -129,7 +132,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coaxial
+      name: RG-6
       rect:
         serializedVersion: 2
         x: 200
@@ -209,7 +212,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Copper
+      name: CAT-3
       rect:
         serializedVersion: 2
         x: 400
@@ -597,13 +600,73 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
       spriteID: e434fed0797aa7b4e84b382b535844b4
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OR-105
+      rect:
+        serializedVersion: 2
+        x: 1822
+        y: 430
+        width: 135
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44acf79c88d43d04f9c9c7bc5c4fb414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CR-100
+      rect:
+        serializedVersion: 2
+        x: 1822
+        y: 266
+        width: 135
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90a1d9a94cac07a44a846e3b0807143b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DR-100
+      rect:
+        serializedVersion: 2
+        x: 1626
+        y: 262
+        width: 135
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8ae189a99b553d49a28baae842a64b0
       vertices: []
       indices: 
       edges: []

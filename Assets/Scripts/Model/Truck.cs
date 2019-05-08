@@ -21,7 +21,7 @@ namespace DCTC.Model {
         private const float BaseWorkSpeed = 5f;
         private const float BaseWork = 1;
 
-
+        private readonly object access = new object();
 
         public string ID { get; set; }
         public string Name { get; set; }
@@ -66,10 +66,12 @@ namespace DCTC.Model {
             TravelSpeed = 1;
             WorkSpeed = 1;
             Inventory = new Inventory();
+            Status = TruckStatus.Idle;
+            CurrentIndex = 0;
         }
 
         // TODO: move this somewhere more global        
-        public bool EquipmentForServices(IEnumerable<Services> services, IEnumerable<CPE> available, out List<CPE> result) {
+        public static bool EquipmentForServices(IEnumerable<Services> services, IEnumerable<CPE> available, out List<CPE> result) {
             result = new List<CPE>();
             bool retVal = true;
 
@@ -98,95 +100,97 @@ namespace DCTC.Model {
         }
 
         public bool Dispatch(string customerID) {
+            lock (access) {
+                DestinationCustomerID = customerID;
+                Customer customer = Game.GetCustomer(customerID);
+                PendingEquipmentFromHQ = new List<string>();
+                PendingInstallEquipment = new List<string>();
 
-            DestinationCustomerID = customerID;
-            Customer customer = Game.GetCustomer(customerID);
-            PendingEquipmentFromHQ = new List<string>();
-            PendingInstallEquipment = new List<string>();
+                Path = new List<TilePosition>();
 
-            Path = new List<TilePosition>();
+                if (customer.Status == CustomerStatus.Pending) {
+                    // Customer is pending install
+                    // Determine what equipment is needed in inventory
+                    List<CPE> installEquipment = new List<CPE>();
 
-            if (customer.Status == CustomerStatus.Pending) {
-                // Customer is pending install
-                // Determine what equipment is needed in inventory
-                List<CPE> installEquipment = new List<CPE>();
+                    if (!EquipmentForServices(customer.Services, Game.Items.FromInventory<CPE>(Inventory), out installEquipment)) {
+                        // Equipment not available in truck
+                        // Determine what equipment we need from HQ
+                        PendingInstallEquipment.AddRange(installEquipment.Select(c => c.ID));
+                        Inventory combinedInventory = new Inventory();
+                        combinedInventory.Add(Inventory);
+                        combinedInventory.Add(Company.Inventory);
 
-                if(!EquipmentForServices(customer.Services, Game.Items.FromInventory<CPE>(Inventory), out installEquipment)) {
-                    // Equipment not available in truck
-                    // Determine what equipment we need from HQ
-                    PendingInstallEquipment.AddRange(installEquipment.Select(c => c.ID));
-                    Inventory combinedInventory = new Inventory();
-                    combinedInventory.Add(Inventory);
-                    combinedInventory.Add(Company.Inventory);
+                        List<CPE> hqEquipment = new List<CPE>();
+                        if (EquipmentForServices(customer.Services, Game.Items.FromInventory<CPE>(combinedInventory), out hqEquipment)) {
+                            // Equipment availabe in HQ
+                            hqEquipment.RemoveAll(cpe => installEquipment.Contains(cpe));
 
-                    List<CPE> hqEquipment = new List<CPE>();
-                    if(EquipmentForServices(customer.Services, Game.Items.FromInventory<CPE>(combinedInventory), out hqEquipment)) {
-                        // Equipment availabe in HQ
-                        hqEquipment.RemoveAll(cpe => installEquipment.Contains(cpe));
+                            if (hqEquipment.Count == 0) {
+                                Debug.LogError("Unexpected zero items to get from HQ");
+                                return false;
+                            }
 
-                        if(hqEquipment.Count == 0) {
-                            Debug.LogError("Unexpected zero items to get from HQ");
+                            // Go to HQ to get equipment 
+                            PendingEquipmentFromHQ = new List<string>(hqEquipment.Select(c => c.ID));
+                            PendingInstallEquipment.AddRange(PendingEquipmentFromHQ);
+                            Path.AddRange(PathTo(Company.HeadquartersLocation));
+                            Status = TruckStatus.GettingEquipment;
+
+                        } else {
+                            // Equipment unavailable at HQ
                             return false;
                         }
-
-                        // Go to HQ to get equipment 
-                        PendingEquipmentFromHQ = new List<string>(hqEquipment.Select(c => c.ID));
-                        PendingInstallEquipment.AddRange(PendingEquipmentFromHQ);
-                        Path.AddRange(PathTo(Company.HeadquartersLocation));
-                        Status = TruckStatus.GettingEquipment;
-
                     } else {
-                        // Equipment unavailable at HQ
-                        return false;
+                        // Sufficient inventory on truck.  Go to customer's home
+                        PendingInstallEquipment.AddRange(installEquipment.Select(c => c.ID));
+                        Path.AddRange(PathTo(customer.HomeLocation));
+                        Status = TruckStatus.EnRoute;
                     }
-                }
-                else {
-                    // Sufficient inventory on truck.  Go to customer's home
-                    PendingInstallEquipment.AddRange(installEquipment.Select(c => c.ID));
+                } else {
+                    // Go directly to customer's home for repair
                     Path.AddRange(PathTo(customer.HomeLocation));
                     Status = TruckStatus.EnRoute;
                 }
+
+                CurrentIndex = 0;
+                WorkRemaining = BaseWork;
+
+                if (NextTile())
+                    DestinationReached();
+
+                if (Dispatched != null)
+                    Dispatched();
+
+                return true;
             }
-            else {
-                // Go directly to customer's home for repair
-                Path.AddRange(PathTo(customer.HomeLocation));
-                Status = TruckStatus.EnRoute;
-            }
-
-            CurrentIndex = 0;
-            WorkRemaining = BaseWork;
-
-            if (NextTile())
-                DestinationReached();
-
-            if (Dispatched != null)
-                Dispatched();
-
-            return true;
         }
 
         public void LightUpdate(float deltaTime) {
-            if (Status == TruckStatus.Working) {
-                WorkRemaining -= deltaTime * BaseWorkSpeed * WorkSpeed * Company.Attributes.TruckWorkSpeed;
-            } else if (Status == TruckStatus.EnRoute || Status == TruckStatus.GettingEquipment) {
-                Elapsed += deltaTime * BaseTravelSpeed * TravelSpeed * Company.Attributes.TruckTravelSpeed;
-                Position = Vector3.Lerp(CurrentStart, CurrentDestination, Elapsed);
+            lock (access) {
+                if (Status == TruckStatus.Working) {
+                    WorkRemaining -= deltaTime * BaseWorkSpeed * WorkSpeed * Company.Attributes.TruckWorkSpeed;
+                } else if (Status == TruckStatus.EnRoute || Status == TruckStatus.GettingEquipment) {
+                    Elapsed += deltaTime * BaseTravelSpeed * TravelSpeed * Company.Attributes.TruckTravelSpeed;
+                    Position = Vector3.Lerp(CurrentStart, CurrentDestination, Elapsed);
 
-                if (Vector3.Distance(Position, CurrentDestination) < 0.05f) {
-                    if (NextTile())
-                        destinationReached = true;
+                    if (Vector3.Distance(Position, CurrentDestination) < 0.05f) {
+                        if (NextTile())
+                            destinationReached = true;
+                    }
                 }
             }
         }
 
         public void Update(float deltaTime) {
-            if (Status == TruckStatus.Working) {
-                if (WorkRemaining <= 0)
-                    JobComplete();
-            }
-            else if(Status == TruckStatus.EnRoute || Status == TruckStatus.GettingEquipment) {
-                if (destinationReached)
-                    DestinationReached();
+            lock (access) {
+                if (Status == TruckStatus.Working) {
+                    if (WorkRemaining <= 0)
+                        JobComplete();
+                } else if (Status == TruckStatus.EnRoute || Status == TruckStatus.GettingEquipment) {
+                    if (destinationReached)
+                        DestinationReached();
+                }
             }
         }
 
@@ -247,12 +251,11 @@ namespace DCTC.Model {
                 }
 
                 // Go to customer's home
-                Status = TruckStatus.EnRoute;
-
                 Path = new List<TilePosition>();
                 Path.AddRange(PathTo(customer.HomeLocation));
 
                 CurrentIndex = 0;
+                Status = TruckStatus.EnRoute;
 
                 if (NextTile())
                     DestinationReached();

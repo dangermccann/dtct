@@ -82,8 +82,6 @@ namespace DCTC.Model {
         private HashSet<TilePosition> serviceArea = null;
         public HashSet<TilePosition> ServiceArea {
             get {
-                if (serviceArea == null)
-                    CalculateServiceArea();
                 return serviceArea;
             }
         }
@@ -92,8 +90,6 @@ namespace DCTC.Model {
         private Dictionary<CableType, HashSet<TilePosition>> potentialServiceArea = null;
         public Dictionary<CableType, HashSet<TilePosition>> PotentialServiceArea {
             get {
-                if (potentialServiceArea == null)
-                    CalculateServiceArea();
                 return potentialServiceArea;
             }
         }
@@ -153,6 +149,12 @@ namespace DCTC.Model {
             Inventory = new Inventory();
             Racks = new List<Rack>();
             Technologies = new Dictionary<string, float>();
+            serviceArea = new HashSet<TilePosition>();
+
+            potentialServiceArea = new Dictionary<CableType, HashSet<TilePosition>>();
+            potentialServiceArea.Add(CableType.Copper, new HashSet<TilePosition>());
+            potentialServiceArea.Add(CableType.Coaxial, new HashSet<TilePosition>());
+            potentialServiceArea.Add(CableType.Optical, new HashSet<TilePosition>());
 
             InitPrices();
         }
@@ -514,10 +516,10 @@ namespace DCTC.Model {
         private void CalculateServiceArea() {
             HashSet<TilePosition> serviceArea = new HashSet<TilePosition>();
 
-            potentialServiceArea = new Dictionary<CableType, HashSet<TilePosition>>();
-            potentialServiceArea.Add(CableType.Copper, new HashSet<TilePosition>());
-            potentialServiceArea.Add(CableType.Coaxial, new HashSet<TilePosition>());
-            potentialServiceArea.Add(CableType.Optical, new HashSet<TilePosition>());
+            potentialServiceArea[CableType.Copper].Clear();
+            potentialServiceArea[CableType.Coaxial].Clear();
+            potentialServiceArea[CableType.Optical].Clear();
+
 
             foreach (Network network in Networks) {
                 network.ServiceArea.Clear();
@@ -583,6 +585,7 @@ namespace DCTC.Model {
 
             UpdateNetworkStatus();
             UpdateNetworkServices();
+            CalculateServiceArea();
         }
 
         void UpdateNetworkStatus() {
@@ -756,8 +759,6 @@ namespace DCTC.Model {
 
         private void InvalidateNetworks() {
             CalculateNetworks();
-            serviceArea = null;
-            potentialServiceArea = null;
 
             if (ServiceAreaChanged != null)
                 ServiceAreaChanged();
