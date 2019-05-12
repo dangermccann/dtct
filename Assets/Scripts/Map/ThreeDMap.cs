@@ -39,6 +39,7 @@ namespace DCTC.Map {
         private const string MapPrefabsLocation = "Prefabs/Map";
         private const bool centerQuadTiles = false;
         private const bool skipRoadsAdjacentToCorners = false;
+        private const float quadScaleReduction = 0; //0.5f;
 
         private const int BatchSize = 100;
         private const string OverlayKey = "Overlay";
@@ -522,11 +523,10 @@ namespace DCTC.Map {
                                 }
                             }
 
-                            float scaleReduction = 0.5f;
                             int dx = (quadX - x);
                             int dz = (quadZ - z);
-                            scale.x = dx * WorldUnitsPerTile / 2 - scaleReduction;
-                            scale.z = dz * WorldUnitsPerTile / 2 - scaleReduction;
+                            scale.x = dx * WorldUnitsPerTile / 2 - quadScaleReduction;
+                            scale.z = dz * WorldUnitsPerTile / 2 - quadScaleReduction;
 
                             // Place quad in center
                             if (centerQuadTiles)
