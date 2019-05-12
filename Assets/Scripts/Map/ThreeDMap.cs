@@ -36,6 +36,10 @@ namespace DCTC.Map {
         private int batchCount = 0;
 
         private const float WorldUnitsPerTile = 2f;
+        private const string MapPrefabsLocation = "Prefabs/Map";
+        private const bool centerQuadTiles = false;
+        private const bool skipRoadsAdjacentToCorners = false;
+
         private const int BatchSize = 100;
         private const string OverlayKey = "Overlay";
         private const string SelectionKey = "Selection";
@@ -61,7 +65,7 @@ namespace DCTC.Map {
         }
 
         void LoadPrefabs() {
-            GameObject[] all = Resources.LoadAll<GameObject>("Prefabs/Map");
+            GameObject[] all = Resources.LoadAll<GameObject>(MapPrefabsLocation);
             foreach (GameObject go in all) {
                 if (prefabs.ContainsKey(go.name)) {
                     Debug.LogWarning("Duplicate prefab: " + go.name);
@@ -453,17 +457,42 @@ namespace DCTC.Map {
 
                     prefab = null;
                     TilePosition pos = new TilePosition(x, z);
+                    Vector3 world = Vector3.zero;
                     Tile tile = map.Tiles[pos];
                     Vector3 scale = Vector3.one;
 
                     if (tile.Type == TileType.Road) {
-                        prefab = prefabs["Road" + tile.RoadType.ToString()];
+
+
+                        // Skip horizontal and vertical roads that are adjacent to corners and intersections
+                        bool skip = false;
+                        if (skipRoadsAdjacentToCorners) {
+                            
+                            if (tile.RoadType == RoadType.Horizontal || tile.RoadType == RoadType.Vertical) {
+                                List<TilePosition> adjacents = map.AdjacentPositions(pos);
+                                foreach (TilePosition adjacent in adjacents) {
+                                    Tile at = map.Tiles[adjacent];
+                                    if (at.Type == TileType.Road &&
+                                        at.RoadType != RoadType.Horizontal &&
+                                        at.RoadType != RoadType.Vertical) {
+                                        skip = true;
+                                        break;
+                                    }
+                                }
+
+                            }
+                        }
+
+                        if (!skip) {
+                            prefab = prefabs["Road" + tile.RoadType.ToString()];
+                            world = PositionToWorld(pos);
+                        }
+
                     }  
                     else {
                         // Optimization to stretch quad 
                         if(!completedQuads.ContainsKey(pos)) {
                             prefab = prefabs["Quad"];
-                            completedQuads.Add(pos, prefab);
                             int quadZ = z + 1;
                             int quadX = x + 1;
                             Tile quadTile;
@@ -474,8 +503,6 @@ namespace DCTC.Map {
                                     break;
                                 }
                                 else {
-                                    completedQuads.Add(quadTile.Position, prefab);
-                                    scale.z += 1;
                                     quadZ++;
                                 }
                             }
@@ -485,12 +512,27 @@ namespace DCTC.Map {
                                 if (quadTile.Type == TileType.Road) {
                                     break;
                                 } else {
-                                    completedQuads.Add(quadTile.Position, prefab);
-                                    scale.x += 1;
                                     quadX++;
                                 }
                             }
 
+                            for(int qx = x; qx < quadX; qx++) {
+                                for(int qz = z; qz < quadZ; qz++) {
+                                    completedQuads.Add(new TilePosition(qx, qz), prefab);
+                                }
+                            }
+
+                            float scaleReduction = 0.5f;
+                            int dx = (quadX - x);
+                            int dz = (quadZ - z);
+                            scale.x = dx * WorldUnitsPerTile / 2 - scaleReduction;
+                            scale.z = dz * WorldUnitsPerTile / 2 - scaleReduction;
+
+                            // Place quad in center
+                            if (centerQuadTiles)
+                                world = PositionToWorld(new Vector2(x + (dx - 1) / 2f, z + (dz - 1) / 2f));
+                            else
+                                world = PositionToWorld(pos);
                         }
                         
                     }
@@ -499,7 +541,7 @@ namespace DCTC.Map {
                         GameObject tileGo = Instantiate(prefab);
                         tileGo.name = TileName(pos);
                         tileGo.transform.SetParent(this.transform, false);
-                        tileGo.transform.position = PositionToWorld(pos);
+                        tileGo.transform.position = world;
                         tileGo.transform.localScale = scale;
                         ground.Add(pos, tileGo);
 
@@ -512,7 +554,7 @@ namespace DCTC.Map {
                         GameObject tileGo = Instantiate(prefab);
                         tileGo.name = TileName(pos);
                         tileGo.transform.SetParent(this.transform, false);
-                        Vector3 world = PositionToWorld(pos);
+                        world = PositionToWorld(pos);
                         tileGo.transform.position = new Vector3(world.x, 0.01f, world.z);
                     }
                 }

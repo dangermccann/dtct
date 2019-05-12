@@ -40,9 +40,20 @@
 #
 # image files are treated as binary by default.
 ###############################################################################
-#*.jpg   binary
-#*.png   binary
-#*.gif   binary
+*.jpg   binary
+*.jpeg  binary
+*.png   binary
+*.gif   binary
+*.psd   binary
+*.ico   binary
+*.mp3   binary
+*.mp4   binary
+*.mov   binary
+*.wav   binary
+*.ttf   binary
+*.otf   binary
+
+
 
 ###############################################################################
 # diff behavior for common document formats

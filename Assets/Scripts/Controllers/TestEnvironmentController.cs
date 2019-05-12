@@ -19,82 +19,105 @@ namespace DCTC.Controllers {
         }
 
         void Redraw() {
-            map = new MapConfiguration(7, 8);
-            map.Tiles = new Dictionary<TilePosition, Tile>() {
-                { new TilePosition(0, 0),  new Tile(new TilePosition(0, 0), TileType.Road, RoadType.CornerNE) },
-                { new TilePosition(0, 1),  new Tile(new TilePosition(0, 1), TileType.Road, RoadType.Vertical) },
-                { new TilePosition(0, 2),  new Tile(new TilePosition(0, 2), TileType.Road, RoadType.Vertical) },
-                { new TilePosition(0, 3),  new Tile(new TilePosition(0, 3), TileType.Road, RoadType.Vertical) },
-                { new TilePosition(0, 4),  new Tile(new TilePosition(0, 4), TileType.Road, RoadType.Vertical) },
-                { new TilePosition(0, 5),  new Tile(new TilePosition(0, 5), TileType.Road, RoadType.Vertical) },
-                { new TilePosition(0, 6),  new Tile(new TilePosition(0, 6), TileType.Road, RoadType.Vertical) },
-                { new TilePosition(0, 7),  new Tile(new TilePosition(0, 7), TileType.Road, RoadType.CornerSE) },
+            int width = 8;
+            int height = 13;
+            int numBlocksX = 5;
+            int numBlocksY = 3;
 
+            map = new MapConfiguration(width + (width - 1) * (numBlocksX - 1), height + (height - 1) * (numBlocksY - 1));
+            map.Tiles = new Dictionary<TilePosition, Tile>();
 
-                { new TilePosition(1, 0),  new Tile(new TilePosition(1, 0), TileType.Road, RoadType.Horizontal) },
-                { new TilePosition(1, 1),  new Tile(new TilePosition(1, 1), TileType.Grass) },
-                { new TilePosition(1, 2),  new Tile(new TilePosition(1, 2), TileType.Grass) },
-                { new TilePosition(1, 3),  new Tile(new TilePosition(1, 3), TileType.Grass) },
-                { new TilePosition(1, 4),  new Tile(new TilePosition(1, 4), TileType.Grass) },
-                { new TilePosition(1, 5),  new Tile(new TilePosition(1, 5), TileType.Grass) },
-                { new TilePosition(1, 6),  new Tile(new TilePosition(1, 6), TileType.Grass) },
-                { new TilePosition(1, 7),  new Tile(new TilePosition(1, 7), TileType.Road, RoadType.Horizontal) },
+            
+            for(int x = 0; x < numBlocksX; x++) {
+                for(int y = 0; y < numBlocksY; y++) {
+                    CreateBlock(Mathf.Max(0, x * (width - 1)), Mathf.Max(0, y * (height - 1)), width, height);
+                }
+            }
 
+            map.Neighborhoods.Add(new Neighborhood(map, map.Width, map.Height));
 
-                { new TilePosition(2, 0),  new Tile(new TilePosition(2, 0), TileType.Road, RoadType.Horizontal) },
-                { new TilePosition(2, 1),  new Tile(new TilePosition(2, 1), TileType.Grass) },
-                { new TilePosition(2, 2),  new Tile(new TilePosition(2, 2), TileType.Grass) },
-                { new TilePosition(2, 3),  new Tile(new TilePosition(2, 3), TileType.Grass) },
-                { new TilePosition(2, 4),  new Tile(new TilePosition(2, 4), TileType.Grass) },
-                { new TilePosition(2, 5),  new Tile(new TilePosition(2, 5), TileType.Grass) },
-                { new TilePosition(2, 6),  new Tile(new TilePosition(2, 6), TileType.Grass) },
-                { new TilePosition(2, 7),  new Tile(new TilePosition(2, 7), TileType.Road, RoadType.Horizontal) },
-
-
-                { new TilePosition(3, 0),  new Tile(new TilePosition(3, 0), TileType.Road, RoadType.Horizontal) },
-                { new TilePosition(3, 1),  new Tile(new TilePosition(3, 1), TileType.Grass) },
-                { new TilePosition(3, 2),  new Tile(new TilePosition(3, 2), TileType.Grass) },
-                { new TilePosition(3, 3),  new Tile(new TilePosition(3, 3), TileType.Grass) },
-                { new TilePosition(3, 4),  new Tile(new TilePosition(3, 4), TileType.Grass) },
-                { new TilePosition(3, 5),  new Tile(new TilePosition(3, 5), TileType.Grass) },
-                { new TilePosition(3, 6),  new Tile(new TilePosition(3, 6), TileType.Grass) },
-                { new TilePosition(3, 7),  new Tile(new TilePosition(3, 7), TileType.Road, RoadType.Horizontal) },
-
-
-                { new TilePosition(4, 0),  new Tile(new TilePosition(4, 0), TileType.Road, RoadType.Horizontal) },
-                { new TilePosition(4, 1),  new Tile(new TilePosition(4, 1), TileType.Grass) },
-                { new TilePosition(4, 2),  new Tile(new TilePosition(4, 2), TileType.Grass) },
-                { new TilePosition(4, 3),  new Tile(new TilePosition(4, 3), TileType.Grass) },
-                { new TilePosition(4, 4),  new Tile(new TilePosition(4, 4), TileType.Grass) },
-                { new TilePosition(4, 5),  new Tile(new TilePosition(4, 5), TileType.Grass) },
-                { new TilePosition(4, 6),  new Tile(new TilePosition(4, 6), TileType.Grass) },
-                { new TilePosition(4, 7),  new Tile(new TilePosition(4, 7), TileType.Road, RoadType.Horizontal) },
-
-
-                { new TilePosition(5, 0),  new Tile(new TilePosition(5, 0), TileType.Road, RoadType.Horizontal) },
-                { new TilePosition(5, 1),  new Tile(new TilePosition(5, 1), TileType.Grass) },
-                { new TilePosition(5, 2),  new Tile(new TilePosition(5, 2), TileType.Grass) },
-                { new TilePosition(5, 3),  new Tile(new TilePosition(5, 3), TileType.Grass) },
-                { new TilePosition(5, 4),  new Tile(new TilePosition(5, 4), TileType.Grass) },
-                { new TilePosition(5, 5),  new Tile(new TilePosition(5, 5), TileType.Grass) },
-                { new TilePosition(5, 6),  new Tile(new TilePosition(5, 6), TileType.Grass) },
-                { new TilePosition(5, 7),  new Tile(new TilePosition(5, 7), TileType.Road, RoadType.Horizontal) },
-
-
-                { new TilePosition(6, 0),  new Tile(new TilePosition(6, 0), TileType.Road, RoadType.CornerNW) },
-                { new TilePosition(6, 1),  new Tile(new TilePosition(6, 1), TileType.Road, RoadType.Vertical) },
-                { new TilePosition(6, 2),  new Tile(new TilePosition(6, 2), TileType.Road, RoadType.Vertical) },
-                { new TilePosition(6, 3),  new Tile(new TilePosition(6, 3), TileType.Road, RoadType.Vertical) },
-                { new TilePosition(6, 4),  new Tile(new TilePosition(6, 4), TileType.Road, RoadType.Vertical) },
-                { new TilePosition(6, 5),  new Tile(new TilePosition(6, 5), TileType.Road, RoadType.Vertical) },
-                { new TilePosition(6, 6),  new Tile(new TilePosition(6, 6), TileType.Road, RoadType.Vertical) },
-                { new TilePosition(6, 7),  new Tile(new TilePosition(6, 7), TileType.Road, RoadType.CornerSW) },
-
-            };
 
             GameController.Get().Map = map;
             ThreeDMap.Init(map);
         }
 
+
+
+        void CreateBuilding(int x, int y, BuildingType type, Direction facing, Neighborhood neighborhood) {
+            BuildingAttributes attributes = BuildingAttributes.GetAttributes(type, facing);
+
+            TilePosition position = new TilePosition(x, y);
+            Lot lot = new Lot();
+            lot.Anchor = position;
+            lot.Facing = facing;
+
+            Building building = new Building(map.Tiles[position], type, facing,
+                        attributes.Width, attributes.Height, attributes.SquareMeters);
+            lot.Building = building;
+
+            for (int dx = 0; dx < attributes.Width; dx++) {
+                for (int dy = 0; dy < attributes.Height; dy++) {
+                    Tile tile = map.Tiles[new TilePosition(dx + position.x, dy + position.y)];
+                    tile.Building = building;
+                    tile.Lot = lot;
+                }
+            }
+
+            neighborhood.Lots.Add(lot);
+        }
+
+        void CreateBlock(int offsetX, int offsetY, int width, int height) {
+            TilePosition pos;
+
+            // corners
+            pos = new TilePosition(offsetX, offsetY);
+            RoadType firstType = RoadType.CornerNE;
+            if (offsetX > 0 && offsetY > 0)
+                firstType = RoadType.IntersectAll;
+            else if (offsetX > 0)
+                firstType = RoadType.IntersectN;
+            else if (offsetY > 0)
+                firstType = RoadType.IntersectE;
+            map.Tiles[pos] = new Tile(pos, TileType.Road, firstType);
+
+            pos = new TilePosition(offsetX + width - 1, offsetY);
+            map.Tiles[pos] = new Tile(pos, TileType.Road, offsetY > 0 ? RoadType.IntersectW : RoadType.CornerNW);
+
+            pos = new TilePosition(offsetX, offsetY + height - 1);
+            map.Tiles[pos] = new Tile(pos, TileType.Road, offsetX > 0 ? RoadType.IntersectS : RoadType.CornerSE);
+
+            pos = new TilePosition(offsetX + width - 1, offsetY + height - 1);
+            map.Tiles[pos] = new Tile(pos, TileType.Road, RoadType.CornerSW);
+
+
+
+            for (int x = 1; x < width - 1; x++) {
+                // bottom and top
+                pos = new TilePosition(offsetX + x, offsetY);
+                map.Tiles[pos] = new Tile(pos, TileType.Road, RoadType.Horizontal);
+
+                pos = new TilePosition(offsetX + x, offsetY + height - 1);
+                map.Tiles[pos] = new Tile(pos, TileType.Road, RoadType.Horizontal);
+            }
+
+            for (int y = 1; y < height - 1; y++) {
+                // sides 
+                pos = new TilePosition(offsetX, offsetY + y);
+                map.Tiles[pos] = new Tile(pos, TileType.Road, RoadType.Vertical);
+
+                pos = new TilePosition(offsetX + width - 1, offsetY + y);
+                map.Tiles[pos] = new Tile(pos, TileType.Road, RoadType.Vertical);
+            }
+
+
+            for (int x = 1; x < width - 1; x++) {
+                for (int y = 1; y < height - 1; y++) {
+                    // inside
+                    pos = new TilePosition(offsetX + x, offsetY + y);
+                    map.Tiles[pos] = new Tile(pos, TileType.Grass);
+                }
+            }
+
+        }
     }
 }
