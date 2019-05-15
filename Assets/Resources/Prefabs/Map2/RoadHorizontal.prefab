@@ -9,7 +9,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1000014089819680, guid: 068714d3a2d4683488a7b812c65bd98f, type: 3}
       propertyPath: m_Name
-      value: Road
+      value: RoadHorizontal
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000014089819680, guid: 068714d3a2d4683488a7b812c65bd98f, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 4000011135863620, guid: 068714d3a2d4683488a7b812c65bd98f, type: 3}
       propertyPath: m_LocalPosition.x

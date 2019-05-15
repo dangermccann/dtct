@@ -32,3 +32,4 @@ bin/
 *.mdb.meta
 *.sqlite
 *.sqlite*
+/~$Lots.xlsx

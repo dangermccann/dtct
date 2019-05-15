@@ -9,7 +9,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1000010932534268, guid: 1214f7eeae79bd84f86047c54e8865dc, type: 3}
       propertyPath: m_Name
-      value: Road Crossing T
+      value: RoadIntersectE
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000010932534268, guid: 1214f7eeae79bd84f86047c54e8865dc, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 4000013992759630, guid: 1214f7eeae79bd84f86047c54e8865dc, type: 3}
       propertyPath: m_LocalPosition.x

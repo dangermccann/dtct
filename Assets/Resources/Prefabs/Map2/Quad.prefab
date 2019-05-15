@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Quad
       objectReference: {fileID: 0}
+    - target: {fileID: 1000011473806374, guid: 82a7e6d7a0882a24d96a3e0cbf31e122, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 4000010970397536, guid: 82a7e6d7a0882a24d96a3e0cbf31e122, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

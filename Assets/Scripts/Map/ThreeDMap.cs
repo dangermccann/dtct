@@ -35,11 +35,11 @@ namespace DCTC.Map {
 
         private int batchCount = 0;
 
-        private const float WorldUnitsPerTile = 2f;
-        private const string MapPrefabsLocation = "Prefabs/Map";
-        private const bool centerQuadTiles = false;
-        private const bool skipRoadsAdjacentToCorners = false;
-        private const float quadScaleReduction = 0; //0.5f;
+        private const float WorldUnitsPerTile = 4f;
+        private const string MapPrefabsLocation = "Prefabs/Map2";
+        private const bool centerQuadTiles = true;
+        private const bool skipRoadsAdjacentToCorners = true;
+        private const float quadScaleReduction = 0.5f;
 
         private const int BatchSize = 100;
         private const string OverlayKey = "Overlay";

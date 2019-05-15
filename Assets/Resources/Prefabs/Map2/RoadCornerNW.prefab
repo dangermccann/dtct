@@ -9,7 +9,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1000011738967500, guid: bc1e1e02c7914ad45ae5c197dc697ef9, type: 3}
       propertyPath: m_Name
-      value: Road Corner (1)
+      value: RoadCornerNW
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000011738967500, guid: bc1e1e02c7914ad45ae5c197dc697ef9, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 4000013700029056, guid: bc1e1e02c7914ad45ae5c197dc697ef9, type: 3}
       propertyPath: m_LocalPosition.x

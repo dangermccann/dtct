@@ -514,6 +514,9 @@ namespace DCTC.Model {
 
 
         private void CalculateServiceArea() {
+            if (Game.Map == null)
+                return;
+
             HashSet<TilePosition> serviceArea = new HashSet<TilePosition>();
 
             potentialServiceArea[CableType.Copper].Clear();
