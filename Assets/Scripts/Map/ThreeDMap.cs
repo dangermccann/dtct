@@ -163,6 +163,55 @@ namespace DCTC.Map {
             cameraController.MoveCamera(PositionToWorld(position));
         }
 
+
+
+        public void PlaceCable(Cable cable) {
+            int idx = 0;
+            int total = cable.Positions.Count;
+
+            Transform last = null;
+
+            foreach (TilePosition pos in cable.Positions) {
+                Tile tile = map.Tiles[pos];
+                if (tile.RoadType == RoadType.Vertical || tile.RoadType == RoadType.Horizontal) {
+                    if (idx % 2 == 0 || idx == total - 1) {
+                        GameObject go = InstantiateObject("Pole", cable.Guid, pos);
+
+                        // offset 
+                        Vector3 world = go.transform.position;
+                        if(tile.RoadType == RoadType.Vertical) {
+                            go.transform.position = new Vector3(world.x + 3, world.y, world.z + 1);
+                        }
+                        else {
+                            go.transform.position = new Vector3(world.x + 1, world.y, world.z + 3);
+                        }
+
+                        // rotate 
+                        if (tile.RoadType == RoadType.Horizontal) {
+                            go.transform.rotation = Quaternion.Euler(new Vector3(0, 90, 0));
+                        }
+
+                        // TODO: find right connection point
+                        GameObject connection = go.transform.Find("Cable1").gameObject;
+                        Cable_Procedural_Static comp = connection.AddComponent<Cable_Procedural_Static>();
+                        comp.sagAmplitude = 0.3f;
+
+                        if (last != null)
+                            comp.endPointTransform = last;
+
+                        last = connection.transform;
+
+                    }
+
+                    idx++;
+                }
+
+            }
+        }
+
+
+
+
         // TODO: move this
         private bool serviceAreadChanged = false;
         private ConcurrentQueue<object> placedItems = new ConcurrentQueue<object>();

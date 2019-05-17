@@ -19,6 +19,8 @@ namespace DCTC.Controllers {
         }
 
         void Redraw() {
+            //transform.root.Find("Environment").gameObject.SetActive(false);
+
             int width = 8;
             int height = 13;
             int numBlocksX = 5;
@@ -39,7 +41,21 @@ namespace DCTC.Controllers {
 
             GameController.Get().Map = map;
             ThreeDMap.Init(map);
+
+            Cable cable = new Cable("", new CableAttributes() { Color = "0xffffff", Wiring = "Copper" });
+            for(int z = 0; z < 30; z++) {
+                cable.Positions.Add(new TilePosition(0, z));
+            }
+            ThreeDMap.PlaceCable(cable);
+
+
+            cable = new Cable("", new CableAttributes() { Color = "0xffffff", Wiring = "Copper" });
+            for (int x = 0; x < 30; x++) {
+                cable.Positions.Add(new TilePosition(x, 0));
+            }
+            ThreeDMap.PlaceCable(cable);
         }
+
 
 
 
