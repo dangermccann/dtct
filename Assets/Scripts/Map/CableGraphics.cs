@@ -11,19 +11,14 @@ namespace DCTC.Map {
             Placed
         }
 
-        private GameObject vertical, horizontal;
-        private bool needsRedraw = false;
-        private readonly float y = 0.1f;
+        public GameObject PolePrefab;
 
-        public Color InvalidColor = Color.red;
+        private bool needsRedraw = false;
+
+        private List<GameObject> poles = new List<GameObject>();
 
         [HideInInspector]
         public string CableId;
-
-        private void Awake() {
-            vertical = transform.Find("Vertical").gameObject;
-            horizontal = transform.Find("Horizontal").gameObject;
-        }
 
         private Orientation orientation = Orientation.Horizontal;
         public Orientation Orientation {
@@ -34,22 +29,11 @@ namespace DCTC.Map {
             }
         }
 
-        private bool intersection = false;
-        public bool Intersection {
-            get { return intersection; }
-            set {
-                intersection = value;
-                Redraw();
-            }
-        }
-
         private bool valid = true;
         public bool Valid {
             get { return valid; }
             set {
                 valid = value;
-                if (!valid)
-                    intersection = true;
                 Redraw();
             }
         }
@@ -91,6 +75,17 @@ namespace DCTC.Map {
                 cable.StatusChanged -= Invalidate;
         }
 
+        private void Update() {
+            if (needsRedraw) {
+                Redraw();
+                needsRedraw = false;
+            }
+        }
+
+        private void Invalidate() {
+            needsRedraw = true;
+        }
+
         private void Redraw() {
             if(Mode == GraphicsMode.Cursor) {
                 RedrawCursor();
@@ -98,91 +93,23 @@ namespace DCTC.Map {
             else {
                 RedrawPlaced();
             }
-
-            RedrawLineColor();
         }
 
         private void RedrawCursor() {
-            LineRenderer lr = vertical.GetComponent<LineRenderer>();
-            lr.positionCount = 2;
-            lr.SetPositions(new Vector3[] {
-                new Vector3(1, y, 0),
-                new Vector3(1, y, 2),
-            });
 
-            lr = horizontal.GetComponent<LineRenderer>();
-            lr.positionCount = 2;
-            lr.SetPositions(new Vector3[] {
-                new Vector3(0, y, 1),
-                new Vector3(2, y, 1),
-            });
-
-            if (intersection == true) {
-                vertical.SetActive(true);
-                horizontal.SetActive(true);
-            } else {
-                if (Orientation == Orientation.Vertical) {
-                    vertical.SetActive(true);
-                    horizontal.SetActive(false);
-                } else {
-                    vertical.SetActive(false);
-                    horizontal.SetActive(true);
-                }
-            }
         }
 
         private void RedrawPlaced() {
-            vertical.SetActive(false);
-            horizontal.SetActive(true);
-
-            List<Vector3> positions = new List<Vector3>();
-            foreach(TilePosition pos in Points) {
-                Vector3 world = ThreeDMap.PositionToWorld(pos);
-                positions.Add(new Vector3(world.x + 1, y, world.z + 1));
-            }
-
-            LineRenderer lr = horizontal.GetComponent<LineRenderer>();
-            lr.positionCount = positions.Count;
-            lr.SetPositions(positions.ToArray());
-
-            
         }
 
-        private void Invalidate() {
-            needsRedraw = true;
-        }
 
-        private void Update() {
-            if(needsRedraw) {
-                RedrawLineColor();
-                needsRedraw = false;
-            }
-        }
 
-        private void RedrawLineColor() {
-            //if (Mode == GraphicsMode.Placed && Cable != null)
-            //    valid = (Cable.Status == NetworkStatus.Active);
-
-            if (valid) {
-                SetLineColor(vertical, ValidColor());
-                SetLineColor(horizontal, ValidColor());
-            } else {
-                SetLineColor(vertical, InvalidColor);
-                SetLineColor(horizontal, InvalidColor);
-            }
-        }
-
-        private Color ValidColor() {
+        private Color CableColor() {
             Color c;
             ColorUtility.TryParseHtmlString(Cable.Attributes.Color, out c);
             return c;
         }
 
-        private void SetLineColor(GameObject go, Color color) {
-            LineRenderer lr = go.GetComponent<LineRenderer>();
-            lr.startColor = color;
-            lr.endColor = color;
-        }
     }
 
 }

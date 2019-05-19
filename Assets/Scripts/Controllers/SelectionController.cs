@@ -41,7 +41,6 @@ namespace DCTC.Controllers {
         private GameController gameController;
         private CableGraphics cableCursor;
         private TilePosition cablePlacementStart;
-        private AStar pathfinder = null;
         private ThreeDMap mapComponent;
         private Vector3 mouseDownPosition;
         private Cable dragCable;
@@ -53,7 +52,7 @@ namespace DCTC.Controllers {
         private void Start() {
             mapComponent = MapGameObject.GetComponent<ThreeDMap>();
             cameraController.TileClicked += CameraController_TileClicked;
-            cameraController.TileDragged += CameraController_TileDragged;
+            //cameraController.TileDragged += CameraController_TileDragged;
             LotSelection.SetActive(false);
         }
 
@@ -171,9 +170,10 @@ namespace DCTC.Controllers {
                         // Placement mode
                         cursorObject.transform.position = Vector3.zero;
 
-                        // Move destination to nearest road on map
-                        pos = gameController.Map.NearestRoad(pos);
-                        if(pos.x == -1) {
+                        // Move destination to nearest valid location
+                        pos = gameController.Map.NearestPoleLocation(pos);
+
+                        if (!gameController.Map.IsInBounds(pos)) {
                             return;
                         }
 
@@ -192,7 +192,7 @@ namespace DCTC.Controllers {
                                 nodes.Add(gameController.Map.Tiles[p]);
                             }
                         }
-                        pathfinder = new AStar(nodes);
+                        AStar pathfinder = new AStar(nodes);
 
                         // Perform search
                         IList<IPathNode> results = pathfinder.Search(
@@ -214,14 +214,12 @@ namespace DCTC.Controllers {
                         // Cursor mode
                         cursorObject.transform.position = world;
 
-                        Tile tile = gameController.Map.Tiles[pos];
-                        if (tile.Type == TileType.Road) {
+                        pos = gameController.Map.NearestPoleLocation(pos);
+
+                        if (gameController.Map.IsInBounds(pos)) {
+                            Tile tile = gameController.Map.Tiles[pos];
+
                             cableCursor.Valid = true;
-                            if (tile.RoadType == RoadType.IntersectAll) {
-                                cableCursor.Intersection = true;
-                            } else {
-                                cableCursor.Intersection = false;
-                            }
 
                             if (tile.RoadType == RoadType.Horizontal) {
                                 cableCursor.Orientation = Orientation.Horizontal;
@@ -229,11 +227,9 @@ namespace DCTC.Controllers {
                                 cableCursor.Orientation = Orientation.Vertical;
                             }
                         } 
-                        else if(tile.Type == TileType.Connector && gameController.Game.Player.Headquarters.Contains(pos)) {
-                            cableCursor.Valid = true;
-                        }
+
                         else {
-                            // Not a road tile; disable selection
+                            // Too far from a valid position for placement; disable
                             cableCursor.Valid = false;
                         }
                     }
@@ -278,6 +274,8 @@ namespace DCTC.Controllers {
                 if (cableCursor.Mode == CableGraphics.GraphicsMode.Cursor) {
                     // First click
                     // Set variable so it draws preview in Update
+                    position = gameController.Map.NearestPoleLocation(position);
+
                     cablePlacementStart = position;
                     cableCursor.Mode = CableGraphics.GraphicsMode.Placed;
                 } else {
@@ -297,6 +295,7 @@ namespace DCTC.Controllers {
         }
 
         private void CameraController_TileDragged(Vector3 world, TilePosition position) {
+            /*
             if (Mode == SelectionModes.Destroy) {
                 gameController.Game.Player.RemoveCablePosition(position);
                 gameController.Game.Player.RemoveNode(position);
@@ -326,6 +325,7 @@ namespace DCTC.Controllers {
                     }
                 }
             }
+            */
         }
     }
 }

@@ -175,21 +175,30 @@ namespace DCTC.Map {
                 Tile tile = map.Tiles[pos];
                 if (tile.RoadType == RoadType.Vertical || tile.RoadType == RoadType.Horizontal) {
                     if (idx % 2 == 0 || idx == total - 1) {
-                        GameObject go = InstantiateObject("Pole", cable.Guid, pos);
 
-                        // offset 
-                        Vector3 world = go.transform.position;
-                        if(tile.RoadType == RoadType.Vertical) {
-                            go.transform.position = new Vector3(world.x + 3, world.y, world.z + 1);
-                        }
-                        else {
-                            go.transform.position = new Vector3(world.x + 1, world.y, world.z + 3);
+
+                        string poleName = "Pole " + pos.ToString();
+                        GameObject go = GameObject.Find(poleName);
+
+                        if (go == null) {
+                            go = InstantiateObject("Pole", pos.ToString(), pos);
+
+                            // TODO: move to graphics class 
+                            // offset 
+                            Vector3 world = go.transform.position;
+                            if (tile.RoadType == RoadType.Vertical) {
+                                go.transform.position = new Vector3(world.x + 3, world.y, world.z);
+                            } else {
+                                go.transform.position = new Vector3(world.x, world.y, world.z + 3);
+                            }
+
+                            // rotate 
+                            if (tile.RoadType == RoadType.Horizontal) {
+                                go.transform.rotation = Quaternion.Euler(new Vector3(0, 90, 0));
+                            }
                         }
 
-                        // rotate 
-                        if (tile.RoadType == RoadType.Horizontal) {
-                            go.transform.rotation = Quaternion.Euler(new Vector3(0, 90, 0));
-                        }
+
 
                         // TODO: find right connection point
                         GameObject connection = go.transform.Find("Cable1").gameObject;

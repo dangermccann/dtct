@@ -269,6 +269,40 @@ namespace DCTC.Map {
             return new TilePosition(-1, -1);
         }
 
+        public TilePosition NearestPoleLocation(TilePosition position) {
+            if (IsValidPoleLocation(position))
+                return position;
+
+            bool bail = false;
+            int count = 5;
+
+            TilePosition north = position;
+            TilePosition south = position;
+            TilePosition east = position;
+            TilePosition west = position;
+
+            while (!bail) {
+                east = East(east);
+                if (IsValidPoleLocation(east)) return east;
+
+                west = West(west);
+                if (IsValidPoleLocation(west)) return west;
+
+                north = North(north);
+                if (IsValidPoleLocation(north)) return north;
+
+                south = South(south);
+                if (IsValidPoleLocation(south)) return south;
+
+                count--;
+
+                if (count < 0)
+                    bail = true;
+            }
+
+            return new TilePosition(-1, -1);
+        }
+
         public IList<TilePosition> Pathfind(TilePosition start, TilePosition end, int tolerence = 15) {
             // Build bounding box of candidate nodes
             TileRectangle boundingBox = MapConfiguration.BoundingBox(start, end);
@@ -400,6 +434,13 @@ namespace DCTC.Map {
         public bool HasRoad(TilePosition pos) {
             if(Tiles.ContainsKey(pos))
                 return HasRoad(Tiles[pos]);
+            return false;
+        }
+
+        public bool IsValidPoleLocation(TilePosition pos) {
+            if (Tiles.ContainsKey(pos))
+                return HasRoad(Tiles[pos]) && 
+                    (Tiles[pos].RoadType == RoadType.Horizontal || Tiles[pos].RoadType == RoadType.Vertical);
             return false;
         }
 

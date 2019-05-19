@@ -43,14 +43,11 @@ namespace DCTC.Controllers {
             ThreeDMap.Init(map);
 
             Cable cable = new Cable("", new CableAttributes() { Color = "0xffffff", Wiring = "Copper" });
-            for(int z = 0; z < 30; z++) {
+            for(int z = 29; z >= 0; z--) {
                 cable.Positions.Add(new TilePosition(0, z));
             }
-            ThreeDMap.PlaceCable(cable);
 
-
-            cable = new Cable("", new CableAttributes() { Color = "0xffffff", Wiring = "Copper" });
-            for (int x = 0; x < 30; x++) {
+            for (int x = 1; x < 30; x++) {
                 cable.Positions.Add(new TilePosition(x, 0));
             }
             ThreeDMap.PlaceCable(cable);
