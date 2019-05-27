@@ -38,9 +38,9 @@ namespace DCTC.Model
             }
         }
 
-        public bool WillFitBuilding(BuildingAttributes attributes) {
-            for(int x = 0; x < attributes.Width; x++) {
-                for(int y = 0; y < attributes.Height; y++) {
+        public bool WillFitBuilding(Building building) {
+            for(int x = 0; x < building.Width; x++) {
+                for(int y = 0; y < building.Height; y++) {
                     TilePosition pos = new TilePosition(Anchor.x + x, Anchor.y + y);
                     if (!Tiles.Contains(pos))
                         return false;

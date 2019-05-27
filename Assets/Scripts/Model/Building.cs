@@ -10,6 +10,9 @@ namespace DCTC.Model {
 		public Direction FacingDirection;
 		public int Width;
 		public int Height;
+        public string BlockPosition;
+        public int Variation;
+        public string Color;
         public float SquareMeters;
 
 		public Building (Tile tile, BuildingType type) : this(tile, type, Direction.North) { }
@@ -18,10 +21,10 @@ namespace DCTC.Model {
 			: this(tile, type, facingDirection, 1, 1) { }
 
 		public Building (Tile tile, BuildingType type, Direction facingDirection, int width, 
-		                 int height) : this(tile, type, facingDirection, width, height, 0) { }
+		                 int height) : this(tile, type, facingDirection, width, height, "M", 1) { }
 
         public Building (Tile tile, BuildingType type, Direction facingDirection, int width, 
-		                 int height, float squareMeters) {
+		                 int height, string blockPosition, int variation) {
 
 
             this.Anchor = tile.Position;
@@ -29,11 +32,9 @@ namespace DCTC.Model {
 			this.FacingDirection = facingDirection;
 			this.Width = width;
 			this.Height = height;
-            this.SquareMeters = squareMeters;
-        }
-
-        public BuildingAttributes GetAttributes() {
-            return BuildingAttributes.GetAttributes(Type, FacingDirection);
+            this.BlockPosition = blockPosition;
+            this.Variation = variation;
+            SquareMeters = 300;
         }
 
         public bool Contains(TilePosition pos) {
@@ -41,116 +42,70 @@ namespace DCTC.Model {
                     pos.y >= Anchor.y && pos.y < Anchor.y + Height);
         }
 
+        public bool IsResidential() {
+            switch(Type) {
+                case BuildingType.H1:
+                case BuildingType.H2:
+                case BuildingType.H3:
+                case BuildingType.H4:
+                case BuildingType.H5:
+                case BuildingType.H6:
+                case BuildingType.H7:
+                case BuildingType.H8:
+                case BuildingType.H9:
+                case BuildingType.A1:
+                case BuildingType.A2:
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool IsSingleFamily() {
+            switch (Type) {
+                case BuildingType.H1:
+                case BuildingType.H2:
+                case BuildingType.H3:
+                case BuildingType.H4:
+                case BuildingType.H5:
+                case BuildingType.H6:
+                case BuildingType.H7:
+                case BuildingType.H8:
+                case BuildingType.H9:
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool IsMultiDwellingUnit() {
+            switch (Type) {
+                case BuildingType.A1:
+                case BuildingType.A2:
+                    return true;
+            }
+            return false;
+        }
+
 	}
 
 	public enum BuildingType {
-		SmallHouse,
-		Townhouse,
-        Ranch,
-		SuburbanHouse,
-        Apartment,
-        StripMall,
-        SmallRetail,
-        SmallRetail2,
-        Retail,
-		Barn,
-        Factory,
-        SmallFactory,
-        Warehouse,
-        Office,
-        Headquarters
+        H1, H2, H3, H4, H5,
+        H6, H7, H8, H9,
+        A1, A2,
+        Headquarters,
+        Park,
+        None
 	}
 
     public enum BuildingClassification {
         Residential,
         Commercial,
         Industrial,
-        Agricultural
+        Agricultural,
+        Community
     }
 
-	public enum BuildingColor {
-		None,
-		Gray,
-		Red,
-		RedOrange,
-		Blue,
-		Yellow,
-		Pink,
-		Beige,
-		Teal,
-        White
-	}
 
-	public class BuildingAttributes {
-		public int Width, Height;
-        public float SquareMeters;
-        public BuildingClassification Classification;
-
-
-        BuildingAttributes() { }
-
-        BuildingAttributes(int width, int height, BuildingClassification classification, float squareMeters) {
-			this.Width = width;
-			this.Height = height;
-            this.Classification = classification;
-            this.SquareMeters = squareMeters;
-        }
-
-		public static BuildingAttributes GetAttributes(BuildingType type, Direction facing) {
-			switch(type) {
-                // Residential
-				case BuildingType.SmallHouse:
-					return new BuildingAttributes(1, 1, BuildingClassification.Residential, 195);
-
-				case BuildingType.Townhouse:
-					return new BuildingAttributes(1, 1, BuildingClassification.Residential, 100);
-
-                case BuildingType.Ranch:
-					return new BuildingAttributes((facing == Direction.East || facing == Direction.West) ? 1 : 2, 
-												  (facing == Direction.East || facing == Direction.West) ? 2 : 1,
-                                                  BuildingClassification.Residential, 250);
-
-				case BuildingType.SuburbanHouse:
-					return new BuildingAttributes((facing == Direction.East || facing == Direction.West) ? 1 : 2, 
-												  (facing == Direction.East || facing == Direction.West) ? 2 : 1,
-                                                  BuildingClassification.Residential, 290);
-                case BuildingType.Apartment:
-                    return new BuildingAttributes(5, 5, BuildingClassification.Residential, 670);
-
-                // Commercial
-                case BuildingType.StripMall:
-                    return new BuildingAttributes(2, 2, BuildingClassification.Commercial, 278);
-
-                case BuildingType.SmallRetail:
-                    return new BuildingAttributes(1, 1, BuildingClassification.Commercial, 150);
-
-                case BuildingType.Retail:
-                    return new BuildingAttributes(5, 5, BuildingClassification.Commercial, 300);
-
-                case BuildingType.Office:
-                    return new BuildingAttributes(5, 5, BuildingClassification.Commercial, 1200);
-
-                case BuildingType.Headquarters:
-                    return new BuildingAttributes(5, 5, BuildingClassification.Commercial, 1500);
-
-                // Aggricultural
-                case BuildingType.Barn:
-                    return new BuildingAttributes(1, 1, BuildingClassification.Agricultural, 100);
-
-                // Industrial
-                case BuildingType.Factory:
-                    return new BuildingAttributes(6, 6, BuildingClassification.Industrial, 9000);
-
-                case BuildingType.SmallFactory:
-                    return new BuildingAttributes(4, 4, BuildingClassification.Industrial, 4800);
-
-                case BuildingType.Warehouse:
-                    return new BuildingAttributes(4, 4, BuildingClassification.Industrial, 4800);
-
-            }
-
-            return new BuildingAttributes();
-		}
-	}
 }
 

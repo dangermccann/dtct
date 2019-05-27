@@ -123,18 +123,11 @@ namespace DCTC.Model {
             foreach (Neighborhood neighborhood in Map.Neighborhoods) {
                 foreach(Lot lot in neighborhood.Lots) {
                     if(lot.Building != null) {
-                        switch(lot.Building.Type) {
-                            case BuildingType.SmallHouse:
-                            case BuildingType.Ranch:
-                            case BuildingType.SuburbanHouse:
-                            case BuildingType.Townhouse:
-                                // Create single customer account
-                                Customers.Add(GenerateCustomer(lot));
-                                break;
-
-                            case BuildingType.Apartment:
-                                // Create customer accounts for all tenants 
-                                break;
+                        if(lot.Building.IsSingleFamily()) {
+                            Customers.Add(GenerateCustomer(lot));
+                        }
+                        else if(lot.Building.IsMultiDwellingUnit()) {
+                            // TODO: support MDUs
                         }
                     }
                 }

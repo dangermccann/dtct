@@ -31,16 +31,45 @@ namespace DCTC.Map
     {
         public BuildingType BuildingType { get; set; } 
         public Direction Facing { get; set; }
+        public string BlockPosition { get; set; }
+        public int Variation { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+
+        public LotTemplate() { }
+        public LotTemplate(string pattern) {
+            string[] splits = pattern.Split('-');
+
+            BuildingType = Utilities.ParseEnum<BuildingType>(splits[0]);
+            switch(splits[1]) {
+                case "N":
+                    Facing = Direction.North;
+                    break;
+                case "S":
+                    Facing = Direction.South;
+                    break;
+                case "E":
+                    Facing = Direction.East;
+                    break;
+                case "W":
+                    Facing = Direction.West;
+                    break;
+            }
+            BlockPosition = splits[2];
+
+            Width = int.Parse(splits[3].Split('x')[0]);
+            Height = int.Parse(splits[3].Split('x')[1]);
+            Variation = int.Parse(splits[4]);
+        }
     }
 
     [Serializable]
     public class MapTemplate
     {
-        public Dictionary<string, LotTemplate> LotTemplates { get; set; }
+        public List<string> LotTemplates { get; set; }
         public Dictionary<string, BlockTemplate> BlockTemplates { get; set; }
         public List<NeighborhoodTemplate> Neighborhoods { get; set; }
+        public Dictionary<string, List<string>> BuildingColors { get; set; }
     }
 
     public class MapGenerator {
@@ -98,7 +127,7 @@ namespace DCTC.Map
             foreach(Neighborhood neighborhood in map.Neighborhoods) {
                 foreach(Lot lot in neighborhood.Lots) {
                     if(lot.Building != null) {
-                        if(lot.Building.Type == BuildingType.Retail || lot.Building.Type == BuildingType.Office) {
+                        if(lot.Building.Type == BuildingType.None) {
                             candidates.Add(lot.Anchor);
                         }
                     }
@@ -160,6 +189,12 @@ namespace DCTC.Map
                 GenerateStreet(map, nameGenerator, segment + offset, neighborhood);
             }
 
+            Dictionary<string, LotTemplate> lotTemplates = new Dictionary<string, LotTemplate>();
+            foreach(string pattern in template.LotTemplates) {
+                LotTemplate lt = new LotTemplate(pattern);
+                lotTemplates[pattern] = lt;
+            }
+
             // Generate lots and buildings 
             foreach(TemplateReference blockRef in neighborhoodTemplate.Blocks) {
 
@@ -167,20 +202,28 @@ namespace DCTC.Map
                     throw new Exception("Template " + blockRef.Name + " not found in BlockTemplates");
 
                 BlockTemplate block = template.BlockTemplates[blockRef.Name];
+
+
+
                 foreach(TemplateReference lotRef in block.Lots) {
-                    LotTemplate lotTemplate = template.LotTemplates[lotRef.Name];
+                    if (!lotTemplates.ContainsKey(lotRef.Name))
+                        throw new Exception("Template " + lotRef.Name + " not found in Lot Templates");
+
+                    LotTemplate lotTemplate = lotTemplates[lotRef.Name];
 
                     TilePosition lotPosition = offset + blockRef.Position + lotRef.Position;
                     Lot lot = new Lot();
                     lot.Anchor = lotPosition;
                     lot.Facing = lotTemplate.Facing;
                     lot.PopulateTiles(lotTemplate.Width, lotTemplate.Height);
-                    
-
-                    BuildingAttributes attributes = BuildingAttributes.GetAttributes(lotTemplate.BuildingType, lotTemplate.Facing);
+                                        
                     Building building = new Building(map.Tiles[lotPosition], lotTemplate.BuildingType, lotTemplate.Facing,
-                        attributes.Width, attributes.Height, attributes.SquareMeters);
+                        lotTemplate.Width, lotTemplate.Height, lotTemplate.BlockPosition, lotTemplate.Variation);
                     lot.Building = building;
+
+                    if(template.BuildingColors.ContainsKey(lotTemplate.BuildingType.ToString())) {
+                        lot.Building.Color = RandomUtils.RandomThing<string>(template.BuildingColors[lotTemplate.BuildingType.ToString()], random);
+                    }
 
                     for (int x = 0; x < lotTemplate.Width; x++) {
                         for (int y = 0; y < lotTemplate.Height; y++) {

@@ -365,22 +365,26 @@ namespace DCTC.Controllers {
             }
         }
 
+        public bool constrain = false;
+
         void MoveCameraRelative(Vector3 diff) {
-            Vector3[] corners = CalculateVisibleArea();
-            Vector2 mapDimensions = MapDimensions;
+            if (constrain) {
+                Vector3[] corners = CalculateVisibleArea();
+                Vector2 mapDimensions = MapDimensions;
 
-            if (corners[0].x < -1 * CameraLockPadding)
-                diff.x = Mathf.Max(0, diff.x);
+                if (corners[0].x < -1 * CameraLockPadding)
+                    diff.x = Mathf.Max(0, diff.x);
 
-            if (corners[3].x > mapDimensions.x + CameraLockPadding)
-                diff.x = Mathf.Min(0, diff.x);
+                if (corners[3].x > mapDimensions.x + CameraLockPadding)
+                    diff.x = Mathf.Min(0, diff.x);
 
-            if (corners[0].z < -1 * CameraLockPadding)
-                diff.z = Mathf.Max(0, diff.z);
+                if (corners[0].z < -1 * CameraLockPadding)
+                    diff.z = Mathf.Max(0, diff.z);
 
-            if (corners[1].z > mapDimensions.y + CameraLockPadding)
-                diff.z = Mathf.Min(0, diff.z);
+                if (corners[1].z > mapDimensions.y + CameraLockPadding)
+                    diff.z = Mathf.Min(0, diff.z);
 
+            }
 
             mainCamera.transform.Translate(diff, Space.World);
 

@@ -82,6 +82,7 @@
     <Compile Include="Assets\Scripts\Map\Direction.cs" />
     <Compile Include="Assets\Scripts\Map\MapConfiguration.cs" />
     <Compile Include="Assets\Scripts\Map\MapGenerator.cs" />
+    <Compile Include="Assets\Scripts\Map\PoleGraphics.cs" />
     <Compile Include="Assets\Scripts\Map\ThreeDMap.cs" />
     <Compile Include="Assets\Scripts\Map\Tile.cs" />
     <Compile Include="Assets\Scripts\Map\TilePosition.cs" />
@@ -739,6 +740,12 @@
     <Reference Include="Boo.Lang">
       <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/unityscript/Boo.Lang.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="ProceduralCable.csproj">
+      <Project>{64779D73-EC57-4CA4-D06B-CB213B11DB5F}</Project>
+      <Name>ProceduralCable</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

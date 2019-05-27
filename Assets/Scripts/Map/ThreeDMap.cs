@@ -164,7 +164,7 @@ namespace DCTC.Map {
         }
 
 
-
+        // TODO: this isn't done yet
         public void PlaceCable(Cable cable) {
             int idx = 0;
             int total = cable.Positions.Count;
@@ -543,8 +543,19 @@ namespace DCTC.Map {
                         }
 
                         if (!skip) {
-                            prefab = prefabs["Road" + tile.RoadType.ToString()];
+                            string prefabName = "Road" + tile.RoadType.ToString();
+                            if (!prefabs.ContainsKey(prefabName)) {
+                                Debug.LogWarning("Prefab " + prefabName + " not found");
+                                continue;
+                            }
+                                
+
+                            prefab = prefabs[prefabName];
                             world = PositionToWorld(pos);
+
+                            if (tile.RoadType != RoadType.Horizontal && tile.RoadType != RoadType.Vertical) {
+                                world = new Vector3(world.x, Random.Range(-0.003f, 0.003f), world.z);
+                            }
                         }
 
                     }  
@@ -619,6 +630,16 @@ namespace DCTC.Map {
             }
         }
 
+        string LotPrefabName(Lot lot) {
+            string str = "";
+            str += lot.Building.Type.ToString() + "-";
+            str += lot.Building.FacingDirection.ToString().Substring(0, 1) + "-";
+            str += lot.Building.BlockPosition + "-";
+            str += lot.Building.Width.ToString() + "x" + lot.Building.Height.ToString() + "-";
+            str += lot.Building.Variation.ToString();
+            return str;
+        }
+
         IEnumerator DrawBuildings() {
             GameObject prefab = null;
             buildings.Clear();
@@ -630,9 +651,9 @@ namespace DCTC.Map {
                     Lot lot = n.Lots[j];
 
                     if (lot.Building != null) {
-                        string prefabName = lot.Building.Type.ToString();
+                        string prefabName = LotPrefabName(lot);
 
-                        if(!prefabs.ContainsKey(prefabName)) {
+                        if (!prefabs.ContainsKey(prefabName)) {
                             Debug.LogWarning("Missing prefab: " + prefabName);
                             continue;
                         }
@@ -641,37 +662,16 @@ namespace DCTC.Map {
                         GameObject buildingGO = Instantiate(prefab);
                         buildingGO.name = BuildingName(lot.Building.Anchor);
                         buildingGO.transform.SetParent(this.transform, false);
-                        buildingGO.transform.position = new Vector3(lot.Building.Anchor.x * 2, 0, lot.Building.Anchor.y * 2);
+                        buildingGO.SetActive(true);
+
+                        Vector2 pos = new Vector2(lot.Anchor.x + (lot.Building.Width - 1) / 2f, lot.Anchor.y + (lot.Building.Height - 1) / 2f);
+                        buildingGO.transform.position = PositionToWorld(pos);
                         buildings.Add(lot.Building.Anchor, buildingGO);
                         buildingRenderers.Add(lot.Building.Anchor, GetBuildingGraphics(buildingGO).GetComponent<MeshRenderer>());
 
-                        float rotation = 0;
-                        switch (lot.Building.FacingDirection) {
-                            case Direction.East:
-                                rotation = 0;
-                                break;
-                            case Direction.South:
-                                rotation = 90;
-                                break;
-                            case Direction.West:
-                                rotation = 180;
-                                break;
-                            case Direction.North:
-                                rotation = 270;
-                                break;
-                        }
-
-                        if (rotation != 0) {
-                            Transform meshTransform = buildingGO.transform.GetChild(0).transform;
-
-                            meshTransform.Rotate(Vector3.up, rotation, Space.World);
-
-                            // If we're rotating 90 or 270 degrees and this isn't a square lot, flip the x and z coordinates of the mesh
-                            if(lot.Building.Width != lot.Building.Height) {
-                                if (lot.Building.FacingDirection == Direction.North || lot.Building.FacingDirection == Direction.South) {
-                                    meshTransform.localPosition = new Vector3(meshTransform.localPosition.z, meshTransform.localPosition.y, meshTransform.localPosition.x);
-                                }
-                            }
+                        if(lot.Building.Color != null) {
+                            Material material = materialController.GetMaterial(lot.Building.Type.ToString() + lot.Building.Color);
+                            GetBuildingGraphics(buildingGO).GetComponent<MeshRenderer>().material = material;
                         }
 
                         if (++batchCount % BatchSize == 0)
@@ -707,7 +707,7 @@ namespace DCTC.Map {
                 labelGO.transform.SetParent(canvas.transform, false);
 
                 Vector3 world = PositionToWorld(pos);
-                labelGO.transform.position = new Vector3(world.x + 1f, world.y + 0.05f, world.z + 1f); ;
+                labelGO.transform.position = new Vector3(world.x, world.y + 0.05f, world.z); ;
 
                 if (segment.Orientation == Orientation.Vertical) {
                     labelGO.transform.Rotate(Vector3.up, 90, Space.World);

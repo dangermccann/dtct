@@ -10,16 +10,32 @@ namespace DCTC.Controllers {
         private MapConfiguration map;
 
         private void Start() {
-            Debug.Log("PRESS SPACE BAR");
+            Generate();
         }
 
         private void Update() {
             if (Input.GetKeyDown(KeyCode.Space))
-                Redraw();
+                Generate();
+        }
+
+        void Generate() {
+            GameObject.Find("Environment").SetActive(false);
+
+            System.Random rand = new System.Random();
+            NewGameSettings settings = new NewGameSettings() {
+                NeighborhoodCountX = 2,
+                NeighborhoodCountY = 2
+            };
+
+            MapGenerator generator = new MapGenerator(rand, settings, new NameGenerator(rand));
+            map = generator.Generate();
+
+            GameController.Get().Map = map;
+            ThreeDMap.Init(map);
         }
 
         void Redraw() {
-            //transform.root.Find("Environment").gameObject.SetActive(false);
+            GameObject.Find("Environment").SetActive(false);
 
             int width = 8;
             int height = 13;
@@ -56,20 +72,19 @@ namespace DCTC.Controllers {
 
 
 
-        void CreateBuilding(int x, int y, BuildingType type, Direction facing, Neighborhood neighborhood) {
-            BuildingAttributes attributes = BuildingAttributes.GetAttributes(type, facing);
-
+        void CreateBuilding(int x, int y, BuildingType type, int width, int height,
+            Direction facing, Neighborhood neighborhood, string blockPos, int variation) {
             TilePosition position = new TilePosition(x, y);
             Lot lot = new Lot();
             lot.Anchor = position;
             lot.Facing = facing;
 
             Building building = new Building(map.Tiles[position], type, facing,
-                        attributes.Width, attributes.Height, attributes.SquareMeters);
+                        width, height, blockPos, variation);
             lot.Building = building;
 
-            for (int dx = 0; dx < attributes.Width; dx++) {
-                for (int dy = 0; dy < attributes.Height; dy++) {
+            for (int dx = 0; dx < width; dx++) {
+                for (int dy = 0; dy < height; dy++) {
                     Tile tile = map.Tiles[new TilePosition(dx + position.x, dy + position.y)];
                     tile.Building = building;
                     tile.Lot = lot;

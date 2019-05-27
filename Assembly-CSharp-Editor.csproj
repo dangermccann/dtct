@@ -721,6 +721,10 @@
       <Project>{FCC3E872-17F3-103E-CA9C-87CFABD73FB7}</Project>
       <Name>Assembly-CSharp</Name>
     </ProjectReference>
+    <ProjectReference Include="ProceduralCable.csproj">
+      <Project>{64779D73-EC57-4CA4-D06B-CB213B11DB5F}</Project>
+      <Name>ProceduralCable</Name>
+    </ProjectReference>
     <ProjectReference Include="Assembly.csproj">
       <Project>{9D721418-0363-37AB-FC25-23EBCA8674B1}</Project>
       <Name>Assembly</Name>
