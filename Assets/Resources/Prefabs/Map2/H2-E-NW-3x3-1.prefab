@@ -14,7 +14,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 0
 --- !u!4 &4489742934260144154
 Transform:
@@ -23,7 +23,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4489742934260144153}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 20, y: 0, z: 8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -829,10 +829,6 @@ PrefabInstance:
     - target: {fileID: 1000011932963582, guid: ad5c618c7c0b0c24ab586d25247fdb07, type: 3}
       propertyPath: m_Name
       value: Bush Box (29)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1000011932963582, guid: ad5c618c7c0b0c24ab586d25247fdb07, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4000012891008124, guid: ad5c618c7c0b0c24ab586d25247fdb07, type: 3}
       propertyPath: m_LocalPosition.x

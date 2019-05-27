@@ -127,14 +127,14 @@ namespace DCTC.Map
             foreach(Neighborhood neighborhood in map.Neighborhoods) {
                 foreach(Lot lot in neighborhood.Lots) {
                     if(lot.Building != null) {
-                        if(lot.Building.Type == BuildingType.None) {
+                        if(lot.Building.Type == BuildingType.Park) {
                             candidates.Add(lot.Anchor);
                         }
                     }
                 }
             }
 
-            if(candidates.Count <= count) {
+            if(candidates.Count < count) {
                 UnityEngine.Debug.LogError("Couldn't find enough buildings to replace with headquarters");
                 return null;
             }
@@ -155,13 +155,6 @@ namespace DCTC.Map
             foreach(TilePosition replacement in replacements) {
                 Lot lot = map.Tiles[replacement].Lot;
                 lot.Building.Type = BuildingType.Headquarters;
-
-                // Add connectors at all four corners
-                HashSet<TilePosition> corners = lot.Corners();
-                foreach(TilePosition corner in corners) {
-                    map.Tiles[corner].Type = TileType.Connector;
-                    map.Tiles[corner].MovementCost = 1;
-                }
             }
 
 

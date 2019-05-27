@@ -142,6 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraController: {fileID: 901094873}
+  lablesVisible: 0
 --- !u!4 &596822
 Transform:
   m_ObjectHideFlags: 0
@@ -15380,6 +15381,7 @@ MonoBehaviour:
   MaxZoomDistance: 200
   AnimationDuration: 1.25
   KeyboardScrollSpeed: 250
+  constrain: 0
 --- !u!114 &901094874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15434,7 +15436,7 @@ MonoBehaviour:
   ConstructionToggleGroup: {fileID: 817452610}
   DestroyPrefab: {fileID: 1879755227799232, guid: b1ade944c623b084d82fa770edef3a71,
     type: 3}
-  CableCursorPrefab: {fileID: 1086567799915276, guid: af67f62b2116fd9448af50b056635089,
+  CableCursorPrefab: {fileID: 9123456137416048944, guid: aaafa61adfe4249fcb4c24103cfa7687,
     type: 3}
   NodeCursorPrefabCopper: {fileID: 1270918085507872, guid: e2928b8350ddd6842806ec56c1d5c011,
     type: 3}

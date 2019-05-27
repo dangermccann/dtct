@@ -22,6 +22,8 @@ namespace DCTC.Map {
         public event GameEvent OverlayModeChanged;
         public event GameEvent DrawComplete;
 
+        public bool lablesVisible = false;
+
         private MapConfiguration map;
         private GameObject canvas;
         private Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
@@ -683,44 +685,47 @@ namespace DCTC.Map {
 
         IEnumerator DrawLabels() {
             labels.Clear();
-            int index = 0;
 
-            foreach (Street street in map.Streets) {
+            if (lablesVisible) {
+                int index = 0;
 
-                Segment segment = street.Segments[0];
-                Vector2 length = segment.End.AsVector() - segment.Start.AsVector();
+                foreach (Street street in map.Streets) {
 
-                if (length.magnitude < 3)
-                    continue;
+                    Segment segment = street.Segments[0];
+                    Vector2 length = segment.End.AsVector() - segment.Start.AsVector();
+
+                    if (length.magnitude < 3)
+                        continue;
 
 
-                Vector2 pos;
-                if(index % 3 == 0)
-                    pos = new Vector2(segment.Start.x + length.x / 3f, segment.Start.y + length.y / 3f);
-                else if(index % 3 == 1)
-                    pos = new Vector2(segment.Start.x + length.x / 2f, segment.Start.y + length.y / 2f);
-                else
-                    pos = new Vector2(segment.Start.x + length.x / 1.5f, segment.Start.y + length.y / 1.5f);
+                    Vector2 pos;
+                    if (index % 3 == 0)
+                        pos = new Vector2(segment.Start.x + length.x / 3f, segment.Start.y + length.y / 3f);
+                    else if (index % 3 == 1)
+                        pos = new Vector2(segment.Start.x + length.x / 2f, segment.Start.y + length.y / 2f);
+                    else
+                        pos = new Vector2(segment.Start.x + length.x / 1.5f, segment.Start.y + length.y / 1.5f);
 
-                GameObject labelGO = Instantiate(prefabs["RoadLabel"]);
-                labelGO.name = "Label (" + street.Name + ")";
-                labelGO.transform.SetParent(canvas.transform, false);
+                    GameObject labelGO = Instantiate(prefabs["RoadLabel"]);
+                    labelGO.name = "Label (" + street.Name + ")";
+                    labelGO.transform.SetParent(canvas.transform, false);
 
-                Vector3 world = PositionToWorld(pos);
-                labelGO.transform.position = new Vector3(world.x, world.y + 0.05f, world.z); ;
+                    Vector3 world = PositionToWorld(pos);
+                    labelGO.transform.position = new Vector3(world.x, world.y + 0.05f, world.z); ;
 
-                if (segment.Orientation == Orientation.Vertical) {
-                    labelGO.transform.Rotate(Vector3.up, 90, Space.World);
+                    if (segment.Orientation == Orientation.Vertical) {
+                        labelGO.transform.Rotate(Vector3.up, 90, Space.World);
+                    }
+
+                    labelGO.GetComponent<TextMeshPro>().text = street.Name;
+                    labels.Add(street.Name, labelGO);
+
+                    index++;
+
+                    if (++batchCount % BatchSize == 0)
+                        yield return null;
+
                 }
-
-                labelGO.GetComponent<TextMeshPro>().text = street.Name;
-                labels.Add(street.Name, labelGO);
-
-                index++;
-
-                if (++batchCount % BatchSize == 0)
-                    yield return null;
-
             }
         }
 

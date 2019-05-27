@@ -95,7 +95,6 @@ namespace DCTC.Model {
         A1, A2,
         Headquarters,
         Park,
-        None
 	}
 
     public enum BuildingClassification {

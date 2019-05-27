@@ -146,10 +146,22 @@ LotTemplates:
   - H9-N-M-2x3-1
   - H9-S-M-2x3-1
   - H9-W-M-3x2-1
+  - Park-S-M-6x6-1
+  - Park-S-M-5x7-1
+  - Headquarters-S-M-6x6-1
+  - Headquarters-S-M-5x7-1
 
   
   
 BlockTemplates:
+  Park-6x6:
+    Lots:
+      - Name: Park-S-M-6x6-1
+        Position: { x: 0, y: 0 }
+  Park-5x7:
+    Lots:
+      - Name: Park-S-M-5x7-1
+        Position: { x: 0, y: 0 }
 
   H-3x6-A:
     Lots:
@@ -162,67 +174,101 @@ BlockTemplates:
     Lots:
       - Name: H1-W-NE-3x3-1
         Position: {x: 0, y: 0}
-      - Name: H1-W-SE-3x3-1
+      - Name: H2-W-SE-3x3-1
         Position: {x: 0, y: 3}
-      - Name: H1-E-NW-3x3-2
+      - Name: H2-E-NW-3x3-1
         Position: {x: 3, y: 0}
-      - Name: H1-E-SW-3x3-1
+      - Name: H1-E-SW-3x3-2
         Position: {x: 3, y: 3}
 
   H-6x6-B:
     Lots:
-      - Name: H1-S-NE-3x3-1
+      - Name: H7-S-NE-3x3-1
         Position: {x: 0, y: 0}
-      - Name: H1-N-SE-3x3-1
+      - Name: H7-N-SE-3x3-1
         Position: {x: 0, y: 3}
-      - Name: H1-S-NW-3x3-1
+      - Name: H7-S-NW-3x3-1
         Position: {x: 3, y: 0}
       - Name: H1-N-SW-3x3-1
         Position: {x: 3, y: 3}
 
   H-6x8-A:
     Lots:
-      - Name: H1-W-NE-3x3-1
+      - Name: H2-W-NE-3x3-1
         Position: {x: 0, y: 0}
       - Name: H1-W-M-3x2-1
         Position: {x: 0, y: 3}
-      - Name: H1-W-SE-3x3-1
+      - Name: H2-W-SE-3x3-2
         Position: {x: 0, y: 5}
       - Name: H1-E-NW-3x3-2
         Position: {x: 3, y: 0}
       - Name: H1-E-M-3x2-1
         Position: {x: 3, y: 3}
-      - Name: H1-E-SW-3x3-2
+      - Name: H2-E-SW-3x3-2
+        Position: {x: 3, y: 5}
+  
+  H-6x8-B:
+    Lots:
+      - Name: H7-W-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H9-W-M-3x2-1
+        Position: {x: 0, y: 3}
+      - Name: H7-W-SE-3x3-1
+        Position: {x: 0, y: 5}
+      - Name: H7-E-NW-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H9-E-M-3x2-1
+        Position: {x: 3, y: 3}
+      - Name: H7-E-SW-3x3-1
         Position: {x: 3, y: 5}
   
   H-6x10-A:
     Lots:
-      - Name: H1-W-NE-3x3-1
+      - Name: H1-W-NE-3x3-2
         Position: {x: 0, y: 0}
       - Name: H1-W-M-3x2-1
         Position: {x: 0, y: 3}
       - Name: H1-W-M-3x2-1
         Position: {x: 0, y: 5}
-      - Name: H1-W-SE-3x3-2
+      - Name: H2-W-SE-3x3-2
         Position: {x: 0, y: 7}
-      - Name: H1-E-NW-3x3-2
+      - Name: H2-E-NW-3x3-2
         Position: {x: 3, y: 0}
       - Name: H1-E-M-3x2-1
         Position: {x: 3, y: 3}
       - Name: H1-E-M-3x2-1
         Position: {x: 3, y: 5}
-      - Name: H1-E-SW-3x3-1
+      - Name: H1-E-SW-3x3-2
+        Position: {x: 3, y: 7}
+
+  H-6x10-B:
+    Lots:
+      - Name: H7-W-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 3}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 5}
+      - Name: H7-W-SE-3x3-1
+        Position: {x: 0, y: 7}
+      - Name: H7-E-NW-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 3}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 5}
+      - Name: H7-E-SW-3x3-1
         Position: {x: 3, y: 7}
 
   H-6x11-A:
     Lots:
       - Name: H1-W-NE-3x3-1
         Position: {x: 0, y: 0}
-      - Name: H1-W-M-3x3-1
+      - Name: H2-W-M-3x3-1
         Position: {x: 0, y: 3}
       - Name: H1-W-M-3x2-1
         Position: {x: 0, y: 6}
-      - Name: H1-W-SE-3x3-2
+      - Name: H2-W-SE-3x3-2
         Position: {x: 0, y: 8}
       - Name: H1-E-NW-3x3-2
         Position: {x: 3, y: 0}
@@ -230,18 +276,37 @@ BlockTemplates:
         Position: {x: 3, y: 3}
       - Name: H1-E-M-3x2-1
         Position: {x: 3, y: 6}
-      - Name: H1-E-SW-3x3-1
+      - Name: H2-E-SW-3x3-2
+        Position: {x: 3, y: 8}
+
+  H-6x11-B:
+    Lots:
+      - Name: H7-W-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-W-M-3x3-1
+        Position: {x: 0, y: 3}
+      - Name: H9-W-M-3x2-1
+        Position: {x: 0, y: 6}
+      - Name: H7-W-SE-3x3-1
+        Position: {x: 0, y: 8}
+      - Name: H7-E-NW-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H7-E-M-3x3-1
+        Position: {x: 3, y: 3}
+      - Name: H9-E-M-3x2-1
+        Position: {x: 3, y: 6}
+      - Name: H7-E-SW-3x3-1
         Position: {x: 3, y: 8}
 
   H-6x12-A:
     Lots:
-      - Name: H1-W-NE-3x3-1
+      - Name: H2-W-NE-3x3-2
         Position: {x: 0, y: 0}
-      - Name: H1-W-M-3x3-1
+      - Name: H2-W-M-3x3-1
         Position: {x: 0, y: 3}
-      - Name: H1-W-M-3x3-1
+      - Name: H2-W-M-3x3-1
         Position: {x: 0, y: 6}
-      - Name: H1-W-SE-3x3-2
+      - Name: H2-W-SE-3x3-1
         Position: {x: 0, y: 9}
       - Name: H1-E-NW-3x3-2
         Position: {x: 3, y: 0}
@@ -249,14 +314,33 @@ BlockTemplates:
         Position: {x: 3, y: 3}
       - Name: H1-E-M-3x3-2
         Position: {x: 3, y: 6}
-      - Name: H1-E-SW-3x3-1
+      - Name: H2-E-SW-3x3-1
         Position: {x: 3, y: 9}
  
+  H-6x12-B:
+    Lots:
+      - Name: H7-W-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-W-M-3x3-1
+        Position: {x: 0, y: 3}
+      - Name: H7-W-M-3x3-1
+        Position: {x: 0, y: 6}
+      - Name: H7-W-SE-3x3-1
+        Position: {x: 0, y: 9}
+      - Name: H7-E-NW-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H7-E-M-3x3-1
+        Position: {x: 3, y: 3}
+      - Name: H7-E-M-3x3-1
+        Position: {x: 3, y: 6}
+      - Name: H7-E-SW-3x3-1
+        Position: {x: 3, y: 9}
+
   H-6x13-A:
     Lots:
-      - Name: H1-W-NE-3x3-1
+      - Name: H2-W-NE-3x3-1
         Position: {x: 0, y: 0}
-      - Name: H1-W-M-3x3-1
+      - Name: H2-W-M-3x3-1
         Position: {x: 0, y: 3}
       - Name: H1-W-M-3x2-1
         Position: {x: 0, y: 6}
@@ -266,22 +350,45 @@ BlockTemplates:
         Position: {x: 0, y: 10}
       - Name: H1-E-NW-3x3-2
         Position: {x: 3, y: 0}
-      - Name: H1-E-M-3x3-1
+      - Name: H2-E-M-3x3-1
         Position: {x: 3, y: 3}
       - Name: H1-E-M-3x2-1
         Position: {x: 3, y: 6}
       - Name: H1-E-M-3x2-1
         Position: {x: 3, y: 8}
-      - Name: H1-E-SW-3x3-1
+      - Name: H1-E-SW-3x3-2
+        Position: {x: 3, y: 10}
+
+  H-6x13-B:
+    Lots:
+      - Name: H7-W-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-W-M-3x3-1
+        Position: {x: 0, y: 3}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 6}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 8}
+      - Name: H7-W-SE-3x3-1
+        Position: {x: 0, y: 10}
+      - Name: H7-E-NW-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H7-E-M-3x3-1
+        Position: {x: 3, y: 3}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 6}
+      - Name: H9-E-M-3x2-1
+        Position: {x: 3, y: 8}
+      - Name: H7-E-SW-3x3-1
         Position: {x: 3, y: 10}
 
   H-6x15-A:
     Lots:
       - Name: H1-W-NE-3x3-1
         Position: {x: 0, y: 0}
-      - Name: H1-W-M-3x3-1
+      - Name: H1-W-M-3x3-2
         Position: {x: 0, y: 3}
-      - Name: H1-W-M-3x3-1
+      - Name: H2-W-M-3x3-1
         Position: {x: 0, y: 6}
       - Name: H1-W-M-3x3-2
         Position: {x: 0, y: 9}
@@ -289,20 +396,43 @@ BlockTemplates:
         Position: {x: 0, y: 12}
       - Name: H1-E-NW-3x3-2
         Position: {x: 3, y: 0}
-      - Name: H1-E-M-3x3-1
+      - Name: H2-E-M-3x3-1
         Position: {x: 3, y: 3}
       - Name: H1-E-M-3x3-2
         Position: {x: 3, y: 6}
       - Name: H1-E-M-3x3-1
         Position: {x: 3, y: 9}
-      - Name: H1-E-SW-3x3-1
+      - Name: H2-E-SW-3x3-2
+        Position: {x: 3, y: 12}
+
+  H-6x15-B:
+    Lots:
+      - Name: H7-W-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-W-M-3x3-1
+        Position: {x: 0, y: 3}
+      - Name: H7-W-M-3x3-1
+        Position: {x: 0, y: 6}
+      - Name: H7-W-M-3x3-1
+        Position: {x: 0, y: 9}
+      - Name: H7-W-SE-3x3-1
+        Position: {x: 0, y: 12}
+      - Name: H7-E-NW-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H7-E-M-3x3-1
+        Position: {x: 3, y: 3}
+      - Name: H7-E-M-3x3-1
+        Position: {x: 3, y: 6}
+      - Name: H7-E-M-3x3-1
+        Position: {x: 3, y: 9}
+      - Name: H7-E-SW-3x3-1
         Position: {x: 3, y: 12}
 
   H-6x18-A:
     Lots:
-      - Name: H1-W-NE-3x3-1
+      - Name: H2-W-NE-3x3-1
         Position: {x: 0, y: 0}
-      - Name: H1-W-M-3x3-1
+      - Name: H2-W-M-3x3-1
         Position: {x: 0, y: 3}
       - Name: H1-W-M-3x3-1
         Position: {x: 0, y: 6}
@@ -312,7 +442,7 @@ BlockTemplates:
         Position: {x: 0, y: 12}
       - Name: H1-W-SE-3x3-1
         Position: {x: 0, y: 15}
-      - Name: H1-E-NW-3x3-2
+      - Name: H2-E-NW-3x3-2
         Position: {x: 3, y: 0}
       - Name: H1-E-M-3x3-1
         Position: {x: 3, y: 3}
@@ -322,20 +452,55 @@ BlockTemplates:
         Position: {x: 3, y: 9}
       - Name: H1-E-M-3x3-1
         Position: {x: 3, y: 12}
-      - Name: H1-E-SW-3x3-2
+      - Name: H2-E-SW-3x3-2
+        Position: {x: 3, y: 15}
+
+  H-6x18-B:
+    Lots:
+      - Name: H7-W-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 3}
+      - Name: H9-W-M-3x2-1
+        Position: {x: 0, y: 5}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 7}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 9}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 11}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 13}
+      - Name: H7-W-SE-3x3-1
+        Position: {x: 0, y: 15}
+      - Name: H7-E-NW-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 3}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 5}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 7}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 9}
+      - Name: H9-E-M-3x2-1
+        Position: {x: 3, y: 11}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 13}
+      - Name: H7-E-SW-3x3-1
         Position: {x: 3, y: 15}
 
   H-6x21-A:
     Lots:
-      - Name: H1-W-NE-3x3-1
+      - Name: H1-W-NE-3x3-2
         Position: {x: 0, y: 0}
-      - Name: H1-W-M-3x3-1
+      - Name: H2-W-M-3x3-2
         Position: {x: 0, y: 3}
-      - Name: H1-W-M-3x3-1
+      - Name: H2-W-M-3x3-1
         Position: {x: 0, y: 6}
-      - Name: H1-W-M-3x3-2
+      - Name: H2-W-M-3x3-1
         Position: {x: 0, y: 9}
-      - Name: H1-W-M-3x3-2
+      - Name: H2-W-M-3x3-1
         Position: {x: 0, y: 12}
       - Name: H1-W-M-3x3-1
         Position: {x: 0, y: 15}
@@ -343,7 +508,7 @@ BlockTemplates:
         Position: {x: 0, y: 18}
       - Name: H1-E-NW-3x3-2
         Position: {x: 3, y: 0}
-      - Name: H1-E-M-3x3-1
+      - Name: H2-E-M-3x3-1
         Position: {x: 3, y: 3}
       - Name: H1-E-M-3x3-2
         Position: {x: 3, y: 6}
@@ -351,9 +516,48 @@ BlockTemplates:
         Position: {x: 3, y: 9}
       - Name: H1-E-M-3x3-1
         Position: {x: 3, y: 12}
-      - Name: H1-E-M-3x3-2
+      - Name: H2-E-M-3x3-2
         Position: {x: 3, y: 15}
-      - Name: H1-E-SW-3x3-1
+      - Name: H2-E-SW-3x3-1
+        Position: {x: 3, y: 18}
+
+  H-6x21-B:
+    Lots:
+      - Name: H7-W-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 3}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 5}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 7}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 9}
+      - Name: H9-W-M-3x2-1
+        Position: {x: 0, y: 11}
+      - Name: H8-W-M-3x2-1
+        Position: {x: 0, y: 13}
+      - Name: H7-W-M-3x3-1
+        Position: {x: 0, y: 15}
+      - Name: H7-W-SE-3x3-1
+        Position: {x: 0, y: 18}
+      - Name: H7-E-NW-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 3}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 5}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 7}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 9}
+      - Name: H8-E-M-3x2-1
+        Position: {x: 3, y: 11}
+      - Name: H9-E-M-3x2-1
+        Position: {x: 3, y: 13}
+      - Name: H7-E-M-3x3-2
+        Position: {x: 3, y: 15}
+      - Name: H7-E-SW-3x3-1
         Position: {x: 3, y: 18}
 
 
@@ -361,19 +565,19 @@ BlockTemplates:
 # Horizontal
   H-20x6-A:
     Lots:
-      - Name: H1-S-NE-3x3-1
+      - Name: H2-S-NE-3x3-2
         Position: {x: 0, y: 0}
       - Name: H1-N-SE-3x3-1
         Position: {x: 0, y: 3}
       - Name: H1-S-M-3x3-1
         Position: {x: 3, y: 0}
-      - Name: H1-N-M-3x3-1
+      - Name: H1-N-M-3x3-2
         Position: {x: 3, y: 3}
-      - Name: H1-S-M-3x3-1
+      - Name: H2-S-M-3x3-1
         Position: {x: 6, y: 0}
-      - Name: H1-N-M-3x3-1
+      - Name: H2-N-M-3x3-1
         Position: {x: 6, y: 3}
-      - Name: H1-S-M-3x3-1
+      - Name: H1-S-M-3x3-2
         Position: {x: 9, y: 0}
       - Name: H1-N-M-3x3-1
         Position: {x: 9, y: 3}
@@ -381,13 +585,48 @@ BlockTemplates:
         Position: {x: 12, y: 0}
       - Name: H1-N-M-2x3-1
         Position: {x: 12, y: 3}
-      - Name: H1-S-M-3x3-1
+      - Name: H2-S-M-3x3-1
         Position: {x: 14, y: 0}
       - Name: H1-N-M-3x3-1
         Position: {x: 14, y: 3}
-      - Name: H1-S-NW-3x3-1
+      - Name: H2-S-NW-3x3-2
         Position: {x: 17, y: 0}
-      - Name: H1-N-SW-3x3-1
+      - Name: H1-N-SW-3x3-2
+        Position: {x: 17, y: 3}
+
+  H-20x6-B:
+    Lots:
+      - Name: H7-S-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-N-SE-3x3-1
+        Position: {x: 0, y: 3}
+      - Name: H8-S-M-2x3-1
+        Position: {x: 3, y: 0}
+      - Name: H8-N-M-2x3-1
+        Position: {x: 3, y: 3}
+      - Name: H8-S-M-2x3-1
+        Position: {x: 5, y: 0}
+      - Name: H8-N-M-2x3-1
+        Position: {x: 5, y: 3}
+      - Name: H8-S-M-2x3-1
+        Position: {x: 7, y: 0}
+      - Name: H9-N-M-2x3-1
+        Position: {x: 7, y: 3}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 9, y: 0}
+      - Name: H7-N-M-3x3-1
+        Position: {x: 9, y: 3}
+      - Name: H8-S-M-2x3-1
+        Position: {x: 12, y: 0}
+      - Name: H9-N-M-2x3-1
+        Position: {x: 12, y: 3}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 14, y: 0}
+      - Name: H7-N-M-3x3-1
+        Position: {x: 14, y: 3}
+      - Name: H7-S-NW-3x3-1
+        Position: {x: 17, y: 0}
+      - Name: H7-N-SW-3x3-1
         Position: {x: 17, y: 3}
 
   H-20x3-A:
@@ -407,69 +646,144 @@ BlockTemplates:
       - Name: H1-S-NW-3x3-1
         Position: {x: 17, y: 0}
 
+  H-20x3-B:
+    Lots:
+      - Name: H7-S-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 6, y: 0}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 9, y: 0}
+      - Name: H9-S-M-2x3-1
+        Position: {x: 12, y: 0}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 14, y: 0}
+      - Name: H7-S-NW-3x3-1
+        Position: {x: 17, y: 0}
+
   H-18x6-A:
     Lots:
-      - Name: H1-S-NE-3x3-1
+      - Name: H2-S-NE-3x3-2
         Position: {x: 0, y: 0}
-      - Name: H1-N-SE-3x3-1
+      - Name: H2-N-SE-3x3-1
         Position: {x: 0, y: 3}
       - Name: H1-S-M-3x3-1
         Position: {x: 3, y: 0}
-      - Name: H1-N-M-3x3-1
+      - Name: H1-N-M-3x3-2
         Position: {x: 3, y: 3}
-      - Name: H1-S-M-3x3-1
+      - Name: H2-S-M-3x3-1
         Position: {x: 6, y: 0}
-      - Name: H1-N-M-3x3-1
+      - Name: H2-N-M-3x3-1
         Position: {x: 6, y: 3}
       - Name: H1-S-M-3x3-1
         Position: {x: 9, y: 0}
       - Name: H1-N-M-3x3-1
         Position: {x: 9, y: 3}
-      - Name: H1-S-M-3x3-1
+      - Name: H2-S-M-3x3-1
         Position: {x: 12, y: 0}
-      - Name: H1-N-M-3x3-1
+      - Name: H1-N-M-3x3-2
         Position: {x: 12, y: 3}
-      - Name: H1-S-NW-3x3-1
+      - Name: H2-S-NW-3x3-1
         Position: {x: 15, y: 0}
       - Name: H1-N-SW-3x3-1
         Position: {x: 15, y: 3}
 
+  H-18x6-B:
+    Lots:
+      - Name: H7-S-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-N-SE-3x3-1
+        Position: {x: 0, y: 3}
+      - Name: H9-S-M-2x3-1
+        Position: {x: 3, y: 0}
+      - Name: H8-N-M-2x3-1
+        Position: {x: 3, y: 3}
+      - Name: H8-S-M-2x3-1
+        Position: {x: 5, y: 0}
+      - Name: H9-N-M-2x3-1
+        Position: {x: 5, y: 3}
+      - Name: H8-S-M-2x3-1
+        Position: {x: 7, y: 0}
+      - Name: H8-N-M-2x3-1
+        Position: {x: 7, y: 3}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 9, y: 0}
+      - Name: H7-N-M-3x3-1
+        Position: {x: 9, y: 3}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 12, y: 0}
+      - Name: H7-N-M-3x3-1
+        Position: {x: 12, y: 3}
+      - Name: H7-S-NW-3x3-1
+        Position: {x: 15, y: 0}
+      - Name: H7-N-SW-3x3-1
+        Position: {x: 15, y: 3}
+
   H-17x6-A:
     Lots:
-      - Name: H1-S-NE-3x3-1
+      - Name: H1-S-NE-3x3-2
         Position: {x: 0, y: 0}
-      - Name: H1-N-SE-3x3-1
+      - Name: H1-N-SE-3x3-2
         Position: {x: 0, y: 3}
       - Name: H1-S-M-3x3-1
         Position: {x: 3, y: 0}
-      - Name: H1-N-M-3x3-1
+      - Name: H1-N-M-3x3-2
         Position: {x: 3, y: 3}
-      - Name: H1-S-M-3x3-1
+      - Name: H1-S-M-3x3-2
         Position: {x: 6, y: 0}
-      - Name: H1-N-M-3x3-1
+      - Name: H2-N-M-3x3-1
         Position: {x: 6, y: 3}
       - Name: H1-S-M-2x3-1
         Position: {x: 9, y: 0}
       - Name: H1-N-M-2x3-1
         Position: {x: 9, y: 3}
-      - Name: H1-S-M-3x3-1
+      - Name: H2-S-M-3x3-1
         Position: {x: 11, y: 0}
-      - Name: H1-N-M-3x3-1
+      - Name: H2-N-M-3x3-1
         Position: {x: 11, y: 3}
-      - Name: H1-S-NW-3x3-1
+      - Name: H2-S-NW-3x3-2
         Position: {x: 14, y: 0}
-      - Name: H1-N-SW-3x3-1
+      - Name: H2-N-SW-3x3-1
+        Position: {x: 14, y: 3}
+
+  H-17x6-B:
+    Lots:
+      - Name: H7-S-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-N-SE-3x3-1
+        Position: {x: 0, y: 3}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H7-N-M-3x3-1
+        Position: {x: 3, y: 3}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 6, y: 0}
+      - Name: H7-N-M-3x3-1
+        Position: {x: 6, y: 3}
+      - Name: H9-S-M-2x3-1
+        Position: {x: 9, y: 0}
+      - Name: H9-N-M-2x3-1
+        Position: {x: 9, y: 3}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 11, y: 0}
+      - Name: H7-N-M-3x3-1
+        Position: {x: 11, y: 3}
+      - Name: H7-S-NW-3x3-1
+        Position: {x: 14, y: 0}
+      - Name: H7-N-SW-3x3-1
         Position: {x: 14, y: 3}
 
   H-13x6-A:
     Lots:
       - Name: H1-S-NE-3x3-1
         Position: {x: 0, y: 0}
-      - Name: H1-N-SE-3x3-1
+      - Name: H1-N-SE-3x3-2
         Position: {x: 0, y: 3}
-      - Name: H1-S-M-3x3-1
+      - Name: H2-S-M-3x3-1
         Position: {x: 3, y: 0}
-      - Name: H1-N-M-3x3-1
+      - Name: H2-N-M-3x3-1
         Position: {x: 3, y: 3}
       - Name: H1-S-M-2x3-1
         Position: {x: 6, y: 0}
@@ -479,54 +793,115 @@ BlockTemplates:
         Position: {x: 8, y: 0}
       - Name: H1-N-M-2x3-1
         Position: {x: 8, y: 3}
-      - Name: H1-S-NW-3x3-1
+      - Name: H1-S-NW-3x3-2
         Position: {x: 10, y: 0}
-      - Name: H1-N-SW-3x3-1
+      - Name: H2-N-SW-3x3-1
+        Position: {x: 10, y: 3}
+
+  H-13x6-B:
+    Lots:
+      - Name: H7-S-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-N-SE-3x3-1
+        Position: {x: 0, y: 3}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H7-N-M-3x3-1
+        Position: {x: 3, y: 3}
+      - Name: H8-S-M-2x3-1
+        Position: {x: 6, y: 0}
+      - Name: H8-N-M-2x3-1
+        Position: {x: 6, y: 3}
+      - Name: H8-S-M-2x3-1
+        Position: {x: 8, y: 0}
+      - Name: H8-N-M-2x3-1
+        Position: {x: 8, y: 3}
+      - Name: H7-S-NW-3x3-1
+        Position: {x: 10, y: 0}
+      - Name: H7-N-SW-3x3-1
         Position: {x: 10, y: 3}
 
   H-12x6-A:
     Lots:
-      - Name: H1-S-NE-3x3-1
+      - Name: H2-S-NE-3x3-2
         Position: {x: 0, y: 0}
-      - Name: H1-N-SE-3x3-1
+      - Name: H2-N-SE-3x3-1
         Position: {x: 0, y: 3}
       - Name: H1-S-M-3x3-1
         Position: {x: 3, y: 0}
       - Name: H1-N-M-3x3-1
         Position: {x: 3, y: 3}
-      - Name: H1-S-M-3x3-1
+      - Name: H2-S-M-3x3-1
         Position: {x: 6, y: 0}
       - Name: H1-N-M-3x3-1
         Position: {x: 6, y: 3}
-      - Name: H1-S-NW-3x3-1
+      - Name: H2-S-NW-3x3-2
         Position: {x: 9, y: 0}
       - Name: H1-N-SW-3x3-1
+        Position: {x: 9, y: 3}
+
+  H-12x6-B:
+    Lots:
+      - Name: H7-S-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-N-SE-3x3-1
+        Position: {x: 0, y: 3}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H7-N-M-3x3-1
+        Position: {x: 3, y: 3}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 6, y: 0}
+      - Name: H7-N-M-3x3-1
+        Position: {x: 6, y: 3}
+      - Name: H7-S-NW-3x3-1
+        Position: {x: 9, y: 0}
+      - Name: H7-N-SW-3x3-1
         Position: {x: 9, y: 3}
 
   H-11x6-A:
     Lots:
       - Name: H1-S-NE-3x3-1
         Position: {x: 0, y: 0}
-      - Name: H1-N-SE-3x3-1
+      - Name: H1-N-SE-3x3-2
         Position: {x: 0, y: 3}
-      - Name: H1-S-M-3x3-1
+      - Name: H2-S-M-3x3-1
         Position: {x: 3, y: 0}
-      - Name: H1-N-M-3x3-1
+      - Name: H2-N-M-3x3-1
         Position: {x: 3, y: 3}
       - Name: H1-S-M-2x3-1
         Position: {x: 6, y: 0}
       - Name: H1-N-M-2x3-1
         Position: {x: 6, y: 3}
-      - Name: H1-S-NW-3x3-1
+      - Name: H2-S-NW-3x3-1
         Position: {x: 8, y: 0}
-      - Name: H1-N-SW-3x3-1
+      - Name: H1-N-SW-3x3-2
+        Position: {x: 8, y: 3}
+
+  H-11x6-B:
+    Lots:
+      - Name: H7-S-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-N-SE-3x3-1
+        Position: {x: 0, y: 3}
+      - Name: H7-S-M-3x3-1
+        Position: {x: 3, y: 0}
+      - Name: H7-N-M-3x3-1
+        Position: {x: 3, y: 3}
+      - Name: H9-S-M-2x3-1
+        Position: {x: 6, y: 0}
+      - Name: H9-N-M-2x3-1
+        Position: {x: 6, y: 3}
+      - Name: H7-S-NW-3x3-1
+        Position: {x: 8, y: 0}
+      - Name: H7-N-SW-3x3-1
         Position: {x: 8, y: 3}
 
   H-10x6-A:
     Lots:
-      - Name: H1-S-NE-3x3-1
+      - Name: H2-S-NE-3x3-2
         Position: {x: 0, y: 0}
-      - Name: H1-N-SE-3x3-1
+      - Name: H1-N-SE-3x3-2
         Position: {x: 0, y: 3}
       - Name: H1-S-M-2x3-1
         Position: {x: 3, y: 0}
@@ -536,9 +911,28 @@ BlockTemplates:
         Position: {x: 5, y: 0}
       - Name: H1-N-M-2x3-1
         Position: {x: 5, y: 3}
-      - Name: H1-S-NW-3x3-1
+      - Name: H2-S-NW-3x3-1
         Position: {x: 7, y: 0}
-      - Name: H1-N-SW-3x3-1
+      - Name: H2-N-SW-3x3-1
+        Position: {x: 7, y: 3}
+
+  H-10x6-B:
+    Lots:
+      - Name: H7-S-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-N-SE-3x3-1
+        Position: {x: 0, y: 3}
+      - Name: H8-S-M-2x3-1
+        Position: {x: 3, y: 0}
+      - Name: H9-N-M-2x3-1
+        Position: {x: 3, y: 3}
+      - Name: H8-S-M-2x3-1
+        Position: {x: 5, y: 0}
+      - Name: H9-N-M-2x3-1
+        Position: {x: 5, y: 3}
+      - Name: H7-S-NW-3x3-1
+        Position: {x: 7, y: 0}
+      - Name: H7-N-SW-3x3-1
         Position: {x: 7, y: 3}
 
   H-10x3-A:
@@ -552,48 +946,75 @@ BlockTemplates:
       - Name: H1-N-SW-3x3-1
         Position: {x: 7, y: 0}
 
+  H-10x3-B:
+    Lots:
+      - Name: H7-N-SE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H9-N-M-2x3-1
+        Position: {x: 3, y: 0}
+      - Name: H9-N-M-2x3-1
+        Position: {x: 5, y: 0}
+      - Name: H7-N-SW-3x3-1
+        Position: {x: 7, y: 0}
+
   H-8x6-A:
     Lots:
-      - Name: H1-S-NE-3x3-1
+      - Name: H2-S-NE-3x3-1
         Position: {x: 0, y: 0}
-      - Name: H1-N-SE-3x3-1
+      - Name: H2-N-SE-3x3-2
         Position: {x: 0, y: 3}
       - Name: H1-S-M-2x3-1
         Position: {x: 3, y: 0}
       - Name: H1-N-M-2x3-1
         Position: {x: 3, y: 3}
-      - Name: H1-S-NW-3x3-1
+      - Name: H1-S-NW-3x3-2
         Position: {x: 5, y: 0}
-      - Name: H1-N-SW-3x3-1
+      - Name: H2-N-SW-3x3-1
         Position: {x: 5, y: 3}
 
+  H-8x6-B:
+    Lots:
+      - Name: H7-S-NE-3x3-1
+        Position: {x: 0, y: 0}
+      - Name: H7-N-SE-3x3-1
+        Position: {x: 0, y: 3}
+      - Name: H9-S-M-2x3-1
+        Position: {x: 3, y: 0}
+      - Name: H9-N-M-2x3-1
+        Position: {x: 3, y: 3}
+      - Name: H7-S-NW-3x3-1
+        Position: {x: 5, y: 0}
+      - Name: H7-N-SW-3x3-1
+        Position: {x: 5, y: 3}
+
+  # 4x4 blocks vertical
   H-8x7-A:
     Lots:
       - Name: H3-W-NE-4x4-1
         Position: {x: 0, y: 0}
       - Name: H3-E-NW-4x4-1
         Position: {x: 4, y: 0}
-      - Name: H1-W-SE-3x3-1
+      - Name: H2-W-SE-3x3-1
         Position: {x: 0, y: 4}
       - Name: H1-E-SW-3x3-1
         Position: {x: 5, y: 4}
 
   H-8x8-A:
     Lots:
-      - Name: H3-S-NE-4x4-1
+      - Name: H4-S-NE-4x4-1
         Position: {x: 0, y: 0}
       - Name: H3-N-SE-4x4-1
         Position: {x: 0, y: 4}
-      - Name: H3-S-NW-4x4-1
+      - Name: H6-S-NW-4x4-1
         Position: {x: 4, y: 0}
-      - Name: H3-N-SW-4x4-1
+      - Name: H4-N-SW-4x4-1
         Position: {x: 4, y: 4}
 
   H-8x15-A:
     Lots:
-      - Name: H3-W-NE-4x4-1
+      - Name: H4-W-NE-4x4-1
         Position: {x: 0, y: 0}
-      - Name: H3-E-NW-4x4-1
+      - Name: H4-E-NW-4x4-1
         Position: {x: 4, y: 0}
       - Name: H3-W-M-4x4-1
         Position: {x: 0, y: 4}
@@ -603,41 +1024,41 @@ BlockTemplates:
         Position: {x: 0, y: 8}
       - Name: H4-E-M-4x3-1
         Position: {x: 4, y: 8}
-      - Name: H3-W-SE-4x4-1
+      - Name: H6-W-SE-4x4-1
         Position: {x: 0, y: 11}
       - Name: H3-E-SW-4x4-1
         Position: {x: 4, y: 11}
 
   H-8x16-A:
     Lots:
-      - Name: H3-W-NE-4x4-1
+      - Name: H6-W-NE-4x4-1
         Position: {x: 0, y: 0}
       - Name: H3-E-NW-4x4-1
         Position: {x: 4, y: 0}
       - Name: H3-W-M-4x4-1
         Position: {x: 0, y: 4}
-      - Name: H3-E-M-4x4-1
+      - Name: H6-E-M-4x4-1
         Position: {x: 4, y: 4}
-      - Name: H3-W-M-4x4-1
+      - Name: H4-W-M-4x4-1
         Position: {x: 0, y: 8}
       - Name: H3-E-M-4x4-1
         Position: {x: 4, y: 8}
-      - Name: H3-W-SE-4x4-1
+      - Name: H4-W-SE-4x4-1
         Position: {x: 0, y: 12}
-      - Name: H3-E-SW-4x4-1
+      - Name: H4-E-SW-4x4-1
         Position: {x: 4, y: 12}
 
   H-8x25-A:
     Lots:
       - Name: H3-W-NE-4x4-1
         Position: {x: 0, y: 0}
-      - Name: H3-E-NW-4x4-1
+      - Name: H6-E-NW-4x4-1
         Position: {x: 4, y: 0}
       - Name: H4-W-M-4x3-1
         Position: {x: 0, y: 4}
       - Name: H4-E-M-4x3-1
         Position: {x: 4, y: 4}
-      - Name: H3-W-M-4x4-1
+      - Name: H6-W-M-4x4-1
         Position: {x: 0, y: 7}
       - Name: H3-E-M-4x4-1
         Position: {x: 4, y: 7}
@@ -645,7 +1066,7 @@ BlockTemplates:
         Position: {x: 0, y: 11}
       - Name: H4-E-M-4x3-1
         Position: {x: 4, y: 11}
-      - Name: H3-W-M-4x4-1
+      - Name: H4-W-M-4x4-1
         Position: {x: 0, y: 14}
       - Name: H3-E-M-4x4-1
         Position: {x: 4, y: 14}
@@ -653,9 +1074,9 @@ BlockTemplates:
         Position: {x: 0, y: 18}
       - Name: H4-E-M-4x3-1
         Position: {x: 4, y: 18}
-      - Name: H3-W-SE-4x4-1
+      - Name: H4-W-SE-4x4-1
         Position: {x: 0, y: 21}
-      - Name: H3-E-SW-4x4-1
+      - Name: H6-E-SW-4x4-1
         Position: {x: 4, y: 21}
 
   H-10x8-A:
@@ -668,16 +1089,16 @@ BlockTemplates:
         Position: {x: 4, y: 0}
       - Name: H1-N-M-2x3-1
         Position: {x: 4, y: 5}
-      - Name: H3-S-NW-4x4-1
+      - Name: H4-S-NW-4x4-1
         Position: {x: 6, y: 0}
-      - Name: H3-N-SW-4x4-1
+      - Name: H6-N-SW-4x4-1
         Position: {x: 6, y: 4}
 
   H-11x8-A:
     Lots:
-      - Name: H3-S-NE-4x4-1
+      - Name: H6-S-NE-4x4-1
         Position: {x: 0, y: 0}
-      - Name: H3-N-SE-4x4-1
+      - Name: H4-N-SE-4x4-1
         Position: {x: 0, y: 4}
       - Name: H4-S-M-3x4-1
         Position: {x: 4, y: 0}
@@ -685,20 +1106,20 @@ BlockTemplates:
         Position: {x: 4, y: 4}
       - Name: H3-S-NW-4x4-1
         Position: {x: 7, y: 0}
-      - Name: H3-N-SW-4x4-1
+      - Name: H4-N-SW-4x4-1
         Position: {x: 7, y: 4}
 
   H-12x8-A:
     Lots:
       - Name: H3-S-NE-4x4-1
         Position: {x: 0, y: 0}
-      - Name: H3-N-SE-4x4-1
+      - Name: H4-N-SE-4x4-1
         Position: {x: 0, y: 4}
       - Name: H3-S-M-4x4-1
         Position: {x: 4, y: 0}
       - Name: H3-N-M-4x4-1
         Position: {x: 4, y: 4}
-      - Name: H3-S-NW-4x4-1
+      - Name: H6-S-NW-4x4-1
         Position: {x: 8, y: 0}
       - Name: H3-N-SW-4x4-1
         Position: {x: 8, y: 4}
@@ -707,7 +1128,7 @@ BlockTemplates:
     Lots:
       - Name: H3-S-NE-4x4-1
         Position: {x: 0, y: 0}
-      - Name: H3-N-SE-4x4-1
+      - Name: H4-N-SE-4x4-1
         Position: {x: 0, y: 4}
       - Name: H4-S-M-3x4-1
         Position: {x: 4, y: 0}
@@ -719,18 +1140,18 @@ BlockTemplates:
         Position: {x: 7, y: 4}
       - Name: H3-S-NW-4x4-1
         Position: {x: 10, y: 0}
-      - Name: H3-N-SW-4x4-1
+      - Name: H6-N-SW-4x4-1
         Position: {x: 10, y: 4}
 
   H-16x8-A:
     Lots:
-      - Name: H3-S-NE-4x4-1
+      - Name: H6-S-NE-4x4-1
         Position: {x: 0, y: 0}
       - Name: H3-N-SE-4x4-1
         Position: {x: 0, y: 4}
       - Name: H3-S-M-4x4-1
         Position: {x: 4, y: 0}
-      - Name: H3-N-M-4x4-1
+      - Name: H6-N-M-4x4-1
         Position: {x: 4, y: 4}
       - Name: H3-S-M-4x4-1
         Position: {x: 8, y: 0}
@@ -738,12 +1159,12 @@ BlockTemplates:
         Position: {x: 8, y: 4}
       - Name: H3-S-NW-4x4-1
         Position: {x: 12, y: 0}
-      - Name: H3-N-SW-4x4-1
+      - Name: H6-N-SW-4x4-1
         Position: {x: 12, y: 4}
 
   H-17x8-A:
     Lots:
-      - Name: H3-S-NE-4x4-1
+      - Name: H4-S-NE-4x4-1
         Position: {x: 0, y: 0}
       - Name: H3-N-SE-4x4-1
         Position: {x: 0, y: 4}
@@ -759,7 +1180,7 @@ BlockTemplates:
         Position: {x: 10, y: 0}
       - Name: H4-N-M-3x4-1
         Position: {x: 10, y: 4}
-      - Name: H3-S-NW-4x4-1
+      - Name: H6-S-NW-4x4-1
         Position: {x: 13, y: 0}
       - Name: H3-N-SW-4x4-1
         Position: {x: 13, y: 4}
@@ -768,11 +1189,11 @@ BlockTemplates:
     Lots:
       - Name: H3-S-NE-4x4-1
         Position: {x: 0, y: 0}
-      - Name: H3-N-SE-4x4-1
+      - Name: H6-N-SE-4x4-1
         Position: {x: 0, y: 4}
       - Name: H3-S-M-4x4-1
         Position: {x: 4, y: 0}
-      - Name: H3-N-M-4x4-1
+      - Name: H4-N-M-4x4-1
         Position: {x: 4, y: 4}
       - Name: H4-S-M-3x4-1
         Position: {x: 8, y: 0}
@@ -786,18 +1207,18 @@ BlockTemplates:
         Position: {x: 15, y: 0}
       - Name: H4-N-M-3x4-1
         Position: {x: 15, y: 4}
-      - Name: H3-S-M-4x4-1
+      - Name: H6-S-M-4x4-1
         Position: {x: 18, y: 0}
       - Name: H3-N-M-4x4-1
         Position: {x: 18, y: 4}
       - Name: H3-S-NW-4x4-1
         Position: {x: 22, y: 0}
-      - Name: H3-N-SW-4x4-1
+      - Name: H6-N-SW-4x4-1
         Position: {x: 22, y: 4}
 
 
 Neighborhoods:
-# Suburban neighborhood -- 5x19 internal block size
+  # H1 & H2 -- Type A -- base 3
   - Width: 60
     Height: 60
     Roads:
@@ -901,6 +1322,8 @@ Neighborhoods:
         Position: {x: 36, y: 8}
       - Name: H-10x6-A
         Position: {x: 50, y: 12}
+      - Name: Park-6x6
+        Position: {x: 43, y: 14}
       - Name: H-10x6-A
         Position: {x: 50, y: 19}
       - Name: H-20x6-A
@@ -964,7 +1387,176 @@ Neighborhoods:
       - Name: H-20x3-A
         Position: {x: 15, y: 57}
 
-  # Suburban neighborhood #2
+  # H7, H8 and H9 -- Type B -- base 3
+  - Width: 60
+    Height: 60
+    Roads:
+    - Start: {x: 0, y: 0}
+      End:   {x: 59, y: 0}
+    - Start: {x: 7, y: 7}
+      End:   {x: 42, y: 7}
+    - Start: {x: 49, y: 4}
+      End:   {x: 59, y: 4}
+    - Start: {x: 49, y: 11}
+      End:   {x: 59, y: 11}
+    - Start: {x: 42, y: 13}
+      End:   {x: 49, y: 13}
+    - Start: {x: 49, y: 18}
+      End:   {x: 59, y: 18}
+    - Start: {x: 0, y: 19}
+      End:   {x: 42, y: 19}
+    - Start: {x: 42, y: 20}
+      End:   {x: 49, y: 20}
+    - Start: {x: 49, y: 25}
+      End:   {x: 59, y: 25}
+    - Start: {x: 0, y: 26}
+      End:   {x: 42, y: 26}
+    - Start: {x: 42, y: 32}
+      End:   {x: 59, y: 32}
+    - Start: {x: 0, y: 33}
+      End:   {x: 21, y: 33}
+    - Start: {x: 28, y: 33}
+      End:   {x: 42, y: 33}
+    - Start: {x: 42, y: 39}
+      End:   {x: 59, y: 39}
+    - Start: {x: 0, y: 40}
+      End:   {x: 7, y: 40}
+    - Start: {x: 14, y: 42}
+      End:   {x: 35, y: 42}
+    - Start: {x: 42, y: 46}
+      End:   {x: 59, y: 46}
+    - Start: {x: 0, y: 47}
+      End:   {x: 14, y: 47}
+    - Start: {x: 14, y: 49}
+      End:   {x: 21, y: 49}
+    - Start: {x: 28, y: 49}
+      End:   {x: 42, y: 49}
+    - Start: {x: 42, y: 53}
+      End:   {x: 59, y: 53}
+    - Start: {x: 14, y: 56}
+      End:   {x: 35, y: 56}
+    - Start: {x: 0, y: 0}
+      End:   {x: 0, y: 59}
+    - Start: {x: 7, y: 0}
+      End:   {x: 7, y: 19}
+    - Start: {x: 7, y: 33}
+      End:   {x: 7, y: 59}
+    - Start: {x: 14, y: 7}
+      End:   {x: 14, y: 19}
+    - Start: {x: 14, y: 33}
+      End:   {x: 14, y: 59}
+    - Start: {x: 21, y: 7}
+      End:   {x: 21, y: 56}
+    - Start: {x: 26, y: 0}
+      End:   {x: 26, y: 7}
+    - Start: {x: 28, y: 7}
+      End:   {x: 28, y: 56}
+    - Start: {x: 35, y: 0}
+      End:   {x: 35, y: 19}
+    - Start: {x: 35, y: 33}
+      End:   {x: 35, y: 59}
+    - Start: {x: 42, y: 0}
+      End:   {x: 42, y: 59}
+    - Start: {x: 49, y: 0}
+      End:   {x: 49, y: 39}
+    - Start: {x: 51, y: 39}
+      End:   {x: 51, y: 46}
+    - Start: {x: 56, y: 25}
+      End:   {x: 56, y: 32}
+
+    Blocks:
+      - Name: H-6x18-B
+        Position: {x: 1, y: 1}
+      - Name: H-18x6-B
+        Position: {x: 8, y: 1}
+      - Name: H-8x6-B
+        Position: {x: 27, y: 1}
+      - Name: H-6x6-B
+        Position: {x: 36, y: 1}
+      - Name: H-6x12-B
+        Position: {x: 43, y: 1}
+      - Name: H-10x3-B
+        Position: {x: 50, y: 1}
+      - Name: H-10x6-B
+        Position: {x: 50, y: 5}
+      - Name: H-6x11-B
+        Position: {x: 8, y: 8}
+      - Name: H-6x11-B
+        Position: {x: 15, y: 8}
+      - Name: H-6x11-B
+        Position: {x: 22, y: 8}
+      - Name: H-6x11-B
+        Position: {x: 29, y: 8}
+      - Name: H-6x11-B
+        Position: {x: 36, y: 8}
+      - Name: H-10x6-B
+        Position: {x: 50, y: 12}
+      - Name: Park-6x6
+        Position: {x: 43, y: 14}
+      - Name: H-10x6-B
+        Position: {x: 50, y: 19}
+      - Name: H-20x6-B
+        Position: {x: 1, y: 20}
+      - Name: H-6x6-B
+        Position: {x: 22, y: 20}
+      - Name: H-13x6-B
+        Position: {x: 29, y: 20}
+      - Name: H-6x11-B
+        Position: {x: 43, y: 21}
+      - Name: H-6x6-B
+        Position: {x: 50, y: 26}
+      - Name: H-3x6-A
+        Position: {x: 57, y: 26}
+      - Name: H-20x6-B
+        Position: {x: 1, y: 27}
+      - Name: H-6x15-B
+        Position: {x: 22, y: 27}
+      - Name: H-13x6-B
+        Position: {x: 29, y: 27}
+      - Name: H-6x6-B
+        Position: {x: 43, y: 33}
+      - Name: H-10x6-B
+        Position: {x: 50, y: 33}
+      - Name: H-6x6-B
+        Position: {x: 1, y: 34}
+      - Name: H-6x13-B
+        Position: {x: 8, y: 34}
+      - Name: H-6x8-B
+        Position: {x: 15, y: 34}
+      - Name: H-6x8-B
+        Position: {x: 29, y: 34}
+      - Name: H-6x15-B
+        Position: {x: 36, y: 34}
+      - Name: H-8x6-B
+        Position: {x: 43, y: 40}
+      - Name: H-8x6-B
+        Position: {x: 52, y: 40}
+      - Name: H-6x6-B
+        Position: {x: 1, y: 41}
+      - Name: H-6x6-B
+        Position: {x: 15, y: 43}
+      - Name: H-6x13-B
+        Position: {x: 22, y: 43}
+      - Name: H-6x6-B
+        Position: {x: 29, y: 43}
+      - Name: H-17x6-B
+        Position: {x: 43, y: 47}
+      - Name: H-6x12-B
+        Position: {x: 1, y: 48}
+      - Name: H-6x12-B
+        Position: {x: 8, y: 48}
+      - Name: H-6x6-B
+        Position: {x: 15, y: 50}
+      - Name: H-6x6-B
+        Position: {x: 29, y: 50}
+      - Name: H-6x10-B
+        Position: {x: 36, y: 50}
+      - Name: H-17x6-B
+        Position: {x: 43, y: 54}
+      - Name: H-20x3-B
+        Position: {x: 15, y: 57}
+
+  # H3, H4 and H6 -- base 4
   - Width: 60
     Height: 60
     Roads:
@@ -1043,7 +1635,7 @@ Neighborhoods:
         Position: {x: 19, y: 10}
       - Name: H-8x16-A
         Position: {x: 28, y: 10}
-      - Name: H-12x8-A
+      - Name: H-11x8-A
         Position: {x: 37, y: 10}
       - Name: H-11x8-A
         Position: {x: 49, y: 10}
@@ -1071,6 +1663,8 @@ Neighborhoods:
         Position: {x: 46, y: 35}
       - Name: H-26x8-A
         Position: {x: 1, y: 45}
+      - Name: Park-5x7
+        Position: {x: 46, y: 44}
       - Name: H-8x16-A
         Position: {x: 52, y: 44}
       - Name: H-6x6-A
