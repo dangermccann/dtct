@@ -108,6 +108,8 @@
     <Compile Include="Assets\Scripts\Pathfinding\PriorityQueue.cs" />
     <Compile Include="Assets\Scripts\UI\AgentCard.cs" />
     <Compile Include="Assets\Scripts\UI\AttributeTable.cs" />
+    <Compile Include="Assets\Scripts\UI\CableDetails.cs" />
+    <Compile Include="Assets\Scripts\UI\CablesList.cs" />
     <Compile Include="Assets\Scripts\UI\CompanyAttributes.cs" />
     <Compile Include="Assets\Scripts\UI\CompanyLogo.cs" />
     <Compile Include="Assets\Scripts\UI\Competition.cs" />

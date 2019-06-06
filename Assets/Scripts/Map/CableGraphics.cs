@@ -2,77 +2,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DCTC.Model;
+using DCTC.Controllers;
 
 namespace DCTC.Map {
     public class CableGraphics : MonoBehaviour {
-
-        public enum GraphicsMode {
-            Cursor,
-            Placed
-        }
 
         public GameObject PolePrefab;
 
         private bool needsRedraw = false;
 
-        private List<GameObject> poles = new List<GameObject>();
+        private Dictionary<TilePosition, PoleGraphics> poles = new Dictionary<TilePosition, PoleGraphics>();
+        private PoleGraphics cursor;
+        private GameController gameController;
+        private MaterialController materialController;
 
-        [HideInInspector]
-        public string CableId;
-
-        private Orientation orientation = Orientation.Horizontal;
-        public Orientation Orientation {
-            get { return orientation; }
-            set {
-                orientation = value;
-                Redraw();
-            }
-        }
-
-        private bool valid = true;
-        public bool Valid {
-            get { return valid; }
-            set {
-                valid = value;
-                Redraw();
-            }
-        }
-
-        private GraphicsMode mode = GraphicsMode.Cursor;
-        public GraphicsMode Mode {
-            get { return mode; }
-            set {
-                mode = value;
-                Redraw();
-            }
-        }
-
-        private Cable cable;
-        public Cable Cable { get {
-                return cable;
+        private Cable selectionCable;
+        public Cable SelectionCable {
+            get {
+                return selectionCable;
             }
             set {
-                if (cable != null)
-                    cable.StatusChanged -= Invalidate;
+                if (selectionCable != null)
+                    selectionCable.StatusChanged -= Invalidate;
 
-                cable = value;
-                cable.StatusChanged += Invalidate;
+                selectionCable = value;
+                selectionCable.StatusChanged += Invalidate;
             }
         } 
 
-        [HideInInspector]
-        private List<TilePosition> points = new List<TilePosition>();
-        public List<TilePosition> Points {
-            get { return points; }
-            set {
-                points = value;
-                Redraw();
-            }
+        private void Start() {
+            gameController = GameController.Get();
+            materialController = MaterialController.Get();
         }
 
         void OnDestroy() {
-            if (cable != null)
-                cable.StatusChanged -= Invalidate;
+            if (selectionCable != null)
+                selectionCable.StatusChanged -= Invalidate;
         }
 
         private void Update() {
@@ -82,31 +47,156 @@ namespace DCTC.Map {
             }
         }
 
+        // TODO: change this to work on a per cable basis rather than redrawing everything
         private void Invalidate() {
             needsRedraw = true;
         }
 
-        private void Redraw() {
-            if(Mode == GraphicsMode.Cursor) {
-                RedrawCursor();
+        public void Redraw() {
+            RedrawSelection();
+            RedrawPlaced();
+        }
+
+        public void RemoveSelection() {
+            if(selectionCable != null)
+                RemoveCable(selectionCable);
+        }
+
+        public void RedrawSelection() {
+            if (selectionCable != null) {
+                DrawCable(selectionCable);
+            }
+        }
+
+        private PoleGraphics GetOrCreatePole(TilePosition pos) {
+            Tile tile = gameController.Map.Tiles[pos];
+
+            PoleGraphics pole;
+
+            if (!poles.ContainsKey(pos)) {
+                GameObject go = Instantiate(PolePrefab, transform);
+                go.name = "Pole " + pos.ToString();
+                
+                pole = go.GetComponent<PoleGraphics>();
+                pole.World = ThreeDMap.PositionToWorld(pos);
+                poles.Add(pos, pole);
+
+                if (tile.RoadType == RoadType.Horizontal) {
+                    pole.Orientation = Orientation.Horizontal;
+                } else {
+                    pole.Orientation = Orientation.Vertical;
+                }
+            } else {
+                pole = poles[pos];
+            }
+
+            return pole;
+        }
+
+        public void DrawCable(Cable cable) {
+            int idx = 0;
+            int total = cable.Positions.Count;
+
+            PoleGraphics last = null;
+
+            foreach (TilePosition pos in cable.Positions) {
+                Tile tile = gameController.Map.Tiles[pos];
+                if (tile.RoadType == RoadType.Vertical || tile.RoadType == RoadType.Horizontal) {
+                    if (idx % 2 == 0 || idx == total - 1) {
+                        PoleGraphics pole = GetOrCreatePole(pos);
+                        int connectionIdx = pole.AddCable(cable, last);
+                        pole.SetMaterial(connectionIdx, GetCableMaterial(cable));
+
+                        last = pole;
+                    }
+
+                    idx++;
+                }
+            }
+        }
+
+        private Material GetCableMaterial(Cable cable) {
+            return materialController.GetMaterial(cable.Type.ToString());
+        }
+
+        public void RemoveCable(Cable cable) {
+            foreach (TilePosition pos in cable.Positions) {
+                if (poles.ContainsKey(pos)) {
+                    PoleGraphics pole = poles[pos];
+                    pole.RemoveCable(cable);
+                    if (pole.IsEmpty()) {
+                        Destroy(pole.gameObject);
+                        poles.Remove(pos);
+                    }
+                }
+            }
+        }
+        
+        public void InitSelection() {
+            Debug.Log("InitSelection");
+            CancelSelection();
+            GameObject go = Instantiate(PolePrefab, transform);
+            go.name = "Selection";
+            cursor = go.GetComponent<PoleGraphics>();
+        }
+
+        public void CancelSelection() {
+            if (cursor != null) {
+                Destroy(cursor.gameObject);
+                cursor = null;
+            }
+
+            if (selectionCable != null) {
+                RemoveCable(selectionCable);
+                selectionCable = null;
+            }
+        }
+
+        public void UpdateSelection(TilePosition pos) {
+            pos = gameController.Map.NearestPoleLocation(pos);
+
+            if (gameController.Map.IsInBounds(pos)) {
+
+                Vector3 world = ThreeDMap.PositionToWorld(pos);
+                cursor.gameObject.SetActive(true);
+                cursor.World = world;
+
+                Tile tile = gameController.Map.Tiles[pos];
+
+                if (tile.RoadType == RoadType.Horizontal) {
+                    cursor.Orientation = Orientation.Horizontal;
+                } else {
+                    cursor.Orientation = Orientation.Vertical;
+                }
             }
             else {
-                RedrawPlaced();
+                cursor.gameObject.SetActive(false);
             }
         }
 
-        private void RedrawCursor() {
-
+        public void RedrawPlaced() {
+            
         }
 
-        private void RedrawPlaced() {
+        public bool SelectPole(TilePosition pos) {
+            if(poles.ContainsKey(pos)) {
+                poles[pos].Select();
+                return true;
+            }
+
+            return false;
+        }
+
+        public void DeselectPole(TilePosition pos) {
+            if (poles.ContainsKey(pos)) {
+                poles[pos].Deselect();
+            }
         }
 
 
-
-        private Color CableColor() {
+        private Color CableColor(Cable cable) {
             Color c;
-            ColorUtility.TryParseHtmlString(Cable.Attributes.Color, out c);
+            ColorUtility.TryParseHtmlString(cable.Attributes.Color, out c);
             return c;
         }
 

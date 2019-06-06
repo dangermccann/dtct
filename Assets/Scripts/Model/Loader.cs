@@ -17,7 +17,7 @@ namespace DCTC.Model {
         private const string NamesYaml = Package + "names";
         private const string PlacesYaml = Package + "places";
         private const string Suffixes = Package + "suffixes";
-        private const string MapYaml = Package + "map2";
+        private const string MapYaml = Package + "map";
         private const string ItemsYaml = Package + "items";
         private const string TechnologiesYaml = Package + "technologies";
 

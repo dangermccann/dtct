@@ -26,6 +26,7 @@ namespace DCTC.Map {
 
         private MapConfiguration map;
         private GameObject canvas;
+        private CableGraphics cableGraphics;
         private Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
         private Dictionary<TilePosition, GameObject> buildings = new Dictionary<TilePosition, GameObject>();
         private Dictionary<string, GameObject> labels = new Dictionary<string, GameObject>();
@@ -38,7 +39,7 @@ namespace DCTC.Map {
         private int batchCount = 0;
 
         private const float WorldUnitsPerTile = 4f;
-        private const string MapPrefabsLocation = "Prefabs/Map2";
+        private const string MapPrefabsLocation = "Prefabs/Map";
         private const bool centerQuadTiles = true;
         private const bool skipRoadsAdjacentToCorners = true;
         private const float quadScaleReduction = 0.5f;
@@ -51,6 +52,7 @@ namespace DCTC.Map {
             LoadPrefabs();
             materialController = MaterialController.Get();
             canvas = transform.GetChild(0).gameObject;
+            cableGraphics = transform.GetChild(1).GetComponent<CableGraphics>();
 
             cameraController.TileClicked += OnTileClicked;
             gameController = GameController.Get();
@@ -164,62 +166,6 @@ namespace DCTC.Map {
         public override void MoveCameraTo(TilePosition position) {
             cameraController.MoveCamera(PositionToWorld(position));
         }
-
-
-        // TODO: this isn't done yet
-        public void PlaceCable(Cable cable) {
-            int idx = 0;
-            int total = cable.Positions.Count;
-
-            Transform last = null;
-
-            foreach (TilePosition pos in cable.Positions) {
-                Tile tile = map.Tiles[pos];
-                if (tile.RoadType == RoadType.Vertical || tile.RoadType == RoadType.Horizontal) {
-                    if (idx % 2 == 0 || idx == total - 1) {
-
-
-                        string poleName = "Pole " + pos.ToString();
-                        GameObject go = GameObject.Find(poleName);
-
-                        if (go == null) {
-                            go = InstantiateObject("Pole", pos.ToString(), pos);
-
-                            // TODO: move to graphics class 
-                            // offset 
-                            Vector3 world = go.transform.position;
-                            if (tile.RoadType == RoadType.Vertical) {
-                                go.transform.position = new Vector3(world.x + 3, world.y, world.z);
-                            } else {
-                                go.transform.position = new Vector3(world.x, world.y, world.z + 3);
-                            }
-
-                            // rotate 
-                            if (tile.RoadType == RoadType.Horizontal) {
-                                go.transform.rotation = Quaternion.Euler(new Vector3(0, 90, 0));
-                            }
-                        }
-
-
-
-                        // TODO: find right connection point
-                        GameObject connection = go.transform.Find("Cable1").gameObject;
-                        Cable_Procedural_Static comp = connection.AddComponent<Cable_Procedural_Static>();
-                        comp.sagAmplitude = 0.3f;
-
-                        if (last != null)
-                            comp.endPointTransform = last;
-
-                        last = connection.transform;
-
-                    }
-
-                    idx++;
-                }
-
-            }
-        }
-
 
 
 
@@ -759,13 +705,7 @@ namespace DCTC.Map {
         private void PlaceItem(object item) {
             if(item is Cable) {
                 Cable cable = item as Cable;
-                GameObject go = InstantiateObject("Cable", cable.Guid, TilePosition.Origin);
-
-                CableGraphics graphics = go.GetComponent<CableGraphics>();
-                graphics.Cable = cable;
-                graphics.CableId = cable.ID;
-                graphics.Mode = CableGraphics.GraphicsMode.Placed;
-                graphics.Points = cable.Positions;
+                cableGraphics.DrawCable(cable);
             }
             else if(item is Node) {
                 Node node = item as Node;
@@ -776,6 +716,10 @@ namespace DCTC.Map {
                 GameObject go = InstantiateObject("Van", truck.ID, truck.TilePosition);
                 go.GetComponent<TruckGraphics>().Truck = truck;
             }
+        }
+
+        public void PlaceCable(Cable cable) {
+            PlaceItem(cable);
         }
 
         private void RemoveItem(object item) {
@@ -793,6 +737,11 @@ namespace DCTC.Map {
         }
 
         private GameObject InstantiateObject(string prefabName, string ID, TilePosition position) {
+            if(!prefabs.ContainsKey(prefabName)) {
+                Debug.LogWarning("Can not find prefab " + prefabName);
+                return null;
+            }
+
             GameObject prefab = prefabs[prefabName];
 
             GameObject go = Instantiate(prefab);

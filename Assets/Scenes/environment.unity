@@ -26782,13 +26782,13 @@ Transform:
   - {fileID: 1572105539}
   - {fileID: 745503827}
   - {fileID: 518646950}
-  - {fileID: 1811675143}
   - {fileID: 774519387}
   - {fileID: 1044527373}
   - {fileID: 992518781}
+  - {fileID: 1811675143}
   - {fileID: 719533524}
-  - {fileID: 1333420081}
   - {fileID: 122825541}
+  - {fileID: 1333420081}
   - {fileID: 833879003}
   - {fileID: 995339522}
   - {fileID: 1037885781}
@@ -53461,6 +53461,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: H3-E-NW-4x4-1
       objectReference: {fileID: 0}
+    - target: {fileID: 2749997744465166465, guid: 70ffb34ce03fa834795ac0f3d6027aa4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2749997744465166464, guid: 70ffb34ce03fa834795ac0f3d6027aa4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -55064,6 +55069,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: H7-E-NW-3x3-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3962736892213421810, guid: 77057195e50c6c4408f71f314b812755,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3962736892213421811, guid: 77057195e50c6c4408f71f314b812755,
         type: 3}
@@ -58455,6 +58465,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: H7-W-NE-3x3-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8323010625058282679, guid: 8c5cbf84029d38a4c8f20c24a4e5b718,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8323010625058282678, guid: 8c5cbf84029d38a4c8f20c24a4e5b718,
         type: 3}

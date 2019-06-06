@@ -64,10 +64,6 @@ namespace DCTC.UI {
                         ShowMenu(NodesMenu);
                         break;
 
-                    case "Destroy":
-                        SelectionController.SetSelection(SelectionController.SelectionModes.Destroy);
-                        break;
-
                     case Cable.CAT3:
                     case Cable.RG6:
                     case Cable.OM2:

@@ -156,6 +156,28 @@ namespace DCTC.Model {
             return Customers.Where(c => c.HomeLocation.Equals(address)).FirstOrDefault();
         }
 
+        public Company GetOwnerOfCable(string guid) {
+            foreach(Company company in Companies) {
+                foreach(Cable cable in company.Cables) {
+                    if (cable.Guid == guid)
+                        return company;
+                }
+            }
+            return null;
+        }
+
+        public IEnumerable<Cable> GetCablesAt(TilePosition pos) {
+            List<Cable> cables = new List<Cable>();
+            foreach(Company company in Companies) {
+                foreach(Cable cable in company.Cables) {
+                    if(cable.Positions.Contains(pos)) {
+                        cables.Add(cable);
+                    }
+                }
+            }
+            return cables;
+        }
+
         public void OnCustomerChanged(Customer customer) {
             Company company = GetCompany(customer.ProviderID);
             //Debug.Log("Customer " + customer.Name + " changed to " +  ((company == null) ? "[none]" : company.Name));

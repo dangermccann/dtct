@@ -25,18 +25,22 @@ public class Cable_Procedural_Static : MonoBehaviour {
 	Vector3 vectorFromStartToEnd;
 	Vector3 sagDirection;
 
+    private void Awake() {
+        line = GetComponent<LineRenderer>();
+    }
 
-	void Start () 
+    void Start () 
 	{
-		line = GetComponent<LineRenderer>();
-
 		//The Direction of SAG is the direction of gravity
 		sagDirection = Physics.gravity.normalized;
 
 		Animate();
 	}
 
-
+    private void Update() {
+        if (Application.isEditor)
+            Animate();
+    }
 
 
     public void Animate()
