@@ -83,6 +83,7 @@ namespace DCTC.Controllers {
             if (Mode != SelectionModes.None) {
                 CreateCursor();
             } else {
+                LotSelection.SetActive(false);
                 cableGraphics.DeselectPole(selectedPosition);
                 selectedPosition = TilePosition.Origin;
             }
@@ -138,7 +139,7 @@ namespace DCTC.Controllers {
             if(Input.GetMouseButtonUp(1) && !ignoreMouse) {
                 if((Input.mousePosition - mouseDownPosition).magnitude < 0.25f) {
                     ConstructionToggleGroup.SetAllTogglesOff();
-                    LotSelection.SetActive(false);
+                    SetSelection(SelectionModes.None);
                 }
             }
 
@@ -158,6 +159,7 @@ namespace DCTC.Controllers {
                         outline.Positions = lot.Tiles;
                         LotSelection.SetActive(true);
                         outline.Redraw();
+                        SetSelection(SelectionModes.Selected);
                     }
                 }
             }
@@ -254,11 +256,16 @@ namespace DCTC.Controllers {
 
                 if(cableGraphics.SelectPole(position)) {
                     selectedPosition = position;
+                    SetSelection(SelectionModes.Selected);
                 }
                 else {
                     selectedPosition = TilePosition.Origin;
+                    SetSelection(SelectionModes.None);
                 }
+
+                return;
             }
+
             if (Mode == SelectionModes.Node) {
                 if(!cursorObject.activeSelf) {
                     return;

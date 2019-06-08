@@ -28,7 +28,7 @@ namespace DCTC.UI {
         }
 
         private void OnSelectionChange() {
-            if(selectionController.Mode == SelectionController.SelectionModes.None) {
+            if(selectionController.Mode == SelectionController.SelectionModes.Selected) {
                 TilePosition pos = selectionController.SelectedPosition;
                 if(pos != TilePosition.Origin) {
                     Cables = gameController.Game.GetCablesAt(pos);
@@ -48,6 +48,11 @@ namespace DCTC.UI {
                 GameObject go = Instantiate(CableDetailsPrefab, transform);
                 go.GetComponent<CableDetails>().Cable = cable;
             }
+        }
+
+        void DeleteCable(string guid) {
+            gameController.Game.Player.RemoveCable(guid);
+            OnSelectionChange();
         }
     }
 }

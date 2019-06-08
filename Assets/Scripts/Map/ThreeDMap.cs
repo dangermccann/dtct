@@ -725,7 +725,7 @@ namespace DCTC.Map {
         private void RemoveItem(object item) {
             if(item is Cable) {
                 Cable cable = item as Cable;
-                RemoveObject("Cable", cable.Guid);
+                cableGraphics.RemoveCable(cable);
             }
             else if (item is Node) {
                 Node node = item as Node;

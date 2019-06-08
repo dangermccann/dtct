@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DCTC.Model;
 using DCTC.Controllers;
@@ -68,12 +69,29 @@ namespace DCTC.Map {
             }
         }
 
-        private PoleGraphics GetOrCreatePole(TilePosition pos) {
-            Tile tile = gameController.Map.Tiles[pos];
+        private PoleGraphics GetOrCreatePole(Tile tile) {
+            PoleGraphics pole = null;
+            TilePosition pos = tile.Position;
 
-            PoleGraphics pole;
+            List<TilePosition> candidates = new List<TilePosition>();
+            candidates.Add(pos);
+            if(tile.RoadType == RoadType.Vertical) {
+                candidates.Add(MapConfiguration.North(pos));
+                candidates.Add(MapConfiguration.South(pos));
+            }
+            else if(tile.RoadType == RoadType.Horizontal) {
+                candidates.Add(MapConfiguration.East(pos));
+                candidates.Add(MapConfiguration.West(pos));
+            }
 
-            if (!poles.ContainsKey(pos)) {
+            foreach (TilePosition candidate in candidates) {
+                if (poles.ContainsKey(candidate)) {
+                    pole = poles[candidate];
+                    break;
+                }
+            }
+
+            if (pole == null) {
                 GameObject go = Instantiate(PolePrefab, transform);
                 go.name = "Pole " + pos.ToString();
                 
@@ -86,8 +104,6 @@ namespace DCTC.Map {
                 } else {
                     pole.Orientation = Orientation.Vertical;
                 }
-            } else {
-                pole = poles[pos];
             }
 
             return pole;
@@ -103,11 +119,14 @@ namespace DCTC.Map {
                 Tile tile = gameController.Map.Tiles[pos];
                 if (tile.RoadType == RoadType.Vertical || tile.RoadType == RoadType.Horizontal) {
                     if (idx % 2 == 0 || idx == total - 1) {
-                        PoleGraphics pole = GetOrCreatePole(pos);
-                        int connectionIdx = pole.AddCable(cable, last);
-                        pole.SetMaterial(connectionIdx, GetCableMaterial(cable));
+                        PoleGraphics pole = GetOrCreatePole(tile);
 
-                        last = pole;
+                        if (pole != last) {
+                            int connectionIdx = pole.AddCable(cable, last);
+                            pole.SetMaterial(connectionIdx, GetCableMaterial(cable));
+
+                            last = pole;
+                        }
                     }
 
                     idx++;
@@ -124,6 +143,7 @@ namespace DCTC.Map {
                 if (poles.ContainsKey(pos)) {
                     PoleGraphics pole = poles[pos];
                     pole.RemoveCable(cable);
+
                     if (pole.IsEmpty()) {
                         Destroy(pole.gameObject);
                         poles.Remove(pos);

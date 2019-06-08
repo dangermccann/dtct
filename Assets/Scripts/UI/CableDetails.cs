@@ -19,11 +19,10 @@ namespace DCTC.UI {
             }
         }
 
-        private void Start() {
-            gameController = GameController.Get();
-        }
-
         void Redraw() {
+            if(gameController == null)
+                gameController = GameController.Get();
+
             SetText("Name", cable.ID + " " + cable.Type.ToString() + " Cable");
 
             string desc = gameController.Game.GetOwnerOfCable(cable.Guid).Name;
@@ -33,6 +32,10 @@ namespace DCTC.UI {
 
         void SetText(string name, string value) {
             transform.Find(name).GetComponent<TextMeshProUGUI>().text = value;
+        }
+
+        public void OnDeleteClicked() {
+            transform.parent.SendMessage("DeleteCable", cable.Guid);
         }
 
     }

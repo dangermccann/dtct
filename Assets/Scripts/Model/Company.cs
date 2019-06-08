@@ -314,6 +314,10 @@ namespace DCTC.Model {
             TriggerItemAdded(cable);
         }
 
+        public void RemoveCable(string guid) {
+            RemoveCable(Cables.Find(c => c.Guid == guid));
+        }
+
         public void RemoveCable(Cable cable) {
             string posStr = cable.Positions.Aggregate("", (current, next) => current + " " + next);
             Debug.Log("Remove: " + posStr);

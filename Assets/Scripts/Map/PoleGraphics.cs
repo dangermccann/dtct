@@ -8,6 +8,7 @@ namespace DCTC.Map {
         public float sagAmount = 0.3f;
         public float SelectionItensity = 1.0f;
         public Color SelectionColor = Color.cyan;
+        private const int ConnectionPoints = 4;
 
 
         private Vector3 world;
@@ -28,7 +29,7 @@ namespace DCTC.Map {
             }
         }
 
-        private List<Cable> cables = new List<Cable>();
+        private Cable[] cables = new Cable[8];
 
         void Redraw() {
             if (orientation == Orientation.Vertical) {
@@ -46,13 +47,33 @@ namespace DCTC.Map {
             }
         }
 
+        public int NextSlot() {
+            for(int i = 0; i < cables.Length; i++) {
+                if (cables[i] == null)
+                    return i;
+            }
+
+            // TODO: what happens when we exceed maximum?
+            return -1;
+        }
+
+        public int CableCount() {
+            int count = 0;
+            for (int i = 0; i < cables.Length; i++) {
+                if (cables[i] != null)
+                    count++;
+            }
+            return count;
+        }
+
         public int AddCable(Cable cable, PoleGraphics to) {
-            cables.Add(cable);
-            int idx = cables.Count - 1;
+            int idx = CableIndex(cable);
 
-            // TODO: what happens when we exceed 4?
-            idx = idx % transform.childCount;
+            if(idx == -1)
+                idx = NextSlot();
 
+            cables[idx] = cable;
+            
             if (to != null) {
                 Cable_Procedural_Static comp = GetProcedural(idx);
                 comp.sagAmplitude = sagAmount;
@@ -64,33 +85,40 @@ namespace DCTC.Map {
         }
 
         public int CableIndex(Cable cable) {
-            return cables.IndexOf(cable);
+            for (int i = 0; i < cables.Length; i++) {
+                if (cables[i] == cable)
+                    return i;
+            }
+            return -1;
         }
 
         public void RemoveCable(Cable cable) {
-            if (!cables.Contains(cable))
+            int idx = CableIndex(cable);
+            if (idx == -1)
                 return;
 
-            int idx = cables.IndexOf(cable);
-            for(int i = idx + 1; i < cables.Count; i++) {
-                Cable_Procedural_Static comp0 = GetProcedural(i - 1);
-                Cable_Procedural_Static comp1 = GetProcedural(i);
-                comp0.endPointTransform = comp1.endPointTransform;
-                comp0.Animate();
-            }
-            cables.RemoveAt(idx);
+            Cable_Procedural_Static comp = GetProcedural(idx);
+            comp.endPointTransform = null;
+            comp.Animate();
+
+            cables[idx] = null;
         }
 
         public bool IsEmpty() {
-            return cables.Count == 0;
+            return CableCount() == 0;
+        }
+
+        public static PoleGraphics GraphicsFromConnection(Transform conn) {
+            return conn.parent.parent.gameObject.GetComponent<PoleGraphics>();
         }
 
         public Transform Connection(int idx) {
+            idx = idx % ConnectionPoints;
             return transform.Find("Connections/Cable" + idx.ToString());
         }
 
         public Transform Connection(Cable cable) {
-            return Connection(cables.IndexOf(cable));
+            return Connection(CableIndex(cable));
         }
 
         public void SetMaterial(int idx, Material material) {

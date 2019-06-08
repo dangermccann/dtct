@@ -50,6 +50,9 @@ namespace DCTC.Controllers {
                 if (gameController.Game != null)
                     StateController.Get().PushState(States.Finance);
             }
+
+            if (Input.GetKeyDown(KeyCode.F12))
+                gameController.Game.Player.Money += 50000;
         }
 
         public static bool IsTextInputActive() {
