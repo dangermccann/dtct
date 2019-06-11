@@ -258,15 +258,17 @@ namespace DCTC.Map {
                 serviceAreadChanged = false;
             }
 
+            // Remove items before placing new ones in case the same item was removed and re-added 
             object item;
-            if(placedItems.TryDequeue(out item)) {
-                PlaceItem(item);
-            }
-
-            item = null;
             if (removedItems.TryDequeue(out item)) {
                 RemoveItem(item);
             }
+
+            item = null;
+            if (placedItems.TryDequeue(out item)) {
+                PlaceItem(item);
+            }
+
 
             Customer customer;
             if(changedCustomers.TryDequeue(out customer)) {

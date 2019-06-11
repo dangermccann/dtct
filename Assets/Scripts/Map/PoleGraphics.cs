@@ -5,7 +5,7 @@ using DCTC.Model;
 
 namespace DCTC.Map {
     public class PoleGraphics : MonoBehaviour {
-        public float sagAmount = 0.3f;
+        public float sagAmount = 0.4f;
         public float SelectionItensity = 1.0f;
         public Color SelectionColor = Color.cyan;
         private const int ConnectionPoints = 4;
@@ -113,6 +113,9 @@ namespace DCTC.Map {
         }
 
         public Transform Connection(int idx) {
+            if (idx == -1)
+                return null;
+
             idx = idx % ConnectionPoints;
             return transform.Find("Connections/Cable" + idx.ToString());
         }
@@ -125,26 +128,40 @@ namespace DCTC.Map {
             Connection(idx).GetComponent<LineRenderer>().material = material;
         }
 
-        public void Select() {
+        public void Highlight() {
             Transform graphics = transform.Find("Graphics");
-            Select(graphics.gameObject, SelectionColor);
+            Highlight(graphics.gameObject.GetComponent<MeshRenderer>(), SelectionColor);
 
             for(int i = 0; i < graphics.childCount; i++) {
-                Select(graphics.GetChild(i).gameObject, SelectionColor);
+                Highlight(graphics.GetChild(i).gameObject.GetComponent<MeshRenderer>(), SelectionColor);
             }
         }
 
-        public void Deselect() {
+        public void Unhighlight() {
             Transform graphics = transform.Find("Graphics");
-            Select(graphics.gameObject, Color.clear);
+            Highlight(graphics.gameObject.GetComponent<MeshRenderer>(), Color.clear);
 
             for (int i = 0; i < graphics.childCount; i++) {
-                Select(graphics.GetChild(i).gameObject, Color.clear);
+                Highlight(graphics.GetChild(i).gameObject.GetComponent<MeshRenderer>(), Color.clear);
             }
         }
 
-        private void Select(GameObject go, Color color) {
-            Material material = go.GetComponent<MeshRenderer>().material;
+        public void HighlightCable(Cable cable) {
+            int idx = CableIndex(cable);
+            if(idx != -1) {
+                Highlight(Connection(idx).GetComponent<LineRenderer>(), SelectionColor);
+            }
+        }
+
+        public void UnhighlightCable(Cable cable) {
+            int idx = CableIndex(cable);
+            if (idx != -1) {
+                Highlight(Connection(idx).GetComponent<LineRenderer>(), Color.clear);
+            }
+        }
+
+        private void Highlight(Renderer renderer, Color color) {
+            Material material = renderer.material;
 
             if (color != Color.clear) {
                 material.SetColor("_EmissionColor",

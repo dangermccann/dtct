@@ -32,5 +32,11 @@ namespace DCTC.Test {
             Assert.IsTrue(new TilePosition(4, 5).Equals( new TilePosition(4, 5) )); 
             Assert.IsFalse(new TilePosition(5, 4).Equals( new TilePosition(4, 5) ));
         }
+
+        [Test]
+        public void TestEquatableOperator() {
+            Assert.IsTrue(new TilePosition(4, 5) == new TilePosition(4, 5));
+            Assert.IsTrue(new TilePosition(5, 4) != new TilePosition(4, 5));
+        }
     }
 }

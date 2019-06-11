@@ -47,10 +47,10 @@ namespace DCTC.Test {
             Assert.AreEqual(10, rect.Width);
             Assert.AreEqual(10, rect.Height);
 
-            Assert.AreEqual(Orientation.Vertical, agent.PrimaryRoadOrientation(rect));
+            Assert.AreEqual(Orientation.Horizontal, agent.PrimaryRoadOrientation(rect));
 
-            IEnumerable<TilePosition> result = agent.FilterRoads(rect.Positions, Orientation.Vertical);
-            Assert.AreEqual(RoadType.Vertical, game.Map.Tiles[result.First()].RoadType);
+            IEnumerable<TilePosition> result = agent.FilterRoads(rect.Positions, Orientation.Horizontal);
+            Assert.AreEqual(RoadType.Horizontal, game.Map.Tiles[result.First()].RoadType);
 
         }
     }

@@ -63,5 +63,14 @@ namespace DCTC.Model
                 new TilePosition(right, top),
             };
         }
+
+        public TileRectangle BoundingRectangle() {
+            int left = Tiles.Min(p => p.x);
+            int right = Tiles.Max(p => p.x);
+            int bottom = Tiles.Min(p => p.y);
+            int top = Tiles.Max(p => p.y);
+
+            return new TileRectangle(left, bottom, right, top);
+        }
     }
 }

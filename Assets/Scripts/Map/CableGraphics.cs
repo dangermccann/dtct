@@ -4,11 +4,13 @@ using System.Linq;
 using UnityEngine;
 using DCTC.Model;
 using DCTC.Controllers;
+using DCTC.UI;
 
 namespace DCTC.Map {
     public class CableGraphics : MonoBehaviour {
 
         public GameObject PolePrefab;
+        public GameObject labelPrefab;
 
         private bool needsRedraw = false;
 
@@ -16,6 +18,8 @@ namespace DCTC.Map {
         private PoleGraphics cursor;
         private GameController gameController;
         private MaterialController materialController;
+        private GameObject canvas;
+        private GameObject selectionLabel;
 
         private Cable selectionCable;
         public Cable SelectionCable {
@@ -34,6 +38,7 @@ namespace DCTC.Map {
         private void Start() {
             gameController = GameController.Get();
             materialController = MaterialController.Get();
+            canvas = transform.parent.GetChild(0).gameObject;
         }
 
         void OnDestroy() {
@@ -61,11 +66,15 @@ namespace DCTC.Map {
         public void RemoveSelection() {
             if(selectionCable != null)
                 RemoveCable(selectionCable);
+
+            if(selectionLabel != null)
+                selectionLabel.SetActive(false);
         }
 
         public void RedrawSelection() {
             if (selectionCable != null) {
                 DrawCable(selectionCable);
+                DrawLabel(selectionCable);
             }
         }
 
@@ -145,7 +154,7 @@ namespace DCTC.Map {
                     pole.RemoveCable(cable);
 
                     if (pole.IsEmpty()) {
-                        Destroy(pole.gameObject);
+                        DestroyImmediate(pole.gameObject);
                         poles.Remove(pos);
                     }
                 }
@@ -170,6 +179,9 @@ namespace DCTC.Map {
                 RemoveCable(selectionCable);
                 selectionCable = null;
             }
+
+            if (selectionLabel != null)
+                selectionLabel.SetActive(false);
         }
 
         public void UpdateSelection(TilePosition pos) {
@@ -198,19 +210,54 @@ namespace DCTC.Map {
             
         }
 
-        public bool SelectPole(TilePosition pos) {
+        public bool HiglightPole(TilePosition pos) {
             if(poles.ContainsKey(pos)) {
-                poles[pos].Select();
+                poles[pos].Highlight();
                 return true;
             }
 
             return false;
         }
 
-        public void DeselectPole(TilePosition pos) {
+        public void UnhighlightPole(TilePosition pos) {
             if (poles.ContainsKey(pos)) {
-                poles[pos].Deselect();
+                poles[pos].Unhighlight();
             }
+        }
+
+        public void HighlightCable(Cable cable) {
+            foreach(TilePosition pos in cable.Positions) {
+                if (poles.ContainsKey(pos)) {
+                    poles[pos].HighlightCable(cable);
+                }
+            }
+        }
+
+        public void UnhighlightCable(Cable cable) {
+            foreach (TilePosition pos in cable.Positions) {
+                if (poles.ContainsKey(pos)) {
+                    poles[pos].UnhighlightCable(cable);
+                }
+            }
+        }
+
+        private void DrawLabel(Cable cable) {
+            if (selectionLabel == null) {
+                selectionLabel = Instantiate(labelPrefab, canvas.transform);
+            }
+
+            if(cable == null || cable.Positions.Count == 0) {
+                selectionLabel.SetActive(false);
+            }
+            else {
+                selectionLabel.SetActive(true);
+                Vector3 world = ThreeDMap.PositionToWorld(cable.Positions.First());
+                selectionLabel.transform.position = new Vector3(world.x, world.y + 1f, world.z);
+
+                float cost = cable.Cost * cable.Positions.Count;
+                selectionLabel.GetComponent<TMPro.TextMeshProUGUI>().text = Formatter.FormatCurrency(cost);
+            }
+            
         }
 
 

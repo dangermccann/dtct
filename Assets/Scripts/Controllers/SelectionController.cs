@@ -84,7 +84,7 @@ namespace DCTC.Controllers {
                 CreateCursor();
             } else {
                 LotSelection.SetActive(false);
-                cableGraphics.DeselectPole(selectedPosition);
+                cableGraphics.UnhighlightPole(selectedPosition);
                 selectedPosition = TilePosition.Origin;
             }
 
@@ -252,9 +252,9 @@ namespace DCTC.Controllers {
                 return;
             }
             if (Mode == SelectionModes.None || Mode == SelectionModes.Selected) {
-                cableGraphics.DeselectPole(selectedPosition);
+                cableGraphics.UnhighlightPole(selectedPosition);
 
-                if(cableGraphics.SelectPole(position)) {
+                if(cableGraphics.HiglightPole(position)) {
                     selectedPosition = position;
                     SetSelection(SelectionModes.Selected);
                 }

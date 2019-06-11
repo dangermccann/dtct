@@ -99,7 +99,9 @@ namespace DCTC.Model {
                 if (HeadquartersLocation.Equals(TilePosition.Origin))
                     return new HashSet<TilePosition>();
 
-                return Game.Map.Tiles[HeadquartersLocation].Lot.Corners();
+                TileRectangle rect = Game.Map.Tiles[HeadquartersLocation].Lot.BoundingRectangle();
+                rect = Game.Map.ExpandBoundingBox(rect, 1);
+                return new HashSet<TilePosition>(rect.Positions);
             }
         }
 
@@ -281,9 +283,37 @@ namespace DCTC.Model {
             if (cost > Money)
                 throw new Exception(Name + " has insufficient funds (" + Money + ") to purchase " + id);
 
-            Cable cable = new Cable(id, Game.Items.CableAttributes[id]);
-            cable.Positions.AddRange(positions);
-            Cables.Add(cable);
+            // Find cables of same type that we might append / prepend
+            Cable cable = null;
+            foreach(Cable candidate in Cables) {
+                if(candidate.ID == id) {
+                    if(candidate.Positions.First() == positions[0]) {
+                        candidate.Positions.InsertRange(0, positions.Reverse().Skip(1));
+                        cable = candidate;
+                    }
+                    else if(candidate.Positions.First() == positions.Last()) {
+                        candidate.Positions.InsertRange(0, positions.Skip(1));
+                        cable = candidate;
+                    }
+                    else if(candidate.Positions.Last() == positions[0]) {
+                        candidate.Positions.AddRange(positions.Skip(1));
+                        cable = candidate;
+                    }
+                    else if(candidate.Positions.Last() == positions.Last()) {
+                        candidate.Positions.AddRange(positions.Reverse().Skip(1));
+                        cable = candidate;
+                    }
+                }
+            }
+
+            if (cable == null) {
+                cable = new Cable(id, Game.Items.CableAttributes[id]);
+                cable.Positions.AddRange(positions);
+                Cables.Add(cable);
+            } else {
+                TriggerItemRemoved(cable);
+            }
+
             Money -= cost;
             InvalidateNetworks();
             TriggerItemAdded(cable);

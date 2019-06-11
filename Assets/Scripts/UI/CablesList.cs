@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using DCTC.Model;
 using DCTC.Map;
 using DCTC.Controllers;
-using TMPro;
 
 namespace DCTC.UI {
     public class CablesList : MonoBehaviour {
 
         public GameObject CableDetailsPrefab;
         public SelectionController selectionController;
+        public CableGraphics cableGraphics;
         private GameController gameController;
 
         private IEnumerable<Cable> cables = new List<Cable>();
@@ -53,6 +54,14 @@ namespace DCTC.UI {
         void DeleteCable(string guid) {
             gameController.Game.Player.RemoveCable(guid);
             OnSelectionChange();
+        }
+
+        void HighlightCable(string guid) {
+            cableGraphics.HighlightCable(cables.First(c => c.Guid == guid));
+        }
+
+        void UnhighlightCable(string guid) {
+            cableGraphics.UnhighlightCable(cables.First(c => c.Guid == guid));
         }
     }
 }

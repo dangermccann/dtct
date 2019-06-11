@@ -48,7 +48,7 @@ namespace DCTC.Test {
 
             networks = company.Networks;
             Assert.AreEqual(1, networks.Count);
-            Assert.AreEqual(2, networks[0].Cables.Count);
+            Assert.AreEqual(1, networks[0].Cables.Count); // cables should merge together into one
 
             company.PlaceCable(Cable.CAT3, new List<TilePosition>() {
                 new TilePosition(8, 3),
@@ -68,7 +68,7 @@ namespace DCTC.Test {
 
             networks = company.Networks;
             Assert.AreEqual(1, networks.Count);
-            Assert.AreEqual(4, networks[0].Cables.Count);
+            Assert.AreEqual(1, networks[0].Cables.Count);
             Assert.AreEqual(2, networks[0].Nodes.Count);
             Assert.IsTrue(networks[0].ContainsPosition(new TilePosition(3, 6)));
             Assert.IsFalse(networks[0].ContainsPosition(new TilePosition(2, 2)));
@@ -78,7 +78,7 @@ namespace DCTC.Test {
 
             networks = company.Networks;
             Assert.AreEqual(2, networks.Count);
-            Assert.AreEqual(3, networks[0].Cables.Count);
+            Assert.AreEqual(1, networks[0].Cables.Count);
             Assert.AreEqual(1, networks[0].Nodes.Count);
             Assert.AreEqual(1, networks[1].Cables.Count);
             Assert.AreEqual(1, networks[1].Nodes.Count);

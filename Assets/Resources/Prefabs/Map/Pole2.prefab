@@ -154,8 +154,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.026226044
-        value: 0.060611725
+        time: 0.03083434
+        value: 0.08599243
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -216,7 +216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endPointTransform: {fileID: 0}
   pointsInLineRenderer: 5
-  sagAmplitude: 0.3
+  sagAmplitude: 0.4
 --- !u!1 &1006799233530497163
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,8 +294,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.026226044
-        value: 0.060611725
+        time: 0.03083434
+        value: 0.08599243
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -356,7 +356,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endPointTransform: {fileID: 0}
   pointsInLineRenderer: 5
-  sagAmplitude: 0.3
+  sagAmplitude: 0.4
 --- !u!1 &3567129278997243616
 GameObject:
   m_ObjectHideFlags: 0
@@ -480,6 +480,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sagAmount: 0.3
+  SelectionItensity: 1
+  SelectionColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &3567129279987973809
 GameObject:
   m_ObjectHideFlags: 0
@@ -748,8 +750,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.026226044
-        value: 0.060611725
+        time: 0.03083434
+        value: 0.08599243
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -810,7 +812,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endPointTransform: {fileID: 0}
   pointsInLineRenderer: 5
-  sagAmplitude: 0.3
+  sagAmplitude: 0.4
 --- !u!1 &7119407466906530829
 GameObject:
   m_ObjectHideFlags: 0
@@ -888,8 +890,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.026226044
-        value: 0.060611725
+        time: 0.03083434
+        value: 0.08599243
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -950,4 +952,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endPointTransform: {fileID: 0}
   pointsInLineRenderer: 5
-  sagAmplitude: 0.3
+  sagAmplitude: 0.4
