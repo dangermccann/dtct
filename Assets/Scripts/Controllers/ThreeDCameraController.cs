@@ -38,6 +38,7 @@ namespace DCTC.Controllers {
         Quaternion savedRotation = Quaternion.identity;
 
         int ScrollMouseButton = 1;
+        int ScrollMouseButton2 = 2;
         int SelectMouseButton = 0;
 
 
@@ -248,7 +249,7 @@ namespace DCTC.Controllers {
 
         void UpdatePosition() {
 
-            if (Input.GetMouseButtonDown(ScrollMouseButton) && !ignoreMouse && NavigationEnabled) {
+            if ((Input.GetMouseButtonDown(ScrollMouseButton) || Input.GetMouseButtonDown(ScrollMouseButton2)) && !ignoreMouse && NavigationEnabled) {
                 isScrolling = true;
                 lastMousePosition = ScreenPointToGroundPoint(Input.mousePosition);
 
@@ -289,7 +290,7 @@ namespace DCTC.Controllers {
 
         void UpdateMouse() {
             // releasing the middle mouse stops scrolling
-            if (Input.GetMouseButtonUp(ScrollMouseButton)) {
+            if (Input.GetMouseButtonUp(ScrollMouseButton) || Input.GetMouseButtonUp(ScrollMouseButton2)) {
                 isScrolling = false;
                 lastMousePosition = Vector3.zero;
             }

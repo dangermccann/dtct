@@ -53,6 +53,8 @@
 *.ttf   binary
 *.otf   binary
 *.dll   binary
+*.fbx   binary
+*.asset   binary
 
 
 ###############################################################################

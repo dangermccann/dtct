@@ -128,6 +128,7 @@
     <Compile Include="Assets\Scripts\UI\LocationDetails.cs" />
     <Compile Include="Assets\Scripts\UI\LotOutline.cs" />
     <Compile Include="Assets\Scripts\UI\NewGameUI.cs" />
+    <Compile Include="Assets\Scripts\UI\NodeDetails.cs" />
     <Compile Include="Assets\Scripts\UI\OverlayToggles.cs" />
     <Compile Include="Assets\Scripts\UI\RackedItemUI.cs" />
     <Compile Include="Assets\Scripts\UI\TechnologyTree.cs" />

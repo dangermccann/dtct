@@ -166,6 +166,16 @@ namespace DCTC.Model {
             return null;
         }
 
+        public Company GetOwnerOfNode(string guid) {
+            foreach (Company company in Companies) {
+                foreach (Node node in company.Nodes) {
+                    if (node.Guid == guid)
+                        return company;
+                }
+            }
+            return null;
+        }
+
         public IEnumerable<Cable> GetCablesAt(TilePosition pos) {
             List<Cable> cables = new List<Cable>();
             foreach(Company company in Companies) {
@@ -176,6 +186,18 @@ namespace DCTC.Model {
                 }
             }
             return cables;
+        }
+
+        public IEnumerable<Node> GetNodesAt(TilePosition pos) {
+            List<Node> nodes = new List<Node>();
+            foreach (Company company in Companies) {
+                foreach (Node node in company.Nodes) {
+                    if (node.Position == pos) {
+                        nodes.Add(node);
+                    }
+                }
+            }
+            return nodes;
         }
 
         public void OnCustomerChanged(Customer customer) {

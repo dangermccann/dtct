@@ -10,18 +10,13 @@ namespace DCTC.UI {
     public class CablesList : MonoBehaviour {
 
         public GameObject CableDetailsPrefab;
+        public GameObject NodeDetailsPrefab;
         public SelectionController selectionController;
         public CableGraphics cableGraphics;
         private GameController gameController;
 
         private IEnumerable<Cable> cables = new List<Cable>();
-        public IEnumerable<Cable> Cables {
-            get { return cables; }
-            set {
-                cables = value;
-                Redraw();
-            }
-        }
+        private IEnumerable<Node> nodes = new List<Node>();
 
         private void Start() {
             gameController = GameController.Get();
@@ -32,15 +27,20 @@ namespace DCTC.UI {
             if(selectionController.Mode == SelectionController.SelectionModes.Selected) {
                 TilePosition pos = selectionController.SelectedPosition;
                 if(pos != TilePosition.Origin) {
-                    Cables = gameController.Game.GetCablesAt(pos);
+                    cables = gameController.Game.GetCablesAt(pos);
+                    nodes = gameController.Game.GetNodesAt(pos);
                 }
                 else {
-                    Cables = new List<Cable>();
+                    cables = new List<Cable>();
+                    nodes = new List<Node>();
                 }
             }
             else {
-                Cables = new List<Cable>();
+                cables = new List<Cable>();
+                nodes = new List<Node>();
             }
+
+            Redraw();
         }
 
         void Redraw() {
@@ -49,10 +49,20 @@ namespace DCTC.UI {
                 GameObject go = Instantiate(CableDetailsPrefab, transform);
                 go.GetComponent<CableDetails>().Cable = cable;
             }
+
+            foreach (Node node in nodes) {
+                GameObject go = Instantiate(NodeDetailsPrefab, transform);
+                go.GetComponent<NodeDetails>().Node = node;
+            }
         }
 
         void DeleteCable(string guid) {
             gameController.Game.Player.RemoveCable(guid);
+            OnSelectionChange();
+        }
+
+        void DeleteNode(string guid) {
+            gameController.Game.Player.RemoveNode(guid);
             OnSelectionChange();
         }
 

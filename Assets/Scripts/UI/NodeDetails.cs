@@ -6,7 +6,7 @@ using DCTC.Controllers;
 using TMPro;
 
 namespace DCTC.UI {
-    public class CableDetails : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
+    public class NodeDetails : MonoBehaviour {
 
 
         private GameController gameController;
@@ -15,30 +15,30 @@ namespace DCTC.UI {
         private static Color ActiveColor = Utilities.CreateColor(0x63C379);
         private static Color DisconnectedColor = Utilities.CreateColor(0xFF7575);
 
-        private Cable cable;
-        public Cable Cable {
-            get { return cable; }
+        private Node node;
+        public Node Node {
+            get { return node; }
             set {
-                cable = value;
+                node = value;
                 Redraw();
             }
         }
 
         void Redraw() {
-            if(gameController == null)
+            if (gameController == null)
                 gameController = GameController.Get();
 
-            SetText("Name", cable.ID + " " + cable.Type.ToString() + " Cable");
+            SetText("Name", node.ID + " " + node.Type.ToString() + " Node");
 
-            Company owner = gameController.Game.GetOwnerOfCable(cable.Guid);
+            Company owner = gameController.Game.GetOwnerOfNode(node.Guid);
 
             string desc = "";
             desc += owner.Name;
-            desc += " / " + Formatter.FormatDistance(cable.Positions.Count, Formatter.Units.Metric);
+            desc += " / Range: " + Formatter.FormatDistance(node.Attributes.Range, Formatter.Units.Metric);
             SetText("Description", desc);
 
             string status;
-            if (cable.Status == NetworkStatus.Disconnected) {
+            if (node.Status == NetworkStatus.Disconnected) {
                 status = "Disconnected from Plant";
                 SetColor("Status", DisconnectedColor);
             } else {
@@ -59,14 +59,7 @@ namespace DCTC.UI {
         }
 
         public void OnDeleteClicked() {
-            transform.parent.SendMessage("DeleteCable", cable.Guid);
-        }
-
-        public void OnPointerEnter(PointerEventData eventData) {
-            transform.parent.SendMessage("HighlightCable", cable.Guid);
-        }
-        public void OnPointerExit(PointerEventData eventData) {
-            transform.parent.SendMessage("UnhighlightCable", cable.Guid);
+            transform.parent.SendMessage("DeleteNode", node.Guid);
         }
 
     }

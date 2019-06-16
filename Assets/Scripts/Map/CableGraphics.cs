@@ -160,6 +160,16 @@ namespace DCTC.Map {
                 }
             }
         }
+
+        public void DrawNode(Node node) {
+            PoleGraphics pole = poles[node.Position];
+            pole.AddNode(node);
+        }
+
+        public void RemoveNode(Node node) {
+            PoleGraphics pole = poles[node.Position];
+            pole.RemoveNode(node);
+        }
         
         public void InitSelection() {
             Debug.Log("InitSelection");
@@ -210,7 +220,7 @@ namespace DCTC.Map {
             
         }
 
-        public bool HiglightPole(TilePosition pos) {
+        public bool HighlightPole(TilePosition pos) {
             if(poles.ContainsKey(pos)) {
                 poles[pos].Highlight();
                 return true;

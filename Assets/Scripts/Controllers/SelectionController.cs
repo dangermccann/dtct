@@ -27,12 +27,11 @@ namespace DCTC.Controllers {
         public event ChangeDelegate SelectionChanged;
         public ThreeDCameraController cameraController;
         public ToggleGroup ConstructionToggleGroup;
-        public GameObject DestroyPrefab;
-        public GameObject NodeCursorPrefabCopper, NodeCursorPrefabCoaxial, NodeCursorPrefabOptical;
         public GameObject MapGameObject;
         public GameObject LotSelection;
         public GameObject LocationDetails;
         public CableGraphics cableGraphics;
+        public GameObject invalidNode;
 
         public TilePosition SelectedPosition {
             get { return selectedPosition; }
@@ -48,7 +47,7 @@ namespace DCTC.Controllers {
         [HideInInspector]
         public string CableId;
 
-        private GameObject cursorObject = null;
+        
         private GameController gameController;
         private TilePosition cablePlacementStart;
         private ThreeDMap mapComponent;
@@ -73,15 +72,12 @@ namespace DCTC.Controllers {
         }
 
         public void SetSelection(SelectionModes mode) {
-            if (cursorObject != null) {
-                DestroyImmediate(cursorObject);
-                cursorObject = null;
-            }
+            invalidNode.SetActive(false);
 
             Mode = mode;
 
             if (Mode != SelectionModes.None) {
-                CreateCursor();
+                InitSelection();
             } else {
                 LotSelection.SetActive(false);
                 cableGraphics.UnhighlightPole(selectedPosition);
@@ -101,25 +97,11 @@ namespace DCTC.Controllers {
             Debug.Log("Selection mode is " + Mode.ToString());
         }
 
-        private void CreateCursor() {
+        private void InitSelection() {
             if (Mode == SelectionModes.Cable) {
                 placementMode = CablePlacementMode.Cursor;
                 cableGraphics.InitSelection();
                 cableGraphics.SelectionCable = new Cable(CableId, gameController.Game.Items.CableAttributes[CableId]);
-            }
-            else if (Mode == SelectionModes.Node) {
-                switch(NodeId) {
-                    case Node.CR100:
-                        cursorObject = Instantiate(NodeCursorPrefabCopper);
-                        break;
-                    case Node.DR100:
-                        cursorObject = Instantiate(NodeCursorPrefabCoaxial);
-                        break;
-                    case Node.OR105:
-                        cursorObject = Instantiate(NodeCursorPrefabOptical);
-                        break;
-                }
-                
             }
         }
 
@@ -137,7 +119,7 @@ namespace DCTC.Controllers {
                 mouseDownPosition = Input.mousePosition;
             }
             if(Input.GetMouseButtonUp(1) && !ignoreMouse) {
-                if((Input.mousePosition - mouseDownPosition).magnitude < 0.25f) {
+                if((Input.mousePosition - mouseDownPosition).magnitude < 0.5f) {
                     ConstructionToggleGroup.SetAllTogglesOff();
                     SetSelection(SelectionModes.None);
                 }
@@ -229,22 +211,37 @@ namespace DCTC.Controllers {
             else if (Mode == SelectionModes.Node) {
                 // Hide if we're off the map
                 if (!gameController.Map.Tiles.ContainsKey(pos)) {
-                    cursorObject.SetActive(false);
+                    invalidNode.SetActive(true);
                     return;
-                } else {
-                    cursorObject.SetActive(true);
+                } 
+
+                // Make sure we're on top of one of our cables
+                Tile tile = gameController.Map.Tiles[pos];
+                bool valid = false;
+
+                if (tile.Type == TileType.Road) {
+                    if (gameController.Game.Player.CablePositions.Contains(pos)) {
+                        pos = gameController.Map.NearestPoleLocation(pos);
+
+                        if (gameController.Map.IsValidPoleLocation(pos)) {
+
+                            if (pos != selectedPosition)
+                                cableGraphics.UnhighlightPole(selectedPosition);
+
+                            selectedPosition = pos;
+                            cableGraphics.HighlightPole(selectedPosition);
+                            invalidNode.SetActive(false);
+                            valid = true;
+                        }
+
+                    }
                 }
 
-                Tile tile = gameController.Map.Tiles[pos];
-                if (tile.Type == TileType.Road) {
-                    cursorObject.SetActive(true);
-                    cursorObject.transform.position = world;
-                }
-                else {
-                    cursorObject.SetActive(false);
-                }
-            } 
-            
+                if(!valid) {
+                    cableGraphics.UnhighlightPole(selectedPosition);
+                    invalidNode.SetActive(true);
+                } 
+            }
         }
 
         private void CameraController_TileClicked(Vector3 world, TilePosition position) {
@@ -254,7 +251,7 @@ namespace DCTC.Controllers {
             if (Mode == SelectionModes.None || Mode == SelectionModes.Selected) {
                 cableGraphics.UnhighlightPole(selectedPosition);
 
-                if(cableGraphics.HiglightPole(position)) {
+                if(cableGraphics.HighlightPole(position)) {
                     selectedPosition = position;
                     SetSelection(SelectionModes.Selected);
                 }
@@ -267,14 +264,13 @@ namespace DCTC.Controllers {
             }
 
             if (Mode == SelectionModes.Node) {
-                if(!cursorObject.activeSelf) {
+                if(invalidNode.activeSelf) {
                     return;
                 }
 
+                position = gameController.Map.NearestPoleLocation(position);
                 gameController.Game.Player.PlaceNode(NodeId, position);
-
-                Destroy(cursorObject);
-                CreateCursor();
+                cableGraphics.UnhighlightPole(selectedPosition);
             }
             else if (Mode == SelectionModes.Cable) {
 
@@ -297,7 +293,7 @@ namespace DCTC.Controllers {
                     }
 
                     cableGraphics.CancelSelection();
-                    CreateCursor();
+                    InitSelection();
                 }
             } 
         }

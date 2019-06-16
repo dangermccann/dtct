@@ -711,7 +711,7 @@ namespace DCTC.Map {
             }
             else if(item is Node) {
                 Node node = item as Node;
-                InstantiateObject("Node" + node.Type.ToString(), node.Guid, node.Position);
+                cableGraphics.DrawNode(node);
             }
             else if(item is Truck) {
                 Truck truck = item as Truck;
@@ -731,7 +731,7 @@ namespace DCTC.Map {
             }
             else if (item is Node) {
                 Node node = item as Node;
-                RemoveObject("Node" + node.Type.ToString(), node.Guid);
+                cableGraphics.RemoveNode(node);
             } else if (item is Truck) {
                 Truck truck = item as Truck;
                 RemoveObject("Van", truck.ID);

@@ -87,6 +87,14 @@ namespace DCTC.Model {
         }
 
         [NonSerialized]
+        private HashSet<TilePosition> cablePositions = null;
+        public HashSet<TilePosition> CablePositions {
+            get {
+                return cablePositions;
+            }
+        }
+
+        [NonSerialized]
         private Dictionary<CableType, HashSet<TilePosition>> potentialServiceArea = null;
         public Dictionary<CableType, HashSet<TilePosition>> PotentialServiceArea {
             get {
@@ -152,6 +160,7 @@ namespace DCTC.Model {
             Racks = new List<Rack>();
             Technologies = new Dictionary<string, float>();
             serviceArea = new HashSet<TilePosition>();
+            cablePositions = new HashSet<TilePosition>();
 
             potentialServiceArea = new Dictionary<CableType, HashSet<TilePosition>>();
             potentialServiceArea.Add(CableType.Copper, new HashSet<TilePosition>());
@@ -437,6 +446,15 @@ namespace DCTC.Model {
             }
         }
 
+        public void RemoveNode(string guid) {
+            for (int i = Nodes.Count - 1; i >= 0; i--) {
+                Node node = Nodes[i];
+                if (node.Guid == guid) {
+                    RemoveNode(node);
+                }
+            }
+        }
+
         public void RemoveNode(Node node) {
             Nodes.Remove(node);
             InvalidateNetworks();
@@ -552,6 +570,7 @@ namespace DCTC.Model {
                 return;
 
             HashSet<TilePosition> serviceArea = new HashSet<TilePosition>();
+            cablePositions = new HashSet<TilePosition>();
 
             potentialServiceArea[CableType.Copper].Clear();
             potentialServiceArea[CableType.Coaxial].Clear();
@@ -563,6 +582,9 @@ namespace DCTC.Model {
 
                 foreach (Cable cable in network.Cables) {
                     foreach (TilePosition pos in cable.Positions) {
+                        if (!cablePositions.Contains(pos))
+                            cablePositions.Add(pos);
+
                         IEnumerable<TilePosition> positions = Game.Map.Area(pos, cable.ServiceRange);
 
                         potentialServiceArea[network.CableType].AddManySafely(positions);

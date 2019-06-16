@@ -30,6 +30,7 @@ namespace DCTC.Map {
         }
 
         private Cable[] cables = new Cable[8];
+        private int nodeCount = 0;
 
         void Redraw() {
             if (orientation == Orientation.Vertical) {
@@ -170,6 +171,23 @@ namespace DCTC.Map {
             } else {
                 material.DisableKeyword("_EMISSION");
             }
+        }
+
+        public void AddNode(Node node) {
+            nodeCount++;
+            GetNode().SetActive(true);
+        }
+
+        public void RemoveNode(Node node) {
+            if (nodeCount == 0)
+                return;
+
+            nodeCount--;
+            GetNode().SetActive(nodeCount > 0);
+        }
+
+        private GameObject GetNode() {
+            return transform.Find("Graphics/Node").gameObject;
         }
 
         private Cable_Procedural_Static GetProcedural(int idx) {
